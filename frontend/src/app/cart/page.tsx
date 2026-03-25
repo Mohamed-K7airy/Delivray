@@ -116,7 +116,7 @@ export default function CartPage() {
       
       setCart(data.id, [], 0);
       toast.success('Order placed successfully! 🚀');
-      router.push(`/order-tracking/${data.id}`);
+      router.push(`/order/${data.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Checkout failed.');
     }
