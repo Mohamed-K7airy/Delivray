@@ -47,12 +47,12 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
 
   return (
     <aside 
-      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-        isCollapsed ? 'w-24' : 'w-80'
+      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:flex ${
+        isCollapsed ? 'w-20 lg:w-24' : 'w-64 lg:w-80'
       }`}
     >
       {/* Brand & Toggle */}
-      <div className={`p-8 mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-6' : 'px-8'}`}>
+      <div className={`p-6 lg:p-8 mb-8 lg:mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-4 lg:px-6' : 'px-6 lg:px-8'}`}>
         {!isCollapsed && (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
@@ -85,7 +85,7 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
             <button 
               key={item.id}
               onClick={() => router.push(item.path)}
-              className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all group relative overflow-hidden ${
+              className={`w-full flex items-center space-x-3 lg:space-x-4 px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl transition-all group relative overflow-hidden ${
                 isActive 
                   ? 'bg-white/[0.04] text-white border border-white/5 shadow-2xl' 
                   : 'text-gray-500 hover:text-white hover:bg-white/[0.02]'
@@ -111,11 +111,11 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-6 space-y-6">
+      <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
         {!isCollapsed && (
           <button 
             onClick={() => toast.success('Connecting to Delivery Terminal... System LIVE!')}
-            className="w-full bg-primary text-black py-5 rounded-[1.25rem] font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(217,119,87,0.4)]"
+            className="w-full bg-primary text-black py-4 lg:py-5 rounded-[1.25rem] font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(217,119,87,0.4)]"
           >
             Go Live
           </button>

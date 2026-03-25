@@ -65,14 +65,14 @@ export default function LoginPage() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-[500px] p-10 md:p-12 space-y-10 bg-[#0b0b0b] rounded-[2rem] border border-white/5 relative z-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)]"
+        className="w-full max-w-[500px] p-6 sm:p-10 md:p-12 space-y-6 sm:space-y-10 bg-[#0b0b0b] rounded-2xl sm:rounded-[2rem] border border-white/5 relative z-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)]"
       >
         <div className="text-center">
           <span className="bg-primary/10 text-primary px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-primary/10 mb-8 inline-block">
             Welcome Back
           </span>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4 uppercase">Sign In</h1>
-          <p className="text-gray-500 font-medium text-base">Access your Delivray account</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter mb-3 uppercase">Sign In</h1>
+          <p className="text-gray-500 font-medium text-sm sm:text-base">Access your Delivray account</p>
         </div>
 
         {error && (
@@ -93,7 +93,7 @@ export default function LoginPage() {
                 placeholder="+1234567890"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
+                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
                 required
               />
             </div>
@@ -105,13 +105,13 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500 pr-16"
+                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500 pr-14 sm:pr-16"
                 required
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-6 top-[54px] text-gray-600 hover:text-white transition-colors"
+                className="absolute right-4 sm:right-6 top-[44px] sm:top-[54px] text-gray-600 hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
               </button>
@@ -121,7 +121,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-8 py-5 bg-primary text-black font-black uppercase tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-98 transition-all shadow-[0_20px_40px_-10px_rgba(217,119,87,0.4)] disabled:opacity-50 text-base flex items-center justify-center space-x-3"
+            className="w-full px-6 py-3.5 sm:px-8 sm:py-5 bg-primary text-black font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-98 transition-all shadow-[0_20px_40px_-10px_rgba(217,119,87,0.4)] disabled:opacity-50 text-sm sm:text-base flex items-center justify-center space-x-3"
           >
             {loading ? (
               <span>Processing...</span>

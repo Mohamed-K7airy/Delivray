@@ -134,21 +134,21 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-[#ff8564]/30">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-16">
         
         {/* Animated Header Section */}
-        <header className="mb-12">
+        <header className="mb-8 sm:mb-12">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-6"
+            className="flex items-center gap-4 sm:gap-6"
           >
-            <h1 className="text-6xl font-black tracking-tightest uppercase italic">Your Cart</h1>
-            <div className="w-16 h-16 rounded-2xl border-2 border-[#ff8564]/20 flex items-center justify-center text-[#ff8564] text-3xl font-black bg-[#ff8564]/5 shadow-2xl shadow-[#ff8564]/10">
+            <h1 className="text-3xl sm:text-6xl font-black tracking-tightest uppercase italic">Your Cart</h1>
+            <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl border-2 border-[#ff8564]/20 flex items-center justify-center text-[#ff8564] text-xl sm:text-3xl font-black bg-[#ff8564]/5 shadow-2xl shadow-[#ff8564]/10">
                {items.length}
             </div>
           </motion.div>
-          <p className="text-gray-500 text-lg mt-3 font-bold max-w-2xl leading-relaxed">
+          <p className="text-gray-500 text-sm sm:text-lg mt-2 sm:mt-3 font-bold max-w-2xl leading-relaxed">
             Review your selection and adjust quantities before the final dash to your doorstep.
           </p>
         </header>
@@ -160,12 +160,12 @@ export default function CartPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="py-32 flex flex-col items-center text-center opacity-50"
             >
-              <ShoppingBag size={120} className="mb-8 text-gray-800" />
-              <h2 className="text-4xl font-black mb-4 uppercase italic">Vibe Check: Empty</h2>
+              <ShoppingBag size={80} className="mb-8 text-gray-800" />
+              <h2 className="text-2xl sm:text-4xl font-black mb-4 uppercase italic">Vibe Check: Empty</h2>
               <Button onClick={() => router.push('/')} variant="outline" size="lg">Discover Food</Button>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
               
               {/* Items Column */}
               <div className="lg:col-span-8 space-y-8">
@@ -182,10 +182,10 @@ export default function CartPage() {
                         layout
                         variants={itemVariants}
                         exit={{ opacity: 0, x: -50 }}
-                        className="group relative bg-white/5 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 flex items-center gap-6 transition-all duration-500 hover:border-white/10 hover:bg-white/[0.07] overflow-hidden"
+                        className="group relative bg-white/5 backdrop-blur-3xl border border-white/5 rounded-2xl sm:rounded-3xl p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 transition-all duration-500 hover:border-white/10 hover:bg-white/[0.07] overflow-hidden"
                       >
                          {/* Item Image */}
-                         <div className="w-28 h-28 rounded-2xl overflow-hidden bg-white/5 border border-white/10 shrink-0">
+                         <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden bg-white/5 border border-white/10 shrink-0">
                             <img 
                               src={item.products?.image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop'} 
                               alt={item.products.name}
@@ -196,8 +196,8 @@ export default function CartPage() {
                          {/* Details */}
                          <div className="flex-1">
                             <div className="flex justify-between items-start mb-1">
-                               <h3 className="text-2xl font-black tracking-tight group-hover:text-[#ff8564] transition-colors">{item.products.name}</h3>
-                               <span className="text-2xl font-black text-white/90 font-mono tracking-tighter">
+                               <h3 className="text-lg sm:text-2xl font-black tracking-tight group-hover:text-[#ff8564] transition-colors">{item.products.name}</h3>
+                               <span className="text-lg sm:text-2xl font-black text-white/90 font-mono tracking-tighter">
                                  ${(Number(item.products.price) * item.quantity).toFixed(2)}
                                </span>
                             </div>
@@ -236,7 +236,7 @@ export default function CartPage() {
                 <motion.div 
                    initial={{ opacity: 0, y: 20 }}
                    animate={{ opacity: 1, y: 0 }}
-                   className="bg-gradient-to-r from-white/5 to-transparent border border-white/5 rounded-3xl p-8 flex items-center justify-between group overflow-hidden relative"
+                   className="bg-gradient-to-r from-white/5 to-transparent border border-white/5 rounded-2xl sm:rounded-3xl p-5 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group overflow-hidden relative"
                 >
                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff8564]/5 blur-[80px] rounded-full -mr-20 -mt-20 group-hover:bg-[#ff8564]/10 transition-colors" />
                    
@@ -287,7 +287,7 @@ export default function CartPage() {
                     <div className="mb-8">
                        <p className="text-gray-500 font-bold uppercase tracking-widest text-[9px] mb-1">Estimated Total</p>
                        <div className="flex justify-between items-end">
-                          <span className="text-5xl font-black text-white tracking-tighter">
+                          <span className="text-3xl sm:text-5xl font-black text-white tracking-tighter">
                              ${(total + 2.99).toFixed(2)}
                           </span>
                        </div>

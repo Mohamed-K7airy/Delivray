@@ -41,7 +41,7 @@ export default function Navbar() {
       className="bg-[#262624]/60 backdrop-blur-xl border-b border-white/10 shadow-2xl sticky top-0 z-50 transition-all duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-20 items-center">
+        <div className="flex justify-between h-16 md:h-20 items-center">
           {/* 1. Left: Logo */}
           <Link href="/" onClick={closeMenu} className="flex-shrink-0 flex items-center group transition-transform duration-300 hover:scale-105 z-50">
             <Logo className="w-10 h-10 md:w-12 md:h-12" />
@@ -148,9 +148,9 @@ export default function Navbar() {
           <div className="md:hidden flex items-center space-x-4">
             {user?.role === 'customer' && (
               <Link href="/cart" onClick={closeMenu} className="relative p-2 text-white/70 hover:text-primary transition-colors">
-                <ShoppingCart size={24} />
+                <ShoppingCart size={20} />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-[20px] px-1.5 text-[11px] font-bold text-white bg-primary rounded-full border-2 border-[#262624]">
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[9px] font-bold text-white bg-primary rounded-full border-2 border-[#262624]">
                     {cartItemCount}
                   </span>
                 )}
@@ -160,7 +160,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors z-50 relative"
             >
-              {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
@@ -173,24 +173,24 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#1a1a1a] border-b border-white/10 overflow-hidden absolute w-full left-0 top-20 shadow-2xl"
+            className="md:hidden bg-[#1a1a1a] border-b border-white/10 overflow-hidden absolute w-full left-0 top-16 shadow-2xl z-50"
           >
-            <div className="px-4 py-6 space-y-4 flex flex-col items-start bg-black/20 backdrop-blur-3xl">
+            <div className="px-4 py-4 space-y-2 flex flex-col items-start bg-black/20 backdrop-blur-3xl">
               {user ? (
                 <>
                   <Link 
                     href={user.role === 'merchant' ? '/merchant/dashboard' : user.role === 'driver' ? '/driver/panel' : user.role === 'admin' ? '/admin/dashboard' : '/profile'}
                     onClick={closeMenu}
-                    className="w-full flex items-center space-x-3 text-lg font-bold text-white bg-white/5 border border-white/10 px-5 py-4 rounded-xl hover:bg-white/10 transition-all"
+                    className="w-full flex items-center space-x-3 text-sm font-bold text-white bg-white/5 border border-white/10 px-4 py-3 rounded-lg hover:bg-white/10 transition-all"
                   >
-                    {user.role === 'merchant' ? <Store size={22} className="text-primary"/> : <User size={22} className="text-primary"/>}
+                    {user.role === 'merchant' ? <Store size={18} className="text-primary"/> : <User size={18} className="text-primary"/>}
                     <span>{user.name}</span>
                   </Link>
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 text-lg font-bold text-red-400 bg-red-400/5 border border-red-400/10 px-5 py-4 rounded-xl hover:bg-red-400/10 transition-all text-left"
+                    className="w-full flex items-center space-x-3 text-sm font-bold text-red-400 bg-red-400/5 border border-red-400/10 px-4 py-3 rounded-lg hover:bg-red-400/10 transition-all text-left"
                   >
-                    <LogOut size={22} />
+                    <LogOut size={18} />
                     <span>Logout</span>
                   </button>
                 </>
@@ -201,17 +201,17 @@ export default function Navbar() {
                       key={item} 
                       href={`#${item.toLowerCase()}`} 
                       onClick={closeMenu}
-                      className="text-gray-300 hover:text-white text-lg font-black tracking-widest uppercase transition-colors"
+                      className="text-gray-300 hover:text-white text-sm font-black tracking-widest uppercase transition-colors"
                     >
                       {item}
                     </Link>
                   ))}
-                  <Link href="/login" onClick={closeMenu} className="w-full flex items-center space-x-3 text-lg font-bold text-white bg-white/5 border border-white/10 px-5 py-4 rounded-xl hover:bg-white/10 transition-all">
-                    <LogIn size={22} className="text-primary" />
+                  <Link href="/login" onClick={closeMenu} className="w-full flex items-center space-x-3 text-sm font-bold text-white bg-white/5 border border-white/10 px-4 py-3 rounded-lg hover:bg-white/10 transition-all">
+                    <LogIn size={18} className="text-primary" />
                     <span>Log In</span>
                   </Link>
                   <Link href="/register" onClick={closeMenu}>
-                    <button className="w-full bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-full font-black text-lg transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
+                    <button className="w-full bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-black text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
                       Sign Up
                     </button>
                   </Link> 

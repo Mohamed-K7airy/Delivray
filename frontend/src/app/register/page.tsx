@@ -90,36 +90,36 @@ export default function RegisterPage() {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-[600px] p-10 md:p-12 space-y-10 bg-[#0b0b0b] rounded-[2.5rem] border border-white/5 relative z-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)]"
+        className="w-full max-w-[600px] p-6 sm:p-10 md:p-12 space-y-6 sm:space-y-10 bg-[#0b0b0b] rounded-2xl sm:rounded-[2.5rem] border border-white/5 relative z-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)]"
       >
         <div className="text-center">
           <span className="bg-primary/10 text-primary px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-primary/10 mb-8 inline-block">
             Join the Fleet
           </span>
-          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4 uppercase">Create an Account</h1>
-          <p className="text-gray-500 font-medium text-base">Join Delivray today</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter mb-3 uppercase">Create an Account</h1>
+          <p className="text-gray-500 font-medium text-sm sm:text-base">Join Delivray today</p>
         </div>
 
         {/* Role Selection */}
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6">
           {[
-            { id: 'customer', label: 'Customer', icon: <User size={24} /> },
-            { id: 'merchant', label: 'Merchant', icon: <ShoppingBag size={24} /> },
-            { id: 'driver', label: 'Driver', icon: <Truck size={24} /> }
+            { id: 'customer', label: 'Customer', icon: <User size={18} /> },
+            { id: 'merchant', label: 'Merchant', icon: <ShoppingBag size={18} /> },
+            { id: 'driver', label: 'Driver', icon: <Truck size={18} /> }
           ].map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => setRole(item.id as any)}
-              className={`flex flex-col items-center justify-center p-6 rounded-2xl transition-all border-2 group
+              className={`flex flex-col items-center justify-center p-3 sm:p-6 rounded-xl sm:rounded-2xl transition-all border-2 group
                 ${role === item.id 
                   ? 'border-primary bg-primary/5 text-primary shadow-[0_10px_30px_-10px_rgba(217,119,87,0.3)]' 
                   : 'border-white/5 bg-white/[0.02] text-white hover:bg-white/[0.05] hover:border-white/10'}`}
             >
-              <div className={`mb-3 p-3 rounded-full transition-colors ${role === item.id ? 'bg-primary/20 text-white' : 'bg-white/5 text-white'}`}>
+              <div className={`mb-2 sm:mb-3 p-2 sm:p-3 rounded-full transition-colors ${role === item.id ? 'bg-primary/20 text-white' : 'bg-white/5 text-white'}`}>
                 {item.icon}
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">{item.label}</span>
+              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.1em] sm:tracking-[0.2em]">{item.label}</span>
             </button>
           ))}
         </div>
@@ -133,8 +133,8 @@ export default function RegisterPage() {
           </motion.div>
         )}
 
-        <form onSubmit={handleRegister} className="space-y-8">
-          <div className="space-y-6">
+        <form onSubmit={handleRegister} className="space-y-5 sm:space-y-8">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 ml-1">Full Name</label>
               <input
@@ -143,12 +143,12 @@ export default function RegisterPage() {
                 placeholder="Enter your name"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
+                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
                 required
               />
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                <div>
                   <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 ml-1">Phone</label>
                   <input
@@ -157,7 +157,7 @@ export default function RegisterPage() {
                     placeholder="Your mobile number"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
+                    className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
                     required
                   />
                </div>
@@ -169,7 +169,7 @@ export default function RegisterPage() {
                     placeholder="email@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
+                    className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
                   />
                </div>
             </div>
@@ -182,13 +182,13 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-8 py-5 text-white bg-white/[0.03] border border-white/5 rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500 pr-16"
+                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500 pr-14 sm:pr-16"
                 required
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-6 top-[54px] text-gray-600 hover:text-white transition-colors"
+                className="absolute right-4 sm:right-6 top-[44px] sm:top-[54px] text-gray-600 hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
               </button>
@@ -247,7 +247,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-8 py-5 bg-primary text-black font-black uppercase tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-98 transition-all shadow-[0_20px_40px_-10px_rgba(217,119,87,0.4)] disabled:opacity-50 text-base"
+            className="w-full px-6 py-3.5 sm:px-8 sm:py-5 bg-primary text-black font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-98 transition-all shadow-[0_20px_40px_-10px_rgba(217,119,87,0.4)] disabled:opacity-50 text-sm sm:text-base"
           >
             {loading ? 'Processing...' : 'Create Account'}
           </button>

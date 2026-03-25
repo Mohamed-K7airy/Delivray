@@ -44,11 +44,11 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
       <MerchantSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
       <main 
         className={`flex-1 flex flex-col min-h-screen relative z-10 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-          isCollapsed ? 'ml-24' : 'ml-80'
+          isCollapsed ? 'md:ml-20 lg:ml-24' : 'md:ml-64 lg:ml-80'
         }`}
       >
         <MerchantNavbar isCollapsed={isCollapsed} />
-        <div className="flex-1 overflow-y-auto p-8 lg:p-12 relative">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 relative">
           {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
           

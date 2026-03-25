@@ -34,8 +34,8 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
   }, []);
 
   return (
-    <nav className="h-24 bg-[#0a0a0a]/80 border-b border-white/5 flex items-center justify-between px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
-      <div className="flex items-center gap-x-12">
+    <nav className="h-16 sm:h-24 bg-[#0a0a0a]/80 border-b border-white/5 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
+      <div className="flex items-center gap-x-6 sm:gap-x-12">
         {/* Only show logo in navbar if sidebar is collapsed */}
         <AnimatePresence mode="wait">
           {isCollapsed && (
@@ -54,7 +54,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
           )}
         </AnimatePresence>
 
-        <div className="flex items-center space-x-10">
+        <div className="hidden sm:flex items-center space-x-6 sm:space-x-10">
           {['Dashboard', 'Earnings', 'Schedule'].map((link) => (
             <Link 
               key={link} 
@@ -68,15 +68,15 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         </div>
       </div>
 
-      <div className="flex items-center space-x-10">
+      <div className="flex items-center space-x-4 sm:space-x-10">
         {/* Search */}
-        <button className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-95">
-          <Search size={22} />
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-95">
+          <Search size={18} />
         </button>
 
         {/* Notifications */}
-        <button className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all relative group active:scale-95">
-          <Bell size={22} />
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all relative group active:scale-95">
+          <Bell size={18} />
           <span className="absolute top-3 right-3 w-2 h-2 bg-[#ff8564] rounded-full shadow-[0_0_8px_#ff8564]" />
         </button>
 
@@ -86,9 +86,9 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         <div className="relative" ref={dropdownRef}>
            <button 
              onClick={() => setShowProfile(!showProfile)}
-             className="flex items-center space-x-4 bg-white/5 p-2 pr-6 rounded-[2rem] border border-white/5 hover:bg-white/10 transition-all group"
+             className="flex items-center space-x-2 sm:space-x-4 bg-white/5 p-1.5 sm:p-2 pr-4 sm:pr-6 rounded-full sm:rounded-[2rem] border border-white/5 hover:bg-white/10 transition-all group"
            >
-              <div className="w-12 h-12 bg-[#ff8564] rounded-full flex items-center justify-center text-black font-black text-xl shadow-lg group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#ff8564] rounded-full flex items-center justify-center text-black font-black text-base sm:text-xl shadow-lg group-hover:scale-105 transition-transform">
                  {user?.name?.[0]?.toUpperCase() || 'D'}
               </div>
               <div className="text-left hidden md:block">

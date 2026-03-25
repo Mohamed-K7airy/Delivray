@@ -41,7 +41,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
   ];
 
   return (
-    <nav className="h-20 bg-[#111111]/80 border-b border-white/5 flex items-center justify-between px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
+    <nav className="h-14 sm:h-20 bg-[#111111]/80 border-b border-white/5 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
       <div className="flex items-center gap-x-16">
         {/* Only show logo in navbar if sidebar is collapsed */}
         <AnimatePresence mode="wait">
@@ -60,7 +60,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
           )}
         </AnimatePresence>
         
-        <div className="flex items-center space-x-10">
+        <div className="hidden sm:flex items-center space-x-6 sm:space-x-10">
           {navLinks.map((link) => {
             const isActive = pathname === link.path;
             return (

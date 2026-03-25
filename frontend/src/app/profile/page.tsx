@@ -56,7 +56,7 @@ export default function UserProfile() {
   if (loading) return <div className="min-h-screen bg-[#111111] flex items-center justify-center text-white/50 font-black uppercase tracking-[0.3em]">Loading Profile...</div>;
 
   return (
-    <div className="min-h-screen bg-[#111111] text-white selection:bg-primary/30 py-12 px-6 lg:px-20 relative overflow-hidden">
+    <div className="min-h-screen bg-[#111111] text-white selection:bg-primary/30 py-6 sm:py-12 px-4 sm:px-6 lg:px-20 relative overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40"></div>
       
@@ -68,7 +68,7 @@ export default function UserProfile() {
           animate={{ opacity: 1, x: 0 }}
           className="lg:col-span-3 lg:sticky lg:top-12 h-fit"
         >
-          <div className="bg-[#262624] p-10 rounded-[3rem] border border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden">
+          <div className="bg-[#262624] p-6 sm:p-10 rounded-2xl sm:rounded-[3rem] border border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
             
             {/* Avatar Section */}
@@ -82,8 +82,8 @@ export default function UserProfile() {
                   </div>
                </div>
 
-               <h2 className="text-3xl font-black text-white mb-2 leading-tight uppercase tracking-tighter">{user?.name}</h2>
-               <div className="flex items-center space-x-2 mb-10">
+               <h2 className="text-xl sm:text-3xl font-black text-white mb-2 leading-tight uppercase tracking-tighter">{user?.name}</h2>
+               <div className="flex items-center space-x-2 mb-6 sm:mb-10">
                   <span className="bg-[#f08c6e]/10 text-[#f08c6e] px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-[#f08c6e]/10">
                     {user?.role || 'CUSTOMER'}
                   </span>
@@ -92,8 +92,8 @@ export default function UserProfile() {
             </div>
 
             {/* Contact Info */}
-            <div className="space-y-4 mb-10">
-               <div className="bg-white/[0.02] p-6 rounded-2xl border border-white/5 group hover:bg-white/[0.04] transition-colors">
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-10">
+               <div className="bg-white/[0.02] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/5 group hover:bg-white/[0.04] transition-colors">
                   <div className="flex items-center space-x-3 text-primary mb-2">
                      <Phone size={14} />
                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Phone Number</span>
@@ -101,7 +101,7 @@ export default function UserProfile() {
                   <p className="text-sm font-bold text-white pl-7 tracking-wider">{user?.phone || '+20 100 234 5678'}</p>
                </div>
 
-               <div className="bg-white/[0.02] p-6 rounded-2xl border border-white/5 group hover:bg-white/[0.04] transition-colors">
+               <div className="bg-white/[0.02] p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/5 group hover:bg-white/[0.04] transition-colors">
                   <div className="flex items-center space-x-3 text-primary mb-2">
                      <Mail size={14} />
                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Email Address</span>
@@ -127,34 +127,34 @@ export default function UserProfile() {
           className="lg:col-span-9"
         >
           {/* Header */}
-          <div className="mb-16">
-             <h1 className="text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-[0.8]">
+          <div className="mb-8 sm:mb-16">
+             <h1 className="text-4xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter uppercase leading-[0.8]">
                 My <span className="text-[#f08c6e] drop-shadow-[0_10px_30px_rgba(240,140,110,0.3)]">Account</span>
              </h1>
-             <p className="text-gray-500 text-lg md:text-xl font-medium mt-10 max-w-2xl leading-relaxed">
+             <p className="text-gray-500 text-sm sm:text-lg md:text-xl font-medium mt-4 sm:mt-10 max-w-2xl leading-relaxed">
                Manage your elite delivery preferences and monitor your premium logistics history with state-of-the-art tracking.
              </p>
           </div>
 
           {/* Activity Section */}
-          <div className="mb-12 flex items-center justify-between">
-            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Recent Activity & Orders</h2>
-            <div className="flex items-center space-x-4">
-               <button className="w-12 h-12 bg-[#262624] border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 hover:text-white transition-colors">
+          <div className="mb-8 sm:mb-12 flex items-center justify-between">
+            <h2 className="text-lg sm:text-2xl font-black text-white uppercase tracking-tighter">Recent Activity & Orders</h2>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+               <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#262624] border border-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white transition-colors">
                   <Filter size={20} />
                </button>
-               <button className="w-12 h-12 bg-[#262624] border border-white/5 rounded-2xl flex items-center justify-center text-gray-500 hover:text-white transition-colors">
+               <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#262624] border border-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white transition-colors">
                   <Search size={20} />
                </button>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {orders.length === 0 ? (
-              <div className="bg-[#262624] p-20 rounded-[3rem] border border-white/5 text-center shadow-2xl">
+              <div className="bg-[#262624] p-10 sm:p-20 rounded-2xl sm:rounded-[3rem] border border-white/5 text-center shadow-2xl">
                 <Box size={60} className="mx-auto text-white/5 mb-8" />
                 <p className="text-gray-500 font-bold text-xl uppercase tracking-widest">No order history found yet.</p>
-                <Link href="/" className="mt-8 inline-block bg-primary text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-transform">
+                <Link href="/" className="mt-6 sm:mt-8 inline-block bg-primary text-white px-8 py-4 sm:px-10 sm:py-5 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-transform">
                   Start Exploring
                 </Link>
               </div>
@@ -165,15 +165,15 @@ export default function UserProfile() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
                   key={order.id} 
-                  className="bg-[#262624]/60 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row items-center justify-between hover:bg-[#262624]/80 transition-all group"
+                  className="bg-[#262624]/60 backdrop-blur-xl p-4 sm:p-8 rounded-2xl sm:rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row items-center justify-between hover:bg-[#262624]/80 transition-all group"
                 >
-                  <div className="flex items-center space-x-8 w-full md:w-auto mb-6 md:mb-0">
-                    <div className="w-16 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center text-white/40 group-hover:text-primary transition-colors">
-                      {order.status === 'PENDING' ? <Truck size={28} /> : <Box size={28} />}
+                  <div className="flex items-center space-x-4 sm:space-x-8 w-full md:w-auto mb-4 sm:mb-6 md:mb-0">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/[0.03] rounded-xl sm:rounded-2xl flex items-center justify-center text-white/40 group-hover:text-primary transition-colors">
+                      {order.status === 'PENDING' ? <Truck size={22} /> : <Box size={22} />}
                     </div>
                     <div>
                       <div className="flex items-center space-x-4 mb-2">
-                        <p className="font-black text-2xl text-white tracking-widest uppercase">#{order.id.includes('-') ? order.id.substring(0,8) : order.id}</p>
+                        <p className="font-black text-base sm:text-2xl text-white tracking-widest uppercase">#{order.id.includes('-') ? order.id.substring(0,8) : order.id}</p>
                         <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-lg border ${
                           order.status === 'COMPLETED' 
                             ? 'bg-green-500/10 text-green-500 border-green-500/20' 

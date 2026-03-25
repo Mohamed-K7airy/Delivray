@@ -44,12 +44,12 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
 
   return (
     <aside 
-      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-        isCollapsed ? 'w-24' : 'w-80'
+      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:flex ${
+        isCollapsed ? 'w-20 lg:w-24' : 'w-64 lg:w-80'
       }`}
     >
       {/* Brand Header */}
-      <div className={`p-8 mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-6' : 'px-8'}`}>
+      <div className={`p-6 lg:p-8 mb-8 lg:mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-4 lg:px-6' : 'px-6 lg:px-8'}`}>
         {!isCollapsed && (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
@@ -82,7 +82,7 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
             <Link 
               key={item.href} 
               href={item.href}
-              className={`flex items-center space-x-4 px-5 py-4 rounded-[1.25rem] transition-all group relative overflow-hidden ${
+              className={`flex items-center space-x-3 lg:space-x-4 px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-[1.25rem] transition-all group relative overflow-hidden ${
                 isActive 
                   ? 'bg-white/[0.04] text-white border border-white/5' 
                   : 'text-gray-500 hover:text-white hover:bg-white/[0.02]'
@@ -99,7 +99,7 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-6 space-y-4">
+      <div className="p-4 lg:p-6 space-y-3 lg:space-y-4">
         {!isCollapsed && (
           <div className="p-5 bg-white/[0.02] rounded-3xl border border-white/5 flex items-center space-x-4">
              <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center text-green-500">
