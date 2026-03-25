@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MapPin, Star, Search, Sparkles, ChevronRight, Zap, Clock, Utensils, ShoppingCart, Croissant, IceCream, Coffee } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/config/api';
@@ -24,7 +24,7 @@ const categories = [
   { name: 'Drinks', icon: <Coffee size={14} />, color: 'bg-white' },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -32,7 +32,7 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } }
 };
