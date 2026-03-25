@@ -95,15 +95,15 @@ export default function MerchantInventory() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-20">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 pb-20 px-4 sm:px-0">
        {/* Page Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-             <h1 className="text-6xl font-black uppercase tracking-tighter leading-none">Catalog <span className="text-primary italic">Nexus</span></h1>
-             <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mt-3">Advanced inventory management and real-time SKU syncing</p>
+             <h1 className="text-3xl sm:text-6xl font-black uppercase tracking-tighter leading-none">Catalog <span className="text-primary italic">Nexus</span></h1>
+             <p className="text-gray-500 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] mt-3">Advanced inventory management and real-time SKU syncing</p>
           </div>
           <div className="flex items-center space-x-4">
-             <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-widest text-primary shadow-2xl">
+             <div className="bg-white/5 px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-white/5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary shadow-2xl">
                 {products.length} Units Online
              </div>
           </div>
@@ -112,14 +112,14 @@ export default function MerchantInventory() {
        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Add Product Form */}
           <div className="lg:col-span-12 xl:col-span-5">
-             <div className="bg-[#1a1a1a] p-10 rounded-[3rem] border border-white/5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden group">
+             <div className="bg-[#1a1a1a] p-6 sm:p-10 rounded-2xl sm:rounded-[3rem] border border-white/5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors"></div>
                 
                 <div className="flex items-center space-x-4 mb-12 relative z-10">
-                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary border border-primary/20 shadow-lg">
+                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary border border-primary/20 shadow-lg">
                       <Plus size={20} className="stroke-[3]" />
                    </div>
-                   <h2 className="text-2xl font-black uppercase tracking-tighter text-white font-geist leading-none">Initialize <span className="text-primary">SKU</span></h2>
+                   <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter text-white font-geist leading-none">Initialize <span className="text-primary">SKU</span></h2>
                 </div>
 
                 <form onSubmit={handleCreateProduct} className="space-y-8 relative z-10">
@@ -180,9 +180,9 @@ export default function MerchantInventory() {
                       </div>
                    </div>
 
-                   <button type="submit" className="group/btn w-full bg-primary text-black py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(217,119,87,0.4)] flex items-center justify-center space-x-4">
+                   <button type="submit" className="group/btn w-full bg-primary text-black py-4 sm:py-6 rounded-xl sm:rounded-[2rem] font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(217,119,87,0.4)] flex items-center justify-center space-x-4">
                       <UploadCloud size={20} className="stroke-[3] group-hover/btn:-translate-y-1 transition-transform" />
-                      <span>Inject into Catalog</span>
+                      <span>Inject</span>
                    </button>
                 </form>
              </div>
@@ -190,7 +190,7 @@ export default function MerchantInventory() {
 
           {/* Product List */}
           <div className="lg:col-span-12 xl:col-span-7">
-             <div className="bg-[#1a1a1a] p-10 rounded-[3rem] border border-white/5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden">
+             <div className="bg-[#1a1a1a] p-6 sm:p-10 rounded-2xl sm:rounded-[3rem] border border-white/5 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] relative overflow-hidden">
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -ml-32 -mb-32"></div>
                 
                 <div className="flex items-center justify-between mb-12 relative z-10">
@@ -235,7 +235,7 @@ export default function MerchantInventory() {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ delay: idx * 0.05, type: "spring", stiffness: 100 }}
-                            className="bg-white/[0.02] p-8 rounded-[2rem] border border-white/5 flex flex-col sm:flex-row items-center justify-between group hover:bg-white/[0.04] transition-all relative overflow-hidden"
+                            className="bg-white/[0.02] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 flex flex-col sm:flex-row items-center justify-between group hover:bg-white/[0.04] transition-all relative overflow-hidden"
                          >
                             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             

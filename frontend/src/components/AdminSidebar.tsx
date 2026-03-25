@@ -45,7 +45,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
 
   return (
     <aside 
-      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
         isCollapsed ? 'w-24' : 'w-80'
       }`}
     >

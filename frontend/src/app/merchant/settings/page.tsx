@@ -8,7 +8,7 @@ export default function MerchantSettings() {
        {/* Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-             <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Store Settings</h1>
+             <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter text-white">Store Settings</h1>
              <p className="text-gray-500 font-medium mt-2">Configure your digital storefront and operational parameters.</p>
           </div>
           <button className="bg-primary text-black px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center space-x-3 shadow-[0_20px_40px_-10px_rgba(217,119,87,0.3)] hover:scale-105 active:scale-95 transition-all">
@@ -34,7 +34,7 @@ export default function MerchantSettings() {
           </div>
 
           {/* Settings Form Placeholder */}
-          <div className="lg:col-span-8 bg-[#262624] p-12 rounded-[3.5rem] border border-white/5 shadow-2xl relative overflow-hidden group">
+          <div className="lg:col-span-8 bg-[#262624] p-6 sm:p-12 rounded-2xl sm:rounded-[3.5rem] border border-white/5 shadow-2xl relative overflow-hidden group">
              <h3 className="text-2xl font-black uppercase tracking-tighter mb-12 flex items-center space-x-4">
                 <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-primary">
                    <Settings size={20} />

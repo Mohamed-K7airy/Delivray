@@ -148,11 +148,11 @@ export default function DriverDashboard() {
    };
 
    return (
-      <div className="max-w-6xl mx-auto space-y-12 pb-20">
+      <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12 pb-20">
          {/* Greetings */}
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
             <div className="space-y-2">
-               <h1 className="text-5xl font-black tracking-tighter">Hello, {user?.name?.toUpperCase() || 'TEST'}</h1>
+               <h1 className="text-3xl sm:text-5xl font-black tracking-tighter">Hello, {user?.name?.toUpperCase() || 'TEST'}</h1>
                <p className="text-gray-500 font-bold text-base">Ready for your next milestone?</p>
             </div>
             <div className="bg-[#1a1a1a] px-6 py-3 rounded-xl border border-white/5 flex items-center space-x-4 shadow-xl">
@@ -163,14 +163,14 @@ export default function DriverDashboard() {
             </div>
          </div>
 
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12">
             {/* Active Task Main Card */}
-            <div className="lg:col-span-8 space-y-12">
+            <div className="lg:col-span-8 space-y-8 sm:space-y-12">
                {activeOrder ? (
                   <motion.div
                      initial={{ opacity: 0, scale: 0.95 }}
                      animate={{ opacity: 1, scale: 1 }}
-                     className="bg-[#1a1a1a] rounded-[2rem] p-8 md:p-10 border border-white/5 relative overflow-hidden group shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
+                     className="bg-[#1a1a1a] rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 md:p-10 border border-white/5 relative overflow-hidden group shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]"
                   >
                      {/* Subtle Map Background */}
                      <div className="absolute inset-x-0 top-0 h-48 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000')] bg-cover bg-center opacity-10 mix-blend-luminosity grayscale group-hover:scale-110 transition-transform duration-1000" />
@@ -178,7 +178,7 @@ export default function DriverDashboard() {
                      <div className="relative z-10 space-y-12">
                         <div className="text-center">
                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#ff8564] mb-2 block">Active Delivery</span>
-                           <h2 className="text-4xl font-black tracking-tighter">Order #{activeOrder.id.substring(0, 8).toUpperCase()}</h2>
+                           <h2 className="text-2xl sm:text-4xl font-black tracking-tighter">Order #{activeOrder.id.substring(0, 8).toUpperCase()}</h2>
                         </div>
 
                         {/* Timeline */}
@@ -224,7 +224,7 @@ export default function DriverDashboard() {
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="bg-white/5 p-6 rounded-[2rem] border border-white/5 space-y-4">
+                        <div className="bg-white/5 p-4 sm:p-6 rounded-xl sm:rounded-[2rem] border border-white/5 space-y-4">
                            <div className="flex justify-between text-[9px] font-black uppercase tracking-widest border-white/5">
                               <span className="text-gray-500">Route Progress</span>
                               <span className="text-[#ff8564]">Estimated: 12 Mins</span>
@@ -240,9 +240,9 @@ export default function DriverDashboard() {
 
                         <button
                            onClick={completeOrder}
-                           className="w-full bg-[#ff8564] hover:bg-[#ff5c30] py-6 rounded-[1.5rem] text-black text-xl font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-[0_20px_40px_-10px_rgba(255,133,100,0.4)] group"
+                           className="w-full bg-[#ff8564] hover:bg-[#ff5c30] py-4 sm:py-6 rounded-xl sm:rounded-[1.5rem] text-black text-base sm:text-xl font-black uppercase tracking-widest flex items-center justify-center gap-3 sm:gap-4 transition-all active:scale-[0.98] shadow-[0_20px_40px_-10px_rgba(255,133,100,0.4)] group"
                         >
-                           <CheckCircle size={28} className="group-hover:scale-110 transition-transform" />
+                           <CheckCircle size={22} className="group-hover:scale-110 transition-transform" />
                            Complete Delivery
                         </button>
                      </div>
@@ -250,11 +250,11 @@ export default function DriverDashboard() {
                ) : (
                   <div className="h-full min-h-[400px] flex items-center justify-center">
                      <div className="text-center space-y-6">
-                        <div className="w-40 h-40 bg-white/5 rounded-[2rem] border border-white/5 flex items-center justify-center mx-auto group">
-                           <Truck size={56} className="text-gray-700 group-hover:text-[#ff8564] group-hover:scale-110 transition-all duration-500" />
+                        <div className="w-28 h-28 sm:w-40 sm:h-40 bg-white/5 rounded-2xl sm:rounded-[2rem] border border-white/5 flex items-center justify-center mx-auto group">
+                           <Truck size={40} className="text-gray-700 group-hover:text-[#ff8564] group-hover:scale-110 transition-all duration-500" />
                         </div>
                         <div className="space-y-3">
-                           <h3 className="text-3xl font-black tracking-tighter">Looking for Active Tasks</h3>
+                           <h3 className="text-xl sm:text-3xl font-black tracking-tighter">Looking for Active Tasks</h3>
                            <p className="text-gray-500 max-w-sm mx-auto font-medium">New delivery requests will appear here instantly. Keep your status Online.</p>
                         </div>
                      </div>
@@ -263,21 +263,21 @@ export default function DriverDashboard() {
             </div>
 
             {/* Sidebar Stats & Activity */}
-            <div className="lg:col-span-4 space-y-12 h-fit">
-               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-6">Fleet Telemetry</h3>
+            <div className="lg:col-span-4 space-y-6 sm:space-y-12 h-fit">
+               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-4 sm:px-6">Fleet Telemetry</h3>
 
-               <div className="grid grid-cols-1 gap-6">
-                  <div className="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-[#ff8564] mb-2">Today's Earnings</p>
-                     <p className="text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">${stats.earnings.toFixed(2)}</p>
+               <div className="grid grid-cols-2 sm:grid-cols-1 gap-4 sm:gap-6">
+                  <div className="bg-[#1a1a1a] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
+                     <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-[#ff8564] mb-1 sm:mb-2">Today's Earnings</p>
+                     <p className="text-2xl sm:text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">${stats.earnings.toFixed(2)}</p>
                   </div>
-                  <div className="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Total Deliveries</p>
-                     <p className="text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">{stats.deliveries}</p>
+                  <div className="bg-[#1a1a1a] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
+                     <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1 sm:mb-2">Total Deliveries</p>
+                     <p className="text-2xl sm:text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">{stats.deliveries}</p>
                   </div>
-                  <div className="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2">Active Time</p>
-                     <p className="text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">{stats.activeTime}</p>
+                  <div className="bg-[#1a1a1a] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 group hover:border-[#ff8564]/30 transition-all shadow-xl">
+                     <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1 sm:mb-2">Active Time</p>
+                     <p className="text-2xl sm:text-4xl font-black tracking-tighter text-white group-hover:scale-105 transition-transform">{stats.activeTime}</p>
                   </div>
                </div>
             </div>
@@ -286,7 +286,7 @@ export default function DriverDashboard() {
          {/* High-Fidelity Delivery Request Popup */}
          <AnimatePresence>
             {availableOrder && (
-               <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 overflow-hidden">
+               <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 overflow-hidden">
                   <motion.div
                      initial={{ opacity: 0 }}
                      animate={{ opacity: 1 }}
@@ -298,24 +298,24 @@ export default function DriverDashboard() {
                      initial={{ opacity: 0, scale: 0.8, y: 50 }}
                      animate={{ opacity: 1, scale: 1, y: 0 }}
                      exit={{ opacity: 0, scale: 0.8, y: 50 }}
-                     className="w-full max-w-lg bg-[#111111] rounded-[2.5rem] p-10 border border-white/10 shadow-[0_50px_150px_-30px_rgba(0,0,0,1)] relative z-10 text-center space-y-8 overflow-hidden"
+                     className="w-full max-w-lg bg-[#111111] rounded-2xl sm:rounded-[2.5rem] p-6 sm:p-10 border border-white/10 shadow-[0_50px_150px_-30px_rgba(0,0,0,1)] relative z-10 text-center space-y-6 sm:space-y-8 overflow-hidden"
                   >
                      {/* Decorative Glow */}
                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-[#ff8564]/20 blur-[80px] -z-1" />
 
                      <div className="space-y-6">
-                        <div className="w-20 h-20 bg-[#ff8564]/10 rounded-[2rem] flex items-center justify-center mx-auto text-[#ff8564] shadow-[0_0_20px_rgba(255,133,100,0.1)] border border-[#ff8564]/20 transition-all hover:scale-110">
-                           <Truck size={36} />
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#ff8564]/10 rounded-xl sm:rounded-[2rem] flex items-center justify-center mx-auto text-[#ff8564] shadow-[0_0_20px_rgba(255,133,100,0.1)] border border-[#ff8564]/20 transition-all hover:scale-110">
+                           <Truck size={28} />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ff8564] drop-shadow-md">New Delivery Request</span>
                      </div>
 
                      <div className="space-y-1">
-                        <h2 className="text-6xl font-black tracking-tighter text-white">${Number(availableOrder.total_price).toFixed(2)}</h2>
+                        <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-white">${Number(availableOrder.total_price).toFixed(2)}</h2>
                         <p className="text-gray-500 font-bold uppercase tracking-widest text-[9px]">Estimated payout incl. tip</p>
                      </div>
 
-                     <div className="bg-[#1a1a1a] p-6 rounded-[1.5rem] border border-white/5 space-y-3">
+                     <div className="bg-[#1a1a1a] p-4 sm:p-6 rounded-xl sm:rounded-[1.5rem] border border-white/5 space-y-3">
                         <div className="flex items-center justify-center space-x-3 text-white">
                            <StoreIcon size={18} className="text-[#ff8564]" />
                            <span className="text-xl font-black tracking-tight">{availableOrder.stores?.name || 'Restaurant'}</span>

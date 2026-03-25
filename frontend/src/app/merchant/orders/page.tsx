@@ -100,37 +100,37 @@ export default function MerchantOrders() {
    };
 
    return (
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
          {/* Header */}
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-               <h1 className="text-5xl font-black uppercase tracking-tighter">Live Orders</h1>
-               <p className="text-gray-500 font-medium mt-2">Manage incoming logistics and order fulfillment.</p>
+               <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter">Live Orders</h1>
+               <p className="text-gray-500 font-medium mt-1 sm:mt-2 text-sm sm:text-base">Manage incoming logistics and order fulfillment.</p>
             </div>
-         <div className="flex bg-[#1a1a1a] p-1.5 rounded-2xl border border-white/5 shadow-xl">
+         <div className="flex bg-[#1a1a1a] p-1 rounded-xl sm:rounded-2xl border border-white/5 shadow-xl w-full sm:w-auto">
                <button 
                   onClick={() => setViewMode('live')}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'live' ? 'bg-primary text-black shadow-[0_10px_20px_-5px_rgba(217,119,87,0.4)]' : 'text-gray-500 hover:text-white'}`}
+                  className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'live' ? 'bg-primary text-black shadow-[0_10px_20px_-5px_rgba(217,119,87,0.4)]' : 'text-gray-500 hover:text-white'}`}
                >
                   Live Orders
                </button>
                <button 
                   onClick={() => setViewMode('history')}
-                  className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'history' ? 'bg-white/10 text-white border border-white/10' : 'text-gray-500 hover:text-white'}`}
+                  className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'history' ? 'bg-white/10 text-white border border-white/10' : 'text-gray-500 hover:text-white'}`}
                >
                   Order History
                </button>
             </div>
 
-         <div className="bg-[#262624] px-5 py-2.5 rounded-xl border border-white/5 flex items-center space-x-4 shadow-xl">
+         <div className="bg-[#262624] px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-white/5 flex items-center space-x-3 sm:space-x-4 shadow-xl w-full sm:w-auto">
                <div className="flex items-center space-x-2">
-                  <span className={`w-2 h-2 rounded-full animate-pulse ${viewMode === 'live' ? 'bg-primary shadow-[0_0_10px_rgba(217,119,87,1)]' : 'bg-gray-600'}`}></span>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${viewMode === 'live' ? 'text-primary' : 'text-gray-600'}`}>
+                  <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full animate-pulse ${viewMode === 'live' ? 'bg-primary shadow-[0_0_10px_rgba(217,119,87,1)]' : 'bg-gray-600'}`}></span>
+                  <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${viewMode === 'live' ? 'text-primary' : 'text-gray-600'}`}>
                      {viewMode === 'live' ? 'Live Connection' : 'Archive Mode'}
                   </span>
                </div>
-               <div className="h-4 w-px bg-white/10"></div>
-               <span className="text-[10px] font-black uppercase tracking-widest text-white">
+               <div className="h-3 sm:h-4 w-px bg-white/10"></div>
+               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white">
                   {viewMode === 'live' ? orders.filter(o => o.status !== 'completed').length : orders.filter(o => o.status === 'completed').length} {viewMode === 'live' ? 'Active' : 'Closed'}
                </span>
             </div>
@@ -144,7 +144,7 @@ export default function MerchantOrders() {
                   <motion.div
                      initial={{ opacity: 0, scale: 0.9 }}
                      animate={{ opacity: 1, scale: 1 }}
-                     className="bg-[#262624] p-16 rounded-[2rem] border border-white/5 border-dashed flex flex-col items-center justify-center text-center group"
+                     className="bg-[#262624] p-8 sm:p-16 rounded-2xl sm:rounded-[2rem] border border-white/5 border-dashed flex flex-col items-center justify-center text-center group"
                   >
                      <div className="w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center mb-6 text-gray-700 group-hover:scale-110 group-hover:text-primary transition-all duration-500">
                         {viewMode === 'live' ? <StoreIcon size={40} /> : <HistoryIcon size={40} />}
@@ -165,7 +165,7 @@ export default function MerchantOrders() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="bg-[#262624] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-2xl hover:border-primary/20 transition-all group flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8"
+                        className="bg-[#262624] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 shadow-2xl hover:border-primary/20 transition-all group flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 sm:gap-8"
                      >
                         <div className="flex items-start gap-6">
                            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-gray-600 transition-all group-hover:bg-primary/5 group-hover:text-primary shrink-0 relative">
@@ -174,12 +174,12 @@ export default function MerchantOrders() {
                            </div>
                            <div className="space-y-4">
                               <div className="flex flex-wrap items-center gap-4">
-                                 <h4 className="text-3xl font-black uppercase tracking-tighter">Order #{order.id.substring(0, 8).toUpperCase()}</h4>
+                                 <h4 className="text-xl sm:text-3xl font-black uppercase tracking-tighter">Order #{order.id.substring(0, 8).toUpperCase()}</h4>
                                  {getStatusBadge(order.status)}
                               </div>
                               <div className="flex flex-wrap items-center gap-8">
                                  <div className="flex items-center space-x-3 text-white">
-                                    <span className="text-4xl font-black tracking-tighter">${Number(order.total_price).toFixed(2)}</span>
+                                    <span className="text-2xl sm:text-4xl font-black tracking-tighter">${Number(order.total_price).toFixed(2)}</span>
                                  </div>
                                  <div className="flex items-center space-x-2 text-gray-600">
                                     <Clock size={14} />

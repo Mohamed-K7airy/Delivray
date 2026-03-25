@@ -50,18 +50,18 @@ export default function MerchantDashboard() {
   }, [token, user, router]);
 
   const statCards = [
-    { label: 'Total Revenue', value: `$${stats.revenue.toLocaleString()}`, change: '+12.5%', icon: <DollarSign size={24} />, color: 'primary' },
-    { label: 'Active Orders', value: stats.orders.toString(), change: '+8.2%', icon: <ListOrdered size={24} />, color: 'white' },
-    { label: 'Total Customers', value: stats.customers.toString(), change: '+5.4', icon: <Users size={24} />, color: 'white' },
-    { label: 'Catalog Size', value: stats.products.toString(), change: '+2', icon: <Package size={24} />, color: 'white' },
+    { label: 'Total Revenue', value: `$${stats.revenue.toLocaleString()}`, change: '+12.5%', icon: <DollarSign size={20} />, color: 'primary' },
+    { label: 'Active Orders', value: stats.orders.toString(), change: '+8.2%', icon: <ListOrdered size={20} />, color: 'white' },
+    { label: 'Total Customers', value: stats.customers.toString(), change: '+5.4', icon: <Users size={20} />, color: 'white' },
+    { label: 'Catalog Size', value: stats.products.toString(), change: '+2', icon: <Package size={20} />, color: 'white' },
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-16">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-16">
        {/* Dashboard Hero */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
           <div>
-             <h1 className="text-5xl font-black uppercase tracking-tighter">Overview</h1>
+             <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter">Overview</h1>
              <p className="text-gray-500 font-medium text-base mt-2">Welcome back. Here is what's happening in your shop today.</p>
           </div>
           <div className="bg-[#262624] px-6 py-3 rounded-full border border-white/5 flex items-center space-x-3">
@@ -71,17 +71,17 @@ export default function MerchantDashboard() {
        </div>
 
        {/* Stats Grid */}
-       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+       <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-8">
           {statCards.map((stat, idx) => (
              <motion.div 
                 key={stat.label}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-[#262624] p-6 rounded-3xl border border-white/5 shadow-2xl group hover:border-primary/20 transition-all"
+                className="bg-[#262624] p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/5 shadow-2xl group hover:border-primary/20 transition-all"
              >
-                <div className="flex justify-between items-start mb-6">
-                   <div className={`w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center ${stat.color === 'primary' ? 'text-primary' : 'text-white'}`}>
+                <div className="flex justify-between items-start mb-4 sm:mb-6">
+                   <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center ${stat.color === 'primary' ? 'text-primary' : 'text-white'}`}>
                       {stat.icon}
                    </div>
                    <div className="flex items-center space-x-1 text-[10px] font-black text-primary uppercase">
@@ -91,21 +91,21 @@ export default function MerchantDashboard() {
                 </div>
                 <div>
                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{stat.label}</p>
-                   <h3 className="text-3xl font-black text-white tracking-tighter">{stat.value}</h3>
+                   <h3 className="text-xl sm:text-3xl font-black text-white tracking-tighter">{stat.value}</h3>
                 </div>
              </motion.div>
           ))}
        </div>
 
-       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Revenue Graph Placeholder */}
-          <div className="lg:col-span-8 bg-[#262624] p-10 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group">
-             <div className="flex justify-between items-center mb-8 relative z-10">
+          <div className="lg:col-span-8 bg-[#262624] p-5 sm:p-10 rounded-2xl sm:rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group">
+             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 relative z-10">
                 <div className="flex items-center space-x-4">
                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                       <BarChart3 size={20} />
                    </div>
-                   <h3 className="text-2xl font-black uppercase tracking-tighter">Revenue Distribution</h3>
+                   <h3 className="text-lg sm:text-2xl font-black uppercase tracking-tighter">Revenue Distribution</h3>
                 </div>
                 <div className="flex space-x-2">
                    {['7D', '1M', '1Y'].map(t => (
@@ -117,19 +117,19 @@ export default function MerchantDashboard() {
              </div>
              
              {/* Abstract Graph Pattern */}
-             <div className="h-64 flex items-end justify-between space-x-4 mb-8">
+             <div className="h-40 sm:h-64 flex items-end justify-between space-x-2 sm:space-x-4 mb-6 sm:mb-8">
                 {[40, 60, 35, 80, 55, 90, 70, 45, 85, 30].map((h, i) => (
                    <motion.div 
                       key={i}
                       initial={{ height: 0 }}
                       animate={{ height: `${h}%` }}
                       transition={{ delay: i * 0.1, duration: 1 }}
-                      className={`w-full rounded-2xl ${i === 5 ? 'bg-primary shadow-[0_0_30px_rgba(217,119,87,0.3)]' : 'bg-white/5 group-hover:bg-white/10 transition-colors'}`}
+                      className={`w-full rounded-xl sm:rounded-2xl ${i === 5 ? 'bg-primary shadow-[0_0_30px_rgba(217,119,87,0.3)]' : 'bg-white/5 group-hover:bg-white/10 transition-colors'}`}
                    ></motion.div>
                 ))}
              </div>
 
-             <div className="flex items-center justify-between text-[10px] font-black text-gray-700 uppercase tracking-[0.3em]">
+             <div className="hidden sm:flex items-center justify-between text-[10px] font-black text-gray-700 uppercase tracking-[0.3em]">
                 <span>Week 01</span>
                 <span>Week 10</span>
                 <span>Week 20</span>
@@ -140,9 +140,9 @@ export default function MerchantDashboard() {
 
           {/* Activity Sidebar */}
           <div className="lg:col-span-4 space-y-8">
-             <div className="bg-[#262624] p-8 rounded-[2rem] border border-white/5 h-full relative group shadow-2xl">
-                <h3 className="text-xl font-black uppercase tracking-tighter mb-8 flex items-center space-x-3">
-                   <Clock size={20} className="text-primary" />
+             <div className="bg-[#262624] p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-white/5 h-full relative group shadow-2xl">
+                <h3 className="text-base sm:text-xl font-black uppercase tracking-tighter mb-6 sm:mb-8 flex items-center space-x-3">
+                   <Clock size={18} className="text-primary" />
                    <span>Real-time Activity</span>
                 </h3>
                 
@@ -177,15 +177,15 @@ export default function MerchantDashboard() {
        </div>
 
        {/* Delivery Stream Tracker (Ported) */}
-       <div className="bg-[#262624] p-10 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
-          <div className="flex items-center justify-between mb-8 relative z-10">
+       <div className="bg-[#262624] p-5 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8 relative z-10">
              <div className="flex items-center space-x-4">
                 <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
                     <Activity size={20} />
                 </div>
-                <h3 className="text-2xl font-black uppercase tracking-tighter">Global Logistics Flow</h3>
+                <h3 className="text-lg sm:text-2xl font-black uppercase tracking-tighter">Global Logistics Flow</h3>
              </div>
-             <div className="flex items-center space-x-6">
+             <div className="hidden sm:flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
                    <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(217,119,87,1)]"></span>
                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mt-0.5">Live Data Flow</span>
@@ -203,7 +203,7 @@ export default function MerchantDashboard() {
              ></motion.div>
           </div>
 
-          <div className="flex justify-between text-[11px] font-black uppercase tracking-[0.4em] text-gray-700">
+          <div className="flex justify-between text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-gray-700">
              <span className="text-primary shadow-[0_10px_10px_-5px_rgba(217,119,87,0.3)]">Nexus</span>
              <span className="text-primary">Dispatch</span>
              <span>In Orbit</span>

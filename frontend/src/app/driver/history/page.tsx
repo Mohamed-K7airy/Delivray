@@ -53,7 +53,7 @@ export default function HistoryPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 px-4">
          <div className="space-y-2">
-            <h1 className="text-5xl font-black tracking-tighter uppercase italic">Mission Logs</h1>
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase italic">Mission Logs</h1>
             <p className="text-gray-500 font-bold text-base uppercase tracking-widest opacity-60">Archive of completed deliveries</p>
          </div>
          <div className="bg-[#1a1a1a] px-8 py-5 rounded-[2rem] border border-white/5 flex items-center space-x-6 shadow-2xl">
@@ -75,7 +75,7 @@ export default function HistoryPage() {
              <motion.div 
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
-               className="bg-[#1a1a1a] p-20 rounded-[3rem] border border-dashed border-white/5 flex flex-col items-center justify-center text-center space-y-6"
+               className="bg-[#1a1a1a] p-10 sm:p-20 rounded-2xl sm:rounded-[3rem] border border-dashed border-white/5 flex flex-col items-center justify-center text-center space-y-6"
              >
                 <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center text-gray-700">
                    <HistoryIcon size={48} />
@@ -92,7 +92,7 @@ export default function HistoryPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-[#1a1a1a] p-8 rounded-[2.5rem] border border-white/5 hover:border-primary/20 transition-all group flex flex-col md:flex-row justify-between items-center gap-8 shadow-xl relative overflow-hidden"
+                className="bg-[#1a1a1a] p-5 sm:p-8 rounded-2xl sm:rounded-[2.5rem] border border-white/5 hover:border-primary/20 transition-all group flex flex-col md:flex-row justify-between items-center gap-8 shadow-xl relative overflow-hidden"
               >
                 {/* Visual Accent */}
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary/30 group-hover:bg-primary transition-all rounded-full" />
@@ -103,7 +103,7 @@ export default function HistoryPage() {
                    </div>
                    <div className="space-y-2">
                       <div className="flex items-center gap-4">
-                         <h4 className="text-2xl font-black tracking-tighter">Order #{order.id.substring(0,8).toUpperCase()}</h4>
+                         <h4 className="text-xl sm:text-2xl font-black tracking-tighter">Order #{order.id.substring(0,8).toUpperCase()}</h4>
                          <span className="bg-green-500/10 text-green-500 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-green-500/20 flex items-center gap-2">
                             <CheckCircle2 size={12} /> Complete
                          </span>

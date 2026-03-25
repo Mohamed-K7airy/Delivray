@@ -4,11 +4,11 @@ import { Headset, MessageSquare, BookOpen, LifeBuoy, Zap, ChevronRight, Activity
 
 export default function MerchantSupport() {
   return (
-    <div className="max-w-7xl mx-auto space-y-12">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 px-4 sm:px-0">
        {/* Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-             <h1 className="text-5xl font-black uppercase tracking-tighter text-white">Support Center</h1>
+             <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter text-white">Support Center</h1>
              <p className="text-gray-500 font-medium mt-2">24/7 technical assistance and operational guidance.</p>
           </div>
           <div className="bg-primary/10 px-6 py-3 rounded-2xl border border-primary/20 flex items-center space-x-4">
@@ -20,14 +20,14 @@ export default function MerchantSupport() {
        </div>
 
        {/* Support Channels */}
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {[
             { label: 'Live Chat', desc: 'Average wait: 2 mins', icon: <MessageSquare />, color: 'text-primary' },
             { label: 'Documentation', desc: 'API & Portal guides', icon: <BookOpen />, color: 'text-white' },
             { label: 'System Health', desc: 'All systems operational', icon: <Activity />, color: 'text-white' },
           ].map((item, idx) => (
-             <div key={idx} className="bg-[#262624] p-10 rounded-[3rem] border border-white/5 shadow-2xl group hover:border-primary/20 transition-all cursor-pointer">
-                <div className={`w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center ${item.color} mb-8 transition-transform group-hover:scale-110`}>
+             <div key={idx} className="bg-[#262624] p-6 sm:p-10 rounded-2xl sm:rounded-[3rem] border border-white/5 shadow-2xl group hover:border-primary/20 transition-all cursor-pointer">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-white/5 rounded-2xl flex items-center justify-center ${item.color} mb-8 transition-transform group-hover:scale-110`}>
                    {item.icon}
                 </div>
                 <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">{item.label}</h3>

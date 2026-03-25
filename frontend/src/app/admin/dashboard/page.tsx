@@ -65,7 +65,7 @@ export default function AdminDashboard() {
         <motion.h1 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-4xl font-black text-white uppercase tracking-tighter"
+          className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tighter"
         >
           Admin <span className="text-red-500 italic">Nexus</span>
         </motion.h1>
@@ -85,15 +85,15 @@ export default function AdminDashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className={`p-8 bg-[#1a1a1a] rounded-[2.5rem] border ${item.border} flex items-center group hover:bg-white/[0.04] transition-all shadow-2xl relative overflow-hidden`}
+            className={`p-5 sm:p-8 bg-[#1a1a1a] rounded-2xl sm:rounded-[2.5rem] border ${item.border} flex items-center group hover:bg-white/[0.04] transition-all shadow-2xl relative overflow-hidden`}
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
-            <div className={`p-5 ${item.bg} ${item.color} rounded-2xl mr-6 group-hover:scale-110 transition-transform`}>
+            <div className={`p-4 sm:p-5 ${item.bg} ${item.color} rounded-xl sm:rounded-2xl mr-4 sm:mr-6 group-hover:scale-110 transition-transform`}>
               <item.icon size={24}/>
             </div>
             <div className="relative z-10">
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-2">{item.label}</p>
-              <p className="text-3xl font-black text-white tracking-tighter">{item.value}</p>
+               <p className="text-2xl sm:text-3xl font-black text-white tracking-tighter">{item.value}</p>
             </div>
           </motion.div>
         ))}
@@ -103,9 +103,9 @@ export default function AdminDashboard() {
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#1a1a1a] rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl"
+        className="bg-[#1a1a1a] rounded-2xl sm:rounded-[3rem] border border-white/5 overflow-hidden shadow-2xl"
       >
-        <div className="px-10 py-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+        <div className="px-6 py-5 sm:px-10 sm:py-8 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
            <div>
               <h2 className="text-lg font-black text-white uppercase tracking-widest">Authorization Queue</h2>
               <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Pending verification for merchants and drivers</p>
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
           ) : (
             <div className="space-y-4">
               {pendingUsers.map(u => (
-                <div key={u.id} className="p-6 rounded-[2rem] bg-white/[0.02] border border-white/5 flex flex-col md:flex-row justify-between items-center hover:bg-white/[0.04] transition-all group">
+                <div key={u.id} className="p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col md:flex-row justify-between items-center hover:bg-white/[0.04] transition-all group">
                   <div className="flex items-center space-x-6 mb-4 md:mb-0">
                     <div className="w-16 h-16 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-red-500 font-black text-2xl italic group-hover:scale-105 transition-transform">
                        {u.name?.[0].toUpperCase()}
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
                   </div>
                   <button 
                     onClick={() => handleApprove(u.id)} 
-                    className="w-full md:w-auto bg-red-500 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_15px_30px_-10px_rgba(239,68,68,0.4)] hover:scale-105 active:scale-95 transition-all"
+                    className="w-full md:w-auto bg-red-500 text-white px-6 py-4 sm:px-10 sm:py-5 rounded-xl sm:rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_15px_30px_-10px_rgba(239,68,68,0.4)] hover:scale-105 active:scale-95 transition-all"
                   >
                     Authorize Access
                   </button>

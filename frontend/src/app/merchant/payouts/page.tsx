@@ -46,7 +46,7 @@ export default function MerchantPayouts() {
        {/* High-Fidelity Header */}
        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div className="space-y-2">
-             <h1 className="text-6xl font-black uppercase tracking-tighter text-white">Payouts</h1>
+             <h1 className="text-3xl sm:text-6xl font-black uppercase tracking-tighter text-white">Payouts</h1>
              <p className="text-gray-500 font-bold text-sm">Financial telemetry and transaction settlement history.</p>
           </div>
           <div className="bg-[#1a1a1a] px-6 py-3 rounded-xl border border-white/5 flex items-center space-x-6 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]">
@@ -70,7 +70,7 @@ export default function MerchantPayouts() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-[#1a1a1a] p-10 rounded-[2.5rem] border border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden group hover:border-primary/20 transition-all"
+                className="bg-[#1a1a1a] p-6 sm:p-10 rounded-2xl sm:rounded-[2.5rem] border border-white/5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] relative overflow-hidden group hover:border-primary/20 transition-all"
              >
                 <div className="absolute -top-4 -right-4 text-white/[0.03] group-hover:text-primary/5 transition-colors transform rotate-12">
                    {stat.icon}
@@ -85,7 +85,7 @@ export default function MerchantPayouts() {
        </div>
 
        {/* Modernized Transaction History */}
-       <div className="bg-[#151515] p-10 md:p-12 rounded-[3.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
+       <div className="bg-[#151515] p-6 sm:p-12 rounded-2xl sm:rounded-[3.5rem] border border-white/5 shadow-2xl relative overflow-hidden">
           <div className="flex items-center space-x-5 mb-14 relative z-10">
              <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-white border border-white/10">
                 <CreditCard size={20} />

@@ -48,12 +48,12 @@ export default function AdminLayout({
       <AdminSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
       <div 
         className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-          isCollapsed ? 'ml-24' : 'ml-80'
+          isCollapsed ? 'ml-0 md:ml-24' : 'ml-0 md:ml-80'
         }`}
       >
         {/* We reuse MerchantNavbar for consistency, but with isCollapsed prop */}
         <MerchantNavbar isCollapsed={isCollapsed} />
-        <main className="flex-1 overflow-y-auto p-8 lg:p-12 custom-scrollbar relative">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12 custom-scrollbar relative">
            {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-500/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
           
