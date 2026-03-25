@@ -13,7 +13,7 @@ export const createOrder = async (req, res) => {
     const { data: cart } = await supabase.from('cart').select('id').eq('user_id', userId).maybeSingle();
     if (!cart) return res.status(400).json({ message: 'Cart is empty' });
 
-    // 2. Fetch Cart Items with products
+    // 2. Fetch Cart Items with products for validation and pricing
     const { data: cartItems } = await supabase
       .from('cart_items')
       .select('id, quantity, product_id, products(id, store_id, price, availability)')
@@ -24,6 +24,7 @@ export const createOrder = async (req, res) => {
     // 3. Validation
     const storeId = cartItems[0].products.store_id;
     let totalPrice = 0;
+    const itemsPayload = [];
 
     for (let item of cartItems) {
       if (item.products.store_id !== storeId) {
@@ -33,54 +34,44 @@ export const createOrder = async (req, res) => {
         return res.status(400).json({ message: `Product ${item.products.id} is unavailable` });
       }
       totalPrice += item.quantity * item.products.price;
+      itemsPayload.push({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.products.price
+      });
     }
 
-    // 4. Create Order
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert([{
-        user_id: userId,
-        store_id: storeId,
-        status: 'pending',
-        total_price: totalPrice,
-        delivery_lat,
-        delivery_lng
-      }])
-      .select()
-      .single();
+    // 4. ATOMIC ORDER CREATION (RPC)
+    const { data: order, error: rpcError } = await supabase.rpc('create_order_v1', {
+      p_user_id: userId,
+      p_store_id: storeId,
+      p_total_price: totalPrice,
+      p_delivery_lat: delivery_lat,
+      p_delivery_lng: delivery_lng,
+      p_cart_id: cart.id,
+      p_items: itemsPayload
+    });
 
-    if (orderError) throw orderError;
+    if (rpcError) throw rpcError;
 
-    // 5. Move items to Order_Items
-    const orderItemsPayload = cartItems.map(item => ({
-      order_id: order.id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      price_at_time: item.products.price
-    }));
-
-    const { error: itemsError } = await supabase.from('order_items').insert(orderItemsPayload);
-    if (itemsError) throw itemsError;
-
-    // 6. Clear Cart
-    await supabase.from('cart_items').delete().eq('cart_id', cart.id);
-
-    // 7. Emit WebSocket event to merchant (with full items)
-    const { data: fullOrder } = await supabase
-      .from('orders')
-      .select('*, order_items(*, products(name))')
-      .eq('id', order.id)
-      .single();
-
-    const io = getIo();
+    // 5. Emit WebSocket event to merchant
     const { data: storeOwner } = await supabase.from('stores').select('owner_id').eq('id', storeId).single();
+    const io = getIo();
     if (io && storeOwner) {
+      // Fetch full order with items for the real-time notification
+      const { data: fullOrder } = await supabase
+        .from('orders')
+        .select('*, order_items(*, products(name))')
+        .eq('id', order.id)
+        .single();
+      
       io.to(`merchant_${storeOwner.owner_id}`).emit('new_order', fullOrder);
     }
 
     res.status(201).json(order);
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    console.error(`[createOrder Error] ${error.message}`);
+    res.status(500).json({ message: error.message || 'Server Error during order creation' });
   }
 };
 

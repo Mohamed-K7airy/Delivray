@@ -14,7 +14,8 @@ import {
   ChevronRight,
   Menu,
   ShieldCheck,
-  Package
+  Package,
+  Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -51,29 +52,22 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
         isCollapsed ? 'w-20 lg:w-24' : 'w-64 lg:w-80'
       }`}
     >
-      {/* Brand & Toggle */}
-      <div className={`p-6 lg:p-8 mb-8 lg:mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-4 lg:px-6' : 'px-6 lg:px-8'}`}>
+      {/* Sidebar Header */}
+      <div className={`p-8 lg:p-10 border-b border-white/5 flex items-center justify-between ${isCollapsed ? 'px-4 lg:px-6' : ''}`}>
         {!isCollapsed && (
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center space-x-4"
-          >
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 shadow-[0_8px_20px_-5px_rgba(217,119,87,0.3)]">
-               <StoreIcon className="text-primary" size={20} />
+          <div className="flex items-center space-x-5 group cursor-pointer" onClick={() => router.push('/')}>
+            <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:scale-110 transition-transform duration-500">
+              <Zap size={24} className="text-white fill-current" />
             </div>
-            <div>
-               <h1 className="text-xs font-black uppercase tracking-widest text-white leading-none">Merchant Central</h1>
-               <p className="text-[8px] font-bold text-gray-500 uppercase tracking-tighter mt-1">Premium Tier</p>
-            </div>
-          </motion.div>
+            <span className="text-2xl font-black text-white tracking-tighter uppercase italic group-hover:text-primary transition-colors">Delivray.</span>
+          </div>
         )}
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`p-2.5 rounded-xl bg-white/5 border border-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
         >
-          {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+          {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
         </button>
       </div>
 

@@ -55,127 +55,133 @@ export default function MerchantDashboard() {
   ];
 
   return (
-    <div className="container-responsive py-6 sm:py-10 space-y-12 lg:space-y-16">
+    <div className="container-responsive py-8 lg:py-16 space-y-10 lg:space-y-20">
        {/* Dashboard Hero */}
-       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
           <div>
-             <h1 className="heading-responsive !text-3xl sm:!text-5xl">Store <span className="text-primary italic">Overview.</span></h1>
-             <p className="text-responsive mt-3 max-w-2xl font-medium">Welcome back, {user?.name?.split(' ')[0]}. Here is what's happening in your shop today.</p>
+             <h1 className="heading-responsive !text-3xl lg:!text-6xl">Store <span className="text-primary italic">Dynamics.</span></h1>
+             <p className="text-responsive mt-4 max-w-3xl">Command center status: Optimal. Analyzing cross-node trajectory for {user?.name?.split(' ')[0]}.</p>
           </div>
-          <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/5 flex items-center space-x-4 shadow-xl">
-             <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(217,119,87,1)]"></div>
-             <span className="text-[10px] font-black text-white uppercase tracking-[0.3em] whitespace-nowrap">Status: High Velocity</span>
+          <div className="bg-[#111111] px-8 py-4 rounded-2xl border border-white/10 flex items-center space-x-5 shadow-2xl">
+             <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(217,119,87,1)]"></div>
+             <span className="text-[10px] font-black text-white uppercase tracking-[0.4em] whitespace-nowrap">Node: Live / Sync Priority</span>
           </div>
        </div>
 
-       {/* Stats Grid */}
-       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
+       {/* Stats Grid - High Density */}
+       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
           {statCards.map((stat, idx) => (
              <motion.div 
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                className="card-responsive !p-6 flex flex-col justify-between group hover:-translate-y-2 border-transparent hover:border-primary/20"
+                transition={{ delay: idx * 0.05 }}
+                className="card-responsive !p-6 lg:!p-8 group"
              >
-                <div className="flex justify-between items-start mb-10">
-                   <div className={`w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center ${stat.color === 'primary' ? 'text-primary' : 'text-gray-400 group-hover:text-white transition-colors'}`}>
+                <div className="flex justify-between items-start mb-12">
+                   <div className={`w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 ${stat.color === 'primary' ? 'text-primary' : 'text-gray-500 group-hover:text-white transition-all'}`}>
                       {stat.icon}
                    </div>
-                   <div className="flex items-center space-x-1.5 text-[10px] font-black text-primary uppercase bg-primary/10 px-3 py-1.5 rounded-full">
+                   <div className="flex items-center space-x-2 text-[9px] font-black text-primary uppercase bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
                       <ArrowUpRight size={14} />
                       <span>{stat.change}</span>
                    </div>
                 </div>
                 <div>
-                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">{stat.label}</p>
-                   <h3 className="text-2xl sm:text-4xl font-black text-white tracking-tighter truncate">{stat.value}</h3>
+                   <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-3">{stat.label}</p>
+                   <h3 className="text-3xl lg:text-5xl font-black text-white tracking-tighter truncate leading-none">{stat.value}</h3>
                 </div>
              </motion.div>
           ))}
        </div>
 
-       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Revenue Graph Placeholder */}
-          <div className="lg:col-span-8 card-responsive !p-8 sm:!p-12 border-transparent hover:border-white/5">
-             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
-                <div className="flex items-center space-x-5">
-                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                      <BarChart3 size={24} />
+       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 lg:gap-16">
+          {/* Revenue Graph Optimized */}
+          <div className="xl:col-span-8 card-responsive !p-10 lg:!p-16">
+             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
+                <div className="flex items-center space-x-6">
+                   <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-xl">
+                      <BarChart3 size={28} />
                    </div>
-                   <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Revenue Dynamics</h3>
+                   <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tight">Financial Trajectory</h3>
                 </div>
-                <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 w-full sm:w-auto">
-                   {['7D', '1M', '1Y'].map(t => (
-                      <button key={t} className={`flex-1 sm:flex-none px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${t === '1M' ? 'bg-primary text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}>
+                <div className="flex bg-[#0a0a0a] p-1.5 rounded-2xl border border-white/10 w-full md:w-auto">
+                   {['7D', '1M', '1Y', 'ALL'].map(t => (
+                      <button key={t} className={`flex-1 md:flex-none px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${t === '1M' ? 'bg-primary text-white shadow-2xl' : 'text-gray-600 hover:text-white'}`}>
                          {t}
                       </button>
                    ))}
                 </div>
              </div>
              
-             {/* Abstract Graph Pattern */}
-             <div className="h-48 sm:h-72 flex items-end justify-between space-x-3 sm:space-x-4 mb-8">
-                {[40, 60, 35, 80, 55, 90, 70, 45, 85, 30].map((h, i) => (
+             {/* Abstract Graph - More Dense */}
+             <div className="h-64 lg:h-80 flex items-end justify-between space-x-2 sm:space-x-4 mb-10">
+                {[45, 65, 40, 85, 60, 95, 75, 50, 90, 35, 70, 55, 80, 45, 90].map((h, i) => (
                    <motion.div 
                       key={i}
                       initial={{ height: 0 }}
                       animate={{ height: `${h}%` }}
-                      transition={{ delay: i * 0.05, duration: 1, ease: 'circOut' }}
-                      className={`w-full rounded-2xl bg-white/5 group-hover:bg-white/10 transition-colors relative overflow-hidden ${i === 5 ? 'bg-primary/20 !bg-primary' : ''}`}
+                      transition={{ delay: i * 0.03, duration: 1.2, ease: 'circOut' }}
+                      className={`flex-1 rounded-2xl bg-white/5 hover:bg-white/10 transition-all relative overflow-hidden group/bar ${h >= 80 ? 'bg-primary/20 !bg-primary/40' : ''}`}
                    >
-                     {i === 5 && <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>}
+                      {h >= 80 && <div className="absolute inset-0 bg-primary opacity-30 shadow-[0_0_20px_rgba(217,119,87,1)]"></div>}
                    </motion.div>
                 ))}
              </div>
 
-             <div className="flex items-center justify-between text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] pt-6 border-t border-white/5">
-                <span>Phase A</span>
-                <span>Phase B</span>
-                <span>Phase C</span>
-                <span>Phase D</span>
-                <span>Phase E</span>
+             <div className="flex items-center justify-between text-[9px] font-black text-gray-700 uppercase tracking-[0.6em] pt-8 border-t border-white/5">
+                <span>TX-ALPHA</span>
+                <span>TX-BETA</span>
+                <span>TX-GAMMA</span>
+                <span>TX-DELTA</span>
+                <span>TX-NEXUS</span>
              </div>
           </div>
 
-          {/* Activity Sidebar */}
-          <div className="lg:col-span-4 flex flex-col space-y-10">
-             <div className="card-responsive !p-8 flex-1 flex flex-col">
-                <h3 className="text-xl font-black uppercase tracking-tight mb-10 flex items-center space-x-4">
-                   <Clock size={22} className="text-primary" />
-                   <span>Live Stream</span>
+          {/* Activity Sidebar Optimized */}
+          <div className="xl:col-span-4 flex flex-col space-y-12">
+             <div className="card-responsive !p-10 flex-1 flex flex-col">
+                <h3 className="text-xl font-black uppercase tracking-tight mb-12 flex items-center justify-between">
+                   <div className="flex items-center space-x-4">
+                      <Clock size={24} className="text-primary" />
+                      <span>Live Stream</span>
+                   </div>
+                   <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
                 </h3>
                 
-                <div className="space-y-8 flex-1">
+                <div className="space-y-6 flex-1">
                    {loading ? (
                       <div className="flex flex-col space-y-6">
-                         {[1,2,3].map(i => <div key={i} className="h-12 bg-white/5 animate-pulse rounded-2xl"></div>)}
+                         {[1,2,3,4].map(i => <div key={i} className="h-16 bg-white/5 animate-pulse rounded-2xl"></div>)}
                       </div>
                    ) : activities.length > 0 ? activities.map((item, idx) => (
-                      <div key={idx} className="flex space-x-5 items-start group/it cursor-pointer" onClick={() => router.push('/merchant/orders')}>
-                         <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-gray-600 group-hover/it:text-primary group-hover/it:bg-primary/10 transition-all border border-white/5">
-                            <Zap size={18} />
+                      <div key={idx} className="flex space-x-6 items-center group/it cursor-pointer p-4 rounded-2xl hover:bg-white/[0.03] transition-all border border-transparent hover:border-white/5" onClick={() => router.push('/merchant/orders')}>
+                         <div className="w-12 h-12 rounded-2xl bg-[#0a0a0a] flex items-center justify-center text-gray-500 group-hover/it:text-primary group-hover/it:bg-primary/10 transition-all border border-white/10">
+                            <Zap size={20} />
                          </div>
                          <div className="flex-1">
-                            <p className="text-xs font-black uppercase tracking-tight text-white group-hover/it:text-primary transition-colors leading-none mb-1.5">
+                            <p className="text-sm font-black uppercase tracking-wide text-white group-hover/it:text-primary transition-colors leading-none mb-2">
                                Order #{item.id.slice(-4)}
                             </p>
-                            <p className="text-[10px] font-bold text-gray-600 uppercase tracking-[0.1em]">{item.status} / {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                            <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.25em]">{item.status}</p>
+                         </div>
+                         <div className="text-[10px] font-black text-gray-700 uppercase italic">
+                            {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                          </div>
                       </div>
                    )) : (
-                      <div className="text-center py-12 opacity-30">
-                        <Activity size={32} className="mx-auto mb-4" />
-                        <p className="text-[10px] font-black uppercase tracking-widest">No Recent Signals</p>
+                      <div className="text-center py-20 opacity-20">
+                        <Activity size={40} className="mx-auto mb-6" />
+                        <p className="text-[11px] font-black uppercase tracking-[0.5em]">Radio Silence</p>
                       </div>
                    )}
                 </div>
 
                 <button 
                   onClick={() => router.push('/merchant/orders')}
-                  className="w-full mt-10 py-5 bg-white/5 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white hover:border-primary transition-all text-gray-400"
+                  className="w-full mt-12 py-5 bg-[#0a0a0a] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all text-gray-500 shadow-xl"
                 >
-                   Vew All Logistics
+                   All Communications
                 </button>
              </div>
           </div>

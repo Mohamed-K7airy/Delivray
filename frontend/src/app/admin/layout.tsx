@@ -63,7 +63,7 @@ export default function AdminLayout({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4, ease: "circOut" }}
-              className="relative z-10 h-full"
+              className="relative z-10 h-full max-w-[1600px] mx-auto"
             >
               {children}
             </motion.div>

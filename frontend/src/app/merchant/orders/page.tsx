@@ -9,8 +9,12 @@ import { CheckCircle, Clock, Package, ChefHat, Activity, Store as StoreIcon, Che
 import { useRef } from 'react';
 import { API_URL } from '@/config/api';
 
+import { useSocket } from '@/context/SocketContext';
+import { apiClient } from '@/lib/apiClient';
+
 export default function MerchantOrders() {
    const { token, user } = useAuthStore();
+   const { socket, isConnected } = useSocket();
    const router = useRouter();
    const [orders, setOrders] = useState<any[]>([]);
    const [loading, setLoading] = useState(true);
@@ -19,40 +23,38 @@ export default function MerchantOrders() {
    const dropdownRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
-      const handleClickOutside = (event: MouseEvent) => {
-         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            setActiveDropdown(null);
-         }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-   }, []);
+      // 1. Initial Auth Check
+      if (!token || user?.role !== 'merchant') {
+         router.push('/login');
+         return;
+      }
 
-   useEffect(() => {
-      if (!token || user?.role !== 'merchant') return router.push('/login');
-
+      // 2. Fetch Orders using Hardened Client
       const fetchOrders = async () => {
          try {
-            const res = await fetch(`${API_URL}/orders/merchant`, {
-               headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (res.ok) setOrders(data);
+            const data = await apiClient('/orders/merchant');
+            if (data) setOrders(data);
          } catch (err) {
-            console.error(err);
+            console.error('[MerchantOrders] Load failed:', err);
          } finally {
             setLoading(false);
          }
       };
 
       fetchOrders();
+   }, [token, user?.role, router]);
 
-      const socket = io(API_URL, { withCredentials: true });
-      socket.emit('join', { role: 'merchant', id: user.id });
+   useEffect(() => {
+      if (!socket || !isConnected) return;
 
+      // Listen for socket events (Room joining is handled in SocketProvider on connect)
       socket.on('new_order', (order) => {
-         setOrders(prev => [order, ...prev]);
-         toast('🔔 New Order!', {
+         setOrders(prev => {
+            // Avoid duplicates
+            if (prev.find(o => o.id === order.id)) return prev;
+            return [order, ...prev];
+         });
+         toast('🔔 New Order Received', {
             description: `Order #${order.id.slice(0, 8)} - $${order.total_price}`,
          });
       });
@@ -61,25 +63,26 @@ export default function MerchantOrders() {
          setOrders(prev => prev.map(o => o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o));
       });
 
-      return () => { socket.disconnect(); };
-   }, [token, user, router]);
+      return () => {
+         socket.off('new_order');
+         socket.off('order_status_updated');
+      };
+   }, [socket, isConnected]);
 
    const updateStatus = async (orderId: string, status: string) => {
       try {
-         const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+         const updated = await apiClient(`/orders/${orderId}/status`, {
             method: 'PATCH',
-            headers: {
-               'Content-Type': 'application/json',
-               Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ status })
+            data: { status }
          });
-         if (res.ok) {
-            setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
-            toast.success(`Success: order updated!`);
+         
+         if (updated) {
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+            toast.success(`Protocol updated to ${status.replace(/_/g, ' ')}`);
          }
       } catch (err: any) {
-         toast.error(err.message);
+         // Error is already toasted by apiClient
+         console.error('[Status Update Error]', err);
       }
    };
 

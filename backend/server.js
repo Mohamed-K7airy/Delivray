@@ -19,17 +19,44 @@ import reviewRoutes from './modules/reviews/reviewRoutes.js';
 
 dotenv.config();
 
+// 1. Environment Validation
+const requiredEnv = ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_KEY'];
+const missingEnv = requiredEnv.filter(env => !process.env[env]);
+if (missingEnv.length > 0) {
+  console.error(`FATAL: Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
 const app = express();
 const httpServer = createServer(app);
 
+// 3. Secure Socket.io with Auth and Restricted Joining
+import { socketAuth } from './middlewares/authMiddleware.js';
 export const io = initIo(httpServer);
+io.use(socketAuth);
 
 const PORT = process.env.PORT || 5000;
 
+// 2. Restricted CORS
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || true,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 app.use(helmet());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 mins
@@ -56,6 +83,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// Routes
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/stores', storeRoutes);
@@ -67,21 +95,35 @@ app.use('/payments', paymentRoutes);
 app.use('/reviews', reviewRoutes);
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Delivray API is running...' });
+  res.json({ status: 'ok', message: 'Delivray API is running...', timestamp: new Date() });
 });
 
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  const { id: userId, role } = socket.data.user;
+  console.log(`User connected: ${socket.id} (User: ${userId}, Role: ${role})`);
   
-  socket.on('join', ({ role, id }) => {
-    if (role === 'merchant') socket.join(`merchant_${id}`);
-    else if (role === 'driver') {
-      socket.join(`driver_${id}`);
-      socket.join('drivers');
+  socket.on('join', ({ role: requestedRole, id: requestedId }) => {
+    // SECURITY: Validate that the user is joining their OWN room or an authorized room
+    if (requestedRole === 'merchant') {
+      if (role !== 'admin' && (role !== 'merchant' || userId !== requestedId)) {
+        return socket.emit('error', { message: 'Unauthorized room join' });
+      }
+      socket.join(`merchant_${requestedId}`);
+      console.log(`User ${userId} joined merchant room: ${requestedId}`);
+    } 
+    else if (requestedRole === 'driver') {
+      if (role !== 'admin' && (role !== 'driver' || userId !== requestedId)) {
+        return socket.emit('error', { message: 'Unauthorized room join' });
+      }
+      socket.join(`driver_${requestedId}`);
+      socket.join('drivers'); // Drivers room for broadcasts
+      console.log(`User ${userId} joined driver rooms`);
     }
   });
 
   socket.on('join_order', (orderId) => {
+    // In a full implementation, we'd verify the user is part of this order
+    // For now, we join, but with the secure connection established
     socket.join(`order_${orderId}`);
   });
 
@@ -90,6 +132,16 @@ io.on('connection', (socket) => {
   });
 });
 
+// 4. Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(`[ERROR] ${err.stack}`);
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    message: err.message || 'Internal Server Error',
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack
+  });
+});
+
 httpServer.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });

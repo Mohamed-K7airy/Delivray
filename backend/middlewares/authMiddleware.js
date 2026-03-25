@@ -18,11 +18,37 @@ export const protect = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    if (!process.env.JWT_SECRET) {
+      console.error('FATAL: JWT_SECRET is not defined');
+      return res.status(500).json({ message: 'Internal server configuration error' });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Not authorized, token failed' });
+  }
+};
+
+/**
+ * Socket.io Authentication Middleware
+ */
+export const socketAuth = (socket, next) => {
+  const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return next(new Error('Authentication error: No token provided'));
+  }
+
+  try {
+    if (!process.env.JWT_SECRET) {
+      return next(new Error('Internal server configuration error'));
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    socket.data.user = decoded;
+    next();
+  } catch (err) {
+    next(new Error('Authentication error: Invalid token'));
   }
 };
 

@@ -75,27 +75,28 @@ body {
 /* System-wide Responsive Utilities */
 @layer components {
   .container-responsive {
-    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16;
   }
 
   .heading-responsive {
-    @apply text-2xl sm:text-4xl lg:text-5xl font-black text-white uppercase tracking-tighter;
+    @apply text-3xl sm:text-5xl lg:text-7xl font-black text-white uppercase tracking-tighter leading-[0.95];
   }
 
   .text-responsive {
-    @apply text-sm sm:text-base text-gray-400 leading-relaxed;
+    @apply text-base lg:text-lg text-gray-400 leading-relaxed font-medium;
   }
 
   .section-spacing {
-    @apply py-8 sm:py-16 lg:py-24;
+    @apply py-12 lg:py-24;
   }
 
   .card-responsive {
-    @apply bg-[#1a1a1a] border border-white/5 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8 transition-all duration-300;
+    @apply bg-[#111111] border border-white/5 rounded-2xl lg:rounded-3xl p-6 lg:p-10 transition-all duration-500 hover:border-primary/20 hover:bg-[#161616];
+    @apply bg-[#111111] border border-white/5 rounded-xl lg:rounded-2xl p-6 lg:p-10 transition-all duration-500 hover:border-primary/20 hover:bg-[#161616];
   }
 
   .button-responsive {
-    @apply w-full sm:w-auto px-6 sm:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all duration-300;
+    @apply w-full sm:w-auto px-8 lg:px-12 py-4 lg:py-5 rounded-lg lg:rounded-xl font-black uppercase tracking-widest text-[10px] lg:text-xs transition-all duration-300 active:scale-95;
   }
 }
 

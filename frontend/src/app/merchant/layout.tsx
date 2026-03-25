@@ -48,14 +48,14 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
         }`}
       >
         <MerchantNavbar isCollapsed={isCollapsed} />
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 custom-scrollbar relative">
+        <div className="flex-1 overflow-y-auto custom-scrollbar relative">
           {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
           
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="h-full relative z-20"
+            className="h-full relative z-20 max-w-[1600px] mx-auto p-4 sm:p-8 lg:p-12 xl:p-16"
           >
             {children}
           </motion.div>

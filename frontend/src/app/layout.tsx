@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SocketProvider } from '@/context/SocketContext';
+
 export default function RootLayout({
   children,
 }: {
@@ -26,11 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-background text-foreground tracking-tight selection:bg-primary/20 flex flex-col min-h-screen`}>
-        <LayoutWrapper>
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </LayoutWrapper>
+        <SocketProvider>
+          <LayoutWrapper>
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </LayoutWrapper>
+        </SocketProvider>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>
