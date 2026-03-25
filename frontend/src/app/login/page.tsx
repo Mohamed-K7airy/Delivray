@@ -7,7 +7,6 @@ import { API_URL } from '@/config/api';
 import { Eye, EyeOff, LogIn, ShieldCheck, Zap, ArrowRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import Input from '@/components/Input';
 import Logo from '@/components/Logo';
 
 export default function LoginPage() {

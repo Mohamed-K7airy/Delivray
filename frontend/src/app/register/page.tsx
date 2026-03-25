@@ -3,11 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
-import { ShoppingBag, User, Truck, Eye, EyeOff, ShieldCheck, Zap, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, User, Truck, Eye, EyeOff, ShieldCheck, Zap, ChevronDown, CheckCircle2, Lock } from 'lucide-react';
 import { API_URL } from '@/config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import Input from '@/components/Input';
 import Logo from '@/components/Logo';
 
 export default function RegisterPage() {
