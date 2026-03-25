@@ -30,9 +30,9 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
   const pathname = usePathname();
 
   const navItems = [
-     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/merchant/dashboard' },
-+    { id: 'orders', label: 'Orders', icon: <Package size={20} />, path: '/merchant/orders' },
-     { id: 'inventory', label: 'Inventory', icon: <Database size={20} />, path: '/merchant/inventory' },
+      { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/merchant/dashboard' },
+      { id: 'orders', label: 'Orders', icon: <Package size={20} />, path: '/merchant/orders' },
+      { id: 'inventory', label: 'Inventory', icon: <Database size={20} />, path: '/merchant/inventory' },
     { id: 'live_map', label: 'Live Map', icon: <Map size={20} />, path: '/merchant/live_map' },
     { id: 'payouts', label: 'Payouts', icon: <CreditCard size={20} />, path: '/merchant/payouts' },
     { id: 'settings', label: 'Store Settings', icon: <Settings size={20} />, path: '/merchant/settings' },
