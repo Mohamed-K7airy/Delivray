@@ -9,8 +9,8 @@ export default function Footer() {
   if (pathname.startsWith('/merchant')) return null;
 
   return (
-    <footer className="bg-[#262624] pt-12 sm:pt-20 pb-8 sm:pb-10 border-t border-white/5 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-black pt-12 sm:pt-20 pb-8 sm:pb-10 border-t border-white/5 mt-auto">
+      <div className="container-responsive">
         <div className="flex flex-col md:flex-row justify-between items-center mb-10 sm:mb-16 gap-6 sm:gap-8">
           <div className="flex flex-col items-center md:items-start text-center md:text-left max-w-sm">
             <Logo />

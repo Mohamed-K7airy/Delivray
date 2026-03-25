@@ -4,23 +4,22 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
 import { API_URL } from '@/config/api';
-
-import { Eye, EyeOff, LogIn } from 'lucide-react';
-
-import { motion } from 'framer-motion';
+import { Eye, EyeOff, LogIn, ShieldCheck, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+import Input from '@/components/Input';
+import Button from '@/components/Button';
 
 export default function LoginPage() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUser, setToken } = useAuthStore();
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
     try {
@@ -33,7 +32,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || 'Authentication failed');
       }
 
       setToken(data.token);
@@ -45,108 +44,105 @@ export default function LoginPage() {
         status: data.status
       });
 
+      toast.success(`Welcome back, ${data.name.split(' ')[0]}!`);
+
       if (data.role === 'customer') router.push('/');
       else if (data.role === 'merchant') router.push('/merchant/dashboard');
-      else if (data.role === 'driver') router.push('/driver/panel');
+      else if (data.role === 'driver') router.push('/driver/dashboard');
       else if (data.role === 'admin') router.push('/admin/dashboard');
 
     } catch (err: any) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#111111] flex flex-col items-center justify-center py-20 px-4 sm:px-6 relative overflow-hidden selection:bg-primary/30">
-      {/* Background Decor */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
-
+    <div className="min-h-[100dvh] bg-[#080808] flex flex-col items-center justify-center py-10 px-4 sm:px-6 relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(217,119,87,0.05),transparent_50%)] pointer-events-none"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+      
       <motion.div 
-        initial={{ opacity: 0, scale: 0.98, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-[500px] p-6 sm:p-10 md:p-12 space-y-6 sm:space-y-10 bg-[#0b0b0b] rounded-2xl sm:rounded-[2rem] border border-white/5 relative z-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md z-10"
       >
-        <div className="text-center">
-          <span className="bg-primary/10 text-primary px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-primary/10 mb-8 inline-block">
-            Welcome Back
-          </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tighter mb-3 uppercase">Sign In</h1>
-          <p className="text-gray-500 font-medium text-sm sm:text-base">Access your Delivray account</p>
+        <div className="text-center mb-10">
+           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 rounded-2xl border border-white/10 mb-6 shadow-2xl">
+              <ShieldCheck size={32} className="text-primary" />
+           </div>
+           <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-4 leading-none italic">Relink <span className="text-primary">Nexus.</span></h1>
+           <p className="text-gray-500 font-medium text-sm sm:text-base px-6">Access your encrypted delivery portal and fulfill active missions.</p>
         </div>
 
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-            className="p-4 text-xs font-black text-[#f08c6e] bg-[#f08c6e]/10 rounded-2xl border border-[#f08c6e]/20 tracking-wider uppercase text-center"
-          >
-            {error}
-          </motion.div>
-        )}
+        <div className="card-responsive !bg-[#111111] !p-8 sm:!p-12 border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+           
+           <form onSubmit={handleLogin} className="space-y-8">
+              <div className="space-y-6">
+                 <Input 
+                    label="Operational Phone Index"
+                    type="tel"
+                    placeholder="+1234..."
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                 />
 
-        <form onSubmit={handleLogin} className="space-y-8">
-          <div className="space-y-6">
-            <div>
-              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 ml-1">Phone Number</label>
-              <input
-                type="tel"
-                placeholder="+1234567890"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500"
-                required
-              />
-            </div>
+                 <div className="relative">
+                    <Input 
+                       label="Access Key"
+                       type={showPassword ? 'text' : 'password'}
+                       placeholder="••••••••"
+                       required
+                       value={password}
+                       onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button 
+                       type="button"
+                       onClick={() => setShowPassword(!showPassword)}
+                       className="absolute right-5 bottom-4 text-gray-600 hover:text-white transition-colors p-2"
+                    >
+                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                 </div>
+              </div>
 
-            <div className="relative">
-              <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3 ml-1">Password</label>
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-3.5 sm:px-8 sm:py-5 text-sm sm:text-base text-white bg-white/[0.03] border border-white/5 rounded-xl sm:rounded-2xl focus:bg-white/[0.05] focus:ring-0 focus:border-primary/40 outline-none transition-all font-medium placeholder:text-gray-500 pr-14 sm:pr-16"
-                required
-              />
-              <button 
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 sm:right-6 top-[44px] sm:top-[54px] text-gray-600 hover:text-white transition-colors"
+              <Button
+                 type="submit"
+                 disabled={loading}
+                 className="w-full h-18 text-base bg-primary text-white shadow-2xl shadow-primary/20"
               >
-                {showPassword ? <EyeOff size={22} /> : <Eye size={22} />}
-              </button>
-            </div>
-          </div>
+                 {loading ? (
+                    <div className="flex items-center gap-3">
+                       <Zap size={20} className="animate-pulse" />
+                       <span>Decrypting...</span>
+                    </div>
+                 ) : (
+                    <>
+                       <LogIn size={20} className="mr-3" />
+                       <span>Synchronize</span>
+                    </>
+                 )}
+              </Button>
+           </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-6 py-3.5 sm:px-8 sm:py-5 bg-primary text-black font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] rounded-xl hover:scale-[1.02] active:scale-98 transition-all shadow-[0_20px_40px_-10px_rgba(217,119,87,0.4)] disabled:opacity-50 text-sm sm:text-base flex items-center justify-center space-x-3"
-          >
-            {loading ? (
-              <span>Processing...</span>
-            ) : (
-              <>
-                <LogIn size={20} strokeWidth={3} />
-                <span>Sign In</span>
-              </>
-            )}
-          </button>
-        </form>
+           <div className="mt-10 pt-8 border-t border-white/5 text-center">
+              <p className="text-gray-500 text-sm font-medium">
+                 New operator?{' '}
+                 <Link href="/register" className="text-primary font-black hover:underline underline-offset-8 transition-all">
+                    Initialize Registry
+                 </Link>
+              </p>
+           </div>
+        </div>
 
-        <p className="text-center text-gray-500 font-medium">
-          Don't have an account?{' '}
-          <Link href="/register" className="text-primary font-black hover:underline underline-offset-8">
-            Register here
-          </Link>
-        </p>
+        <div className="mt-12 text-center opacity-30 hover:opacity-100 transition-opacity">
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">Delivray Protocol v4.2</p>
+        </div>
       </motion.div>
-
-      {/* Page Footer */}
-      <div className="absolute bottom-10 left-0 w-full px-12 hidden md:flex items-center justify-between pointer-events-none opacity-40">
-         <div className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Delivray</div>
-         <div className="text-[10px] font-black uppercase tracking-widest text-[#666]">© 2024 DELIVRAY. ENGINEERED FOR SPEED.</div>
-      </div>
     </div>
   );
 }

@@ -38,7 +38,7 @@ export default function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="bg-[#262624]/60 backdrop-blur-xl border-b border-white/10 shadow-2xl sticky top-0 z-50 transition-all duration-300"
+      className="bg-black/60 backdrop-blur-xl border-b border-white/5 shadow-2xl sticky top-0 z-50 transition-all duration-300"
     >
       <div className="container-responsive">
         <div className="flex justify-between h-16 md:h-20 items-center">
@@ -94,7 +94,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 15, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                        className="absolute right-0 mt-4 w-64 bg-[#262624] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden z-[60] backdrop-blur-2xl"
+                        className="absolute right-0 mt-4 w-64 bg-black border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden z-[60] backdrop-blur-2xl"
                       >
                         <div className="p-6 border-b border-white/10 bg-white/5">
                            <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Logged in as</div>
