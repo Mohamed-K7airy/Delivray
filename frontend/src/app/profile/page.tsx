@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Package, MapPin, CheckCircle, Navigation, Info, LogOut, Phone, Mail, Search, Filter, Box, Truck, ChevronDown, User as UserIcon, ShieldCheck, Activity, Clock, ChevronRight } from 'lucide-react';
+import { Package, MapPin, CheckCircle, Navigation, Info, LogOut, Phone, Mail, Search, Filter, Box, Truck, ChevronDown, User as UserIcon, ShieldCheck, Activity, Clock, ChevronRight, Bell, Settings, CreditCard, LifeBuoy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL } from '@/config/api';
 import Button from '@/components/Button';
+import Logo from '@/components/Logo';
 
 export default function UserProfile() {
   const { token, user, setUser, setToken } = useAuthStore();
@@ -31,11 +32,11 @@ export default function UserProfile() {
            const data = await ordersRes.json();
            setOrders(data);
         } else {
-           // Mock data for high-fidelity preview
+           // Mock data for high-fidelity preview matching mockup
            setOrders([
-             { id: 'ORD-7742', status: 'COMPLETED', created_at: '2023-11-12', total_price: 154.20, location: 'New Cairo, Sector 4', type: 'grocery' },
-             { id: 'ORD-9102', status: 'DELIVERING', created_at: '2023-11-25', total_price: 42.50, location: 'Maadi, Rd 9', type: 'food' },
-             { id: 'ORD-1244', status: 'COMPLETED', created_at: '2023-10-21', total_price: 210.00, location: 'Zamalek, Cairo', type: 'grocery' }
+             { id: 'DV-88219', status: 'In Progress', restaurant: 'The Burger Collective', date: 'Oct 24, 2023', eta: '15-20 mins', price: 42.50, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop' },
+             { id: 'DV-88012', status: 'Completed', restaurant: 'Napoli Pizzeria', date: 'Oct 21, 2023', price: 28.90, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&h=300&auto=format&fit=crop' },
+             { id: 'DV-87955', status: 'Completed', restaurant: 'Green Garden Salads', date: 'Oct 18, 2023', price: 19.20, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=300&h=300&auto=format&fit=crop' }
            ]);
         }
       } catch (err) {
@@ -53,171 +54,186 @@ export default function UserProfile() {
     router.push('/login');
   };
 
-  if (loading) return <div className="min-h-screen bg-[#111111] flex items-center justify-center text-white/50 font-black uppercase tracking-[0.3em] animate-pulse">Initializing Profile...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-[#F8F8F8] flex items-center justify-center">
+      <div className="w-12 h-12 border-4 border-[#FF5A3C] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   return (
-    <div className="container-responsive py-6 sm:py-10 space-y-12 sm:space-y-20">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+    <div className="min-h-screen bg-[#F8F8F8] pb-24">
+      <div className="container-responsive py-10 lg:py-16">
         
-        {/* Sidebar Profile Card */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-4 2xl:col-span-3 lg:sticky lg:top-8"
-        >
-          <div className="card-responsive !bg-[#111111] !p-8 sm:!p-10 border-white/5 shadow-2xl relative overflow-hidden group">
-             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors"></div>
-             
-             {/* Avatar Section */}
-             <div className="flex flex-col items-center text-center pb-10 border-b border-white/5">
-                <div className="relative mb-8">
-                   <div className="w-28 h-28 sm:w-32 sm:h-32 bg-primary text-white rounded-full flex items-center justify-center text-5xl font-black shadow-2xl shadow-primary/20 border-4 border-[#111111] group-hover:scale-105 transition-transform duration-500">
-                     {user?.name?.charAt(0).toUpperCase() || 'M'}
-                   </div>
-                   <div className="absolute bottom-1 right-1 w-8 h-8 bg-black border-2 border-white/5 rounded-full flex items-center justify-center">
-                     <ShieldCheck size={16} className="text-primary" />
-                   </div>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight">{user?.name}</h2>
-                <div className="flex items-center gap-3 mt-4">
-                   <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/10">
-                     {user?.role || 'CLIENT'}
-                   </span>
-                   <span className="text-gray-600 text-[10px] font-black uppercase tracking-widest hidden sm:block">ELITE TIER</span>
-                </div>
-             </div>
-
-             {/* Personal Details */}
-             <div className="py-10 space-y-6">
-                <div className="space-y-2">
-                   <div className="flex items-center gap-3 text-gray-600">
-                      <Phone size={14} className="text-primary" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Phone Link</span>
-                   </div>
-                   <p className="text-sm font-bold text-white pl-7 tracking-wider">{user?.phone || 'UNLINKED'}</p>
-                </div>
-
-                <div className="space-y-2">
-                   <div className="flex items-center gap-3 text-gray-600">
-                      <Mail size={14} className="text-primary" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Protocol Email</span>
-                   </div>
-                   <p className="text-sm font-bold text-white pl-7 tracking-wider truncate">{(user?.email || 'unlinked@delivray.net').toLowerCase()}</p>
-                </div>
-             </div>
-
-             <Button 
-               onClick={handleLogout}
-               className="w-full !bg-white/5 !text-gray-500 !h-16 hover:!bg-red-500/10 hover:!text-red-500 hover:!border-red-500/20"
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Left Sidebar: User Card & Navigation */}
+          <aside className="lg:col-span-4 xl:col-span-3 space-y-8">
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm text-center relative overflow-hidden"
              >
-               <LogOut size={18} className="mr-3" />
-               <span>Deauthorize</span>
-             </Button>
-          </div>
-        </motion.div>
-
-        {/* Operational Records */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-8 2xl:col-span-9 space-y-12"
-        >
-          {/* Main Title Section */}
-          <div>
-             <h1 className="heading-responsive !text-3xl sm:!text-6xl uppercase tracking-tighter leading-none mb-6">Master <span className="text-primary italic">Profile.</span></h1>
-             <p className="text-responsive max-w-2xl font-medium">Control your logistic preferences and audit your secure transaction history across the Delivray network.</p>
-          </div>
-
-          {/* Activity Section */}
-          <div className="space-y-8">
-            <div className="flex items-center justify-between border-b border-white/5 pb-8">
-              <h2 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-4">
-                 <Activity size={20} className="text-primary" />
-                 <span>Operational History</span>
-              </h2>
-              <div className="flex items-center gap-4">
-                 <button className="w-12 h-12 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center text-gray-500 hover:text-white transition-all">
-                    <Filter size={18} />
-                 </button>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              {orders.length === 0 ? (
-                <div className="py-32 text-center bg-white/5 border border-white/5 rounded-[3rem] opacity-30">
-                  <Box size={48} className="mx-auto mb-6" />
-                  <p className="text-[10px] font-black uppercase tracking-widest">No Logged Transactions</p>
-                  <Link href="/" className="mt-8 inline-block text-primary text-[10px] font-black uppercase tracking-widest hover:underline underline-offset-8">
-                    Initialize First Protocol
-                  </Link>
+                {/* Visual Accent */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF5A3C]/5 rounded-full -mr-12 -mt-12" />
+                
+                <div className="relative inline-block mb-8">
+                   <div className="w-32 h-32 rounded-full border-4 border-gray-50 shadow-xl overflow-hidden bg-gray-100">
+                      <img 
+                        src={`https://i.pravatar.cc/150?u=${user?.id || 'john'}`} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                   </div>
+                   <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
                 </div>
-              ) : (
-                orders.map((order, idx) => (
-                  <motion.div 
-                    key={order.id} 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="card-responsive !p-6 sm:!p-8 !bg-white/5 border-transparent hover:border-white/5 hover:!bg-white/[0.08] transition-all flex flex-col md:flex-row items-center justify-between gap-8 group relative overflow-hidden"
-                  >
-                    <div className="flex items-center gap-6 sm:gap-10 w-full md:w-auto">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 bg-black/40 rounded-2xl flex items-center justify-center text-gray-600 group-hover:text-primary group-hover:scale-105 transition-all shadow-inner border border-white/5">
-                        {order.status === 'PENDING' || order.status === 'DELIVERING' ? <Truck size={24} className="animate-pulse" /> : <Package size={24} />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-4 mb-2">
-                          <p className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">#{order.id.slice(-8).toUpperCase()}</p>
-                          <span className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-lg border ${
-                            order.status === 'COMPLETED' 
-                              ? 'bg-green-500/10 text-green-500 border-green-500/20' 
-                              : 'bg-primary/10 text-primary border-primary/20'
-                          }`}>
-                            {order.status}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-6 text-[10px] font-black uppercase tracking-widest text-gray-600">
-                           <div className="flex items-center gap-2">
-                              <Clock size={12} />
-                              <span>{new Date(order.created_at).toLocaleDateString()}</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                              <MapPin size={12} />
-                              <span className="truncate max-w-[150px]">{order.location || 'Encrypted Loc'}</span>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center justify-between w-full md:w-auto md:gap-12 pt-6 md:pt-0 border-t md:border-t-0 border-white/5">
-                       <div className="text-left md:text-right">
-                          <p className="text-[9px] font-black uppercase tracking-widest text-gray-700 mb-1">Valuation</p>
-                          <p className="text-2xl sm:text-3xl font-black text-white tracking-tighter">${Number(order.total_price).toFixed(2)}</p>
-                       </div>
-                       
-                       <Link 
-                         href={`/order/${order.id}`}
-                         className={`h-14 px-8 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-3 ${
-                           order.status === 'COMPLETED'
-                             ? 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/5'
-                             : 'bg-primary text-white shadow-2xl shadow-primary/20 hover:scale-105'
-                         }`}
-                       >
-                         {order.status === 'COMPLETED' ? 'Review' : 'Live Track'}
-                         <ChevronRight size={14} />
-                       </Link>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </div>
+                <h2 className="text-3xl font-black text-[#0A0A0A] tracking-tighter mb-2">{user?.name || 'John Doe'}</h2>
+                <p className="text-gray-400 font-bold text-xs mb-6">{user?.phone || '+1(555) 012-3456'}</p>
+                
+                <span className="inline-flex items-center bg-[#FFF9F8] text-[#FF5A3C] px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-[#FFE7E2] mb-10">
+                   ● PREMIUM MEMBER
+                </span>
 
-            <button className="w-full py-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-800 hover:text-white transition-colors flex items-center justify-center gap-4 group">
-               <span className="group-hover:translate-y-1 transition-transform">Audit Complete History</span>
-               <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
-            </button>
-          </div>
-        </motion.div>
+                <div className="space-y-3">
+                   {[
+                     { icon: <UserIcon size={18} />, label: 'Edit Profile' },
+                     { icon: <MapPin size={18} />, label: 'Saved Addresses' },
+                     { icon: <Bell size={18} />, label: 'Notifications' },
+                   ].map(item => (
+                     <button key={item.label} className="w-full h-16 bg-gray-50 hover:bg-gray-100 rounded-2xl p-5 flex items-center justify-between group transition-all border border-transparent hover:border-gray-200">
+                        <div className="flex items-center gap-4 text-[#0A0A0A]">
+                           <span className="text-gray-400 group-hover:text-[#FF5A3C] transition-colors">{item.icon}</span>
+                           <span className="text-[11px] font-black uppercase tracking-widest leading-none">{item.label}</span>
+                        </div>
+                        <ChevronRight size={16} className="text-gray-300 group-hover:text-[#0A0A0A] transition-colors" />
+                     </button>
+                   ))}
+                </div>
+             </motion.div>
+
+             {/* Help CTA */}
+             <motion.div
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: 0.1 }}
+               className="bg-[#1A1A1A] rounded-[3rem] p-10 text-white relative overflow-hidden group"
+             >
+                <div className="absolute bottom-0 right-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                   <LifeBuoy size={120} />
+                </div>
+                <h4 className="text-2xl font-black tracking-tighter mb-4 relative z-10">Need help?</h4>
+                <p className="text-gray-400 text-xs font-bold leading-relaxed mb-8 relative z-10">
+                   Our 24/7 support team is always here to assist you with your orders.
+                </p>
+                <button className="h-14 bg-white text-[#0A0A0A] rounded-xl px-8 text-[11px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all relative z-10">
+                   Contact Support
+                </button>
+             </motion.div>
+
+             <button 
+                onClick={handleLogout}
+                className="w-full h-16 text-red-500 font-black uppercase tracking-widest text-[10px] hover:bg-red-50 transition-all rounded-2xl flex items-center justify-center gap-3"
+             >
+                <LogOut size={16} />
+                <span>Sign Out</span>
+             </button>
+          </aside>
+
+          {/* Right Column: Main Content */}
+          <main className="lg:col-span-8 xl:col-span-9 space-y-10">
+             <header>
+                <p className="text-[11px] font-black text-[#FF5A3C] uppercase tracking-[0.3em] mb-2 font-black italic">YOUR JOURNEY</p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                   <h1 className="text-5xl lg:text-6xl font-black text-[#0A0A0A] tracking-tighter">Recent Orders</h1>
+                   <button className="h-14 bg-white border border-gray-100 rounded-2xl px-6 flex items-center gap-4 text-[#0A0A0A] hover:bg-gray-50 transition-all shadow-sm">
+                      <Filter size={18} />
+                      <span className="text-[11px] font-black uppercase tracking-widest">Filter</span>
+                   </button>
+                </div>
+             </header>
+
+             <div className="space-y-6">
+                <AnimatePresence>
+                   {orders.map((order, idx) => (
+                     <motion.div 
+                       key={order.id}
+                       initial={{ opacity: 0, x: 20 }}
+                       animate={{ opacity: 1, x: 0 }}
+                       transition={{ delay: idx * 0.1 }}
+                       className="bg-white rounded-[2.5rem] p-6 lg:p-8 border border-gray-100 shadow-sm flex flex-col md:flex-row items-center gap-8 group hover:border-gray-200 transition-all"
+                     >
+                        {/* Order Image */}
+                        <div className="w-28 h-28 lg:w-32 lg:h-32 rounded-3xl overflow-hidden bg-gray-50 shrink-0 border border-gray-100">
+                           <img 
+                             src={order.image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop'} 
+                             alt="Restaurant" 
+                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                           />
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 w-full text-center md:text-left space-y-4">
+                           <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-4">
+                              <div>
+                                 <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-1">{order.restaurant || 'The Burger Collective'}</h3>
+                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    Order #{order.id} • {order.date}
+                                 </p>
+                              </div>
+                              <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                order.status === 'In Progress' || order.status === 'DELIVERING' 
+                                  ? 'bg-[#FFF9F8] text-[#FF5A3C] border-[#FFE7E2]' 
+                                  : 'bg-gray-50 text-gray-400 border-gray-100'
+                              }`}>
+                                 ● {order.status}
+                              </span>
+                           </div>
+
+                           <div className="flex flex-wrap items-center justify-center md:justify-start gap-8 text-[11px] font-black text-gray-400 uppercase tracking-widest">
+                              <div className="flex items-center gap-2">
+                                 <Clock size={14} className="text-gray-300" />
+                                 <span>ETA: {order.eta || 'Completed'}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                 <CreditCard size={14} className="text-gray-300" />
+                                 <span className="text-[#0A0A0A]">${Number(order.price).toFixed(2)}</span>
+                              </div>
+                           </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                           {order.status === 'In Progress' || order.status === 'DELIVERING' ? (
+                             <>
+                               <button 
+                                 onClick={() => router.push(`/order/${order.id}`)}
+                                 className="flex-1 md:flex-none h-16 bg-[#FF5A3C] text-white rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-[#FF5A3C]/20 hover:bg-[#E84A2C] transition-all"
+                               >
+                                  <Navigation size={16} fill="currentColor" />
+                                  Track Order
+                               </button>
+                               <button className="h-16 w-16 bg-gray-50 text-gray-400 hover:text-[#0A0A0A] rounded-2xl flex items-center justify-center border border-gray-100 transition-all">
+                                  <Activity size={20} />
+                               </button>
+                             </>
+                           ) : (
+                             <>
+                               <button className="flex-1 md:flex-none h-16 bg-gray-50 hover:bg-gray-100 text-[#0A0A0A] rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all">
+                                  <Box size={16} />
+                                  Order Again
+                               </button>
+                               <button className="h-16 bg-white border border-gray-100 hover:border-gray-200 text-[#0A0A0A] rounded-2xl px-8 text-[10px] font-black uppercase tracking-widest transition-all">
+                                  View Receipt
+                               </button>
+                             </>
+                           )}
+                        </div>
+                     </motion.div>
+                   ))}
+                </AnimatePresence>
+             </div>
+          </main>
+        </div>
       </div>
     </div>
   );
