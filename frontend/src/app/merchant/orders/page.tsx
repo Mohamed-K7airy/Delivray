@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import io from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { CheckCircle, Clock, Package, ChefHat, Activity, Store as StoreIcon, ChevronRight, MapPin, CreditCard, ChevronDown, MoreVertical, Check, X, Info, Zap, History as HistoryIcon } from 'lucide-react';
+import { CheckCircle, Clock, Package, ChefHat, Activity, Store as StoreIcon, ChevronRight, MapPin, CreditCard, ChevronDown, MoreVertical, Check, X, Info, Zap, History as HistoryIcon, ShieldCheck } from 'lucide-react';
 import { useRef } from 'react';
 import { API_URL } from '@/config/api';
 
