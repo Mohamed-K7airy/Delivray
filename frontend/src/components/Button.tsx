@@ -9,24 +9,24 @@ interface ButtonProps extends HTMLMotionProps<"button"> {
 }
 
 export default function Button({ variant = 'primary', size = 'md', className = '', children, ...props }: ButtonProps) {
-  const baseStyle = "inline-flex items-center justify-center font-bold rounded-xl transition-all outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed";
+  const baseStyle = "button-responsive inline-flex items-center justify-center font-black transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-primary text-white hover:bg-primary-hover shadow-lg shadow-primary/20",
-    secondary: "bg-foreground text-white hover:bg-black shadow-lg shadow-black/10",
-    outline: "border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary bg-transparent",
-    ghost: "bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+    primary: "bg-primary text-white hover:bg-primary-hover shadow-xl shadow-primary/20",
+    secondary: "bg-white/10 text-white hover:bg-white/20 shadow-xl shadow-white/5",
+    outline: "border-2 border-white/10 text-white hover:border-primary hover:text-primary bg-transparent",
+    ghost: "bg-transparent text-gray-400 hover:bg-white/5 hover:text-white"
   };
 
   const sizes = {
-    sm: "px-4 py-2 text-sm",
-    md: "px-6 py-3 text-base",
-    lg: "px-8 py-4 text-lg"
+    sm: "px-4 py-2 text-[10px]",
+    md: "px-6 sm:px-10 py-3 sm:py-4 text-[10px] sm:text-xs",
+    lg: "px-8 sm:px-12 py-4 sm:py-5 text-xs sm:text-sm"
   };
 
   return (
     <motion.button
-      whileHover={{ scale: 1.02, y: -1 }}
+      whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}

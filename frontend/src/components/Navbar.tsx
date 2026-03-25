@@ -40,10 +40,10 @@ export default function Navbar() {
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="bg-[#262624]/60 backdrop-blur-xl border-b border-white/10 shadow-2xl sticky top-0 z-50 transition-all duration-300"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container-responsive">
         <div className="flex justify-between h-16 md:h-20 items-center">
           {/* 1. Left: Logo */}
-          <Link href="/" onClick={closeMenu} className="flex-shrink-0 flex items-center group transition-transform duration-300 hover:scale-105 z-50">
+          <Link href="/" onClick={closeMenu} className="flex-shrink-0 flex items-center group transition-transform duration-300 hover:scale-105 z-[60]">
             <Logo className="w-10 h-10 md:w-12 md:h-12" />
           </Link>
 
@@ -94,7 +94,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 15, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                        className="absolute right-0 mt-4 w-64 bg-[#262624] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden z-50 backdrop-blur-2xl"
+                        className="absolute right-0 mt-4 w-64 bg-[#262624] border border-white/10 rounded-[2rem] shadow-2xl overflow-hidden z-[60] backdrop-blur-2xl"
                       >
                         <div className="p-6 border-b border-white/10 bg-white/5">
                            <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Logged in as</div>
@@ -109,7 +109,7 @@ export default function Navbar() {
                             className="flex items-center space-x-3 px-4 py-3 rounded-2xl hover:bg-white/5 text-gray-300 hover:text-white transition-all text-xs font-black uppercase tracking-widest"
                           >
                             <User size={16} className="text-primary"/>
-                            <span>My Profile</span>
+                            <span>Control Center</span>
                           </Link>
                           
                           <button 
@@ -144,8 +144,8 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Actions (Visible Only on Mobile) */}
-          <div className="md:hidden flex items-center space-x-4">
+          {/* Mobile Actions */}
+          <div className="md:hidden flex items-center space-x-4 z-[70]">
             {user?.role === 'customer' && (
               <Link href="/cart" onClick={closeMenu} className="relative p-2 text-white/70 hover:text-primary transition-colors">
                 <ShoppingCart size={20} />
@@ -158,65 +158,132 @@ export default function Navbar() {
             )}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white p-2 rounded-lg hover:bg-white/10 transition-colors z-50 relative"
+              className={`p-2 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'bg-primary text-white rotate-90' : 'bg-white/5 text-white hover:bg-white/10'}`}
             >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={mobileMenuOpen ? 'close' : 'open'}
+                  initial={{ opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 90 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Modern Mobile Full-Screen Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#1a1a1a] border-b border-white/10 overflow-hidden absolute w-full left-0 top-16 shadow-2xl z-50"
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 1, x: '100%' }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed inset-0 top-0 left-0 w-full h-screen bg-[#0a0a0a] z-[65] flex flex-col md:hidden"
           >
-            <div className="px-4 py-4 space-y-2 flex flex-col items-start bg-black/20 backdrop-blur-3xl">
-              {user ? (
-                <>
-                  <Link 
-                    href={user.role === 'merchant' ? '/merchant/dashboard' : user.role === 'driver' ? '/driver/panel' : user.role === 'admin' ? '/admin/dashboard' : '/profile'}
-                    onClick={closeMenu}
-                    className="w-full flex items-center space-x-3 text-sm font-bold text-white bg-white/5 border border-white/10 px-4 py-3 rounded-lg hover:bg-white/10 transition-all"
+             {/* Decorative Background */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-primary/20 rounded-full blur-[120px]"></div>
+              <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-primary/10 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div className="flex flex-col h-full pt-24 px-6 relative z-10">
+              <nav className="flex flex-col space-y-6">
+                {['Services', 'Tracking', 'Pricing', 'Partners'].map((item, idx) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 + idx * 0.05 }}
                   >
-                    {user.role === 'merchant' ? <Store size={18} className="text-primary"/> : <User size={18} className="text-primary"/>}
-                    <span>{user.name}</span>
-                  </Link>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 text-sm font-bold text-red-400 bg-red-400/5 border border-red-400/10 px-4 py-3 rounded-lg hover:bg-red-400/10 transition-all text-left"
-                  >
-                    <LogOut size={18} />
-                    <span>Logout</span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  {['Services', 'Tracking', 'Pricing', 'Partners'].map((item) => (
                     <Link 
-                      key={item} 
                       href={`#${item.toLowerCase()}`} 
                       onClick={closeMenu}
-                      className="text-gray-300 hover:text-white text-sm font-black tracking-widest uppercase transition-colors"
+                      className="text-4xl font-black text-white/40 hover:text-primary uppercase tracking-tighter transition-all block"
                     >
                       {item}
                     </Link>
-                  ))}
-                  <Link href="/login" onClick={closeMenu} className="w-full flex items-center space-x-3 text-sm font-bold text-white bg-white/5 border border-white/10 px-4 py-3 rounded-lg hover:bg-white/10 transition-all">
-                    <LogIn size={18} className="text-primary" />
-                    <span>Log In</span>
-                  </Link>
-                  <Link href="/register" onClick={closeMenu}>
-                    <button className="w-full bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full font-black text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20">
-                      Sign Up
-                    </button>
-                  </Link> 
-                </>
-              )}
+                  </motion.div>
+                ))}
+              </nav>
+
+              <div className="mt-auto mb-12 space-y-4">
+                {user ? (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Link 
+                        href={user.role === 'merchant' ? '/merchant/dashboard' : user.role === 'driver' ? '/driver/panel' : user.role === 'admin' ? '/admin/dashboard' : '/profile'}
+                        onClick={closeMenu}
+                        className="w-full flex items-center justify-between p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:bg-white/10 transition-all"
+                      >
+                         <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary">
+                               {user.role === 'merchant' ? <Store size={24}/> : <User size={24}/>}
+                            </div>
+                            <div className="text-left">
+                               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Logged in as</p>
+                               <p className="text-lg font-black text-white uppercase tracking-tight">{user.name}</p>
+                            </div>
+                         </div>
+                         <div className="p-2 bg-white/5 rounded-full">
+                            <User size={18} className="text-white/40"/>
+                         </div>
+                      </Link>
+                    </motion.div>
+
+                    <motion.button 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      onClick={handleLogout}
+                      className="w-full p-6 bg-red-500/10 border border-red-500/20 rounded-[2rem] text-red-500 font-black uppercase tracking-widest text-xs flex items-center justify-center space-x-3"
+                    >
+                      <LogOut size={18} />
+                      <span>Terminate Session</span>
+                    </motion.button>
+                  </>
+                ) : (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <Link 
+                        href="/login" 
+                        onClick={closeMenu}
+                        className="w-full p-6 bg-white/5 border border-white/10 rounded-[2rem] text-white font-black uppercase tracking-widest text-xs flex items-center justify-center space-x-3"
+                      >
+                        <LogIn size={18} className="text-primary"/>
+                        <span>Access Terminal</span>
+                      </Link>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Link 
+                        href="/register" 
+                        onClick={closeMenu}
+                        className="w-full p-6 bg-primary rounded-[2rem] text-white font-black uppercase tracking-widest text-xs flex items-center justify-center space-x-3 shadow-2xl shadow-primary/20"
+                      >
+                        <UserPlus size={18} />
+                        <span>Initialize Account</span>
+                      </Link>
+                    </motion.div>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
