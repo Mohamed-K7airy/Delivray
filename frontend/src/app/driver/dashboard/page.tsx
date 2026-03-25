@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
-import io from 'socket.io-client';
 import {
    Navigation,
    CheckCircle,
@@ -25,9 +24,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
 import Button from '@/components/Button';
+import { useSocket } from '@/context/SocketContext';
 
 export default function DriverDashboard() {
    const { token, user } = useAuthStore();
+   const { socket, isConnected } = useSocket();
    const router = useRouter();
    const [availableOrder, setAvailableOrder] = useState<any | null>(null);
    const [activeOrder, setActiveOrder] = useState<any | null>(null);
@@ -74,9 +75,10 @@ export default function DriverDashboard() {
          }
       };
       fetchActiveOrder();
+   }, [token, user, router]);
 
-      const socket = io(API_URL, { withCredentials: true });
-      socket.emit('join', { role: 'driver', id: user.id });
+   useEffect(() => {
+      if (!socket || !isConnected) return;
 
       socket.on('order_ready_for_pickup', (order) => {
          setAvailableOrder(order);
@@ -95,10 +97,10 @@ export default function DriverDashboard() {
       });
 
       return () => {
-         socket.disconnect();
+         socket.off('order_ready_for_pickup');
          if (timerRef.current) clearInterval(timerRef.current);
       };
-   }, [token, user, router]);
+   }, [socket, isConnected]);
 
    const acceptOrder = async (orderId: string) => {
       try {

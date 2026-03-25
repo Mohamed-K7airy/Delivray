@@ -119,30 +119,59 @@ export const updateOrderStatus = async (req, res) => {
     }
 
     // Verify ownership
-    const { data: order } = await supabase.from('orders').select('*, stores(owner_id)').eq('id', id).single();
-    if (!order) return res.status(404).json({ message: 'Order not found' });
-    if (order.stores.owner_id !== req.user.id) return res.status(403).json({ message: 'Not authorized' });
+    console.log(`[updateOrderStatus] Attempting update for Order: ${id} to ${status} by User: ${req.user.id}`);
+    
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
+      .select('*, stores!inner(owner_id)')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error(`[updateOrderStatus] Fetch Error: ${fetchError.message}`);
+      throw fetchError;
+    }
+
+    if (!order) {
+      console.error(`[updateOrderStatus] Order ${id} not found or RLS blocked join for user ${req.user.id}`);
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.stores.owner_id !== req.user.id) {
+       console.warn(`[updateOrderStatus] Unauthorized attempt: Order Store Owner ${order.stores.owner_id} vs User ${req.user.id}`);
+       return res.status(403).json({ message: 'Not authorized' });
+    }
 
     // Transition validation
-    if (status === 'accepted' && order.status !== 'pending') return res.status(400).json({ message: 'Can only accept pending orders' });
+    if (status === 'accepted' && order.status !== 'pending') {
+       return res.status(400).json({ message: `Invalid transition from ${order.status} to ${status}` });
+    }
 
-    const { data: updatedOrder, error } = await supabase
+    const { data: updatedOrder, error: updateError } = await supabase
       .from('orders')
-      .update({ status })
+      .update({ status, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
 
-    if (error) throw error;
+    if (updateError) {
+      console.error(`[updateOrderStatus] Update Error: ${updateError.message}`);
+      throw updateError;
+    }
 
     // Emit event
     const io = getIo();
     if (io) {
+      console.log(`[updateOrderStatus] Emitting socket events for Order ${id}`);
       io.to(`order_${id}`).emit('order_status_updated', updatedOrder);
       io.to(`merchant_${order.stores.owner_id}`).emit('order_status_updated', updatedOrder);
-      // If ready for pickup, emit to drivers
+      
       if (status === 'ready_for_pickup') {
-        io.to('drivers').emit('order_ready_for_pickup', updatedOrder);
+        console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
+        io.to('drivers').emit('order_ready_for_pickup', {
+           ...updatedOrder,
+           stores: order.stores // Include store info for driver overlay
+        });
       }
     }
 
