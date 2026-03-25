@@ -5,7 +5,7 @@ import Footer from './Footer';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isPortal = pathname?.startsWith('/merchant') || pathname?.startsWith('/driver');
+  const isPortal = pathname?.startsWith('/merchant') || pathname?.startsWith('/driver') || pathname?.startsWith('/admin');
 
   return (
     <>
