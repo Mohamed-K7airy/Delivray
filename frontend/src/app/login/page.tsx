@@ -4,11 +4,11 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
 import { API_URL } from '@/config/api';
-import { Eye, EyeOff, LogIn, ShieldCheck, Zap } from 'lucide-react';
+import { Eye, EyeOff, LogIn, ShieldCheck, Zap, ArrowRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import Input from '@/components/Input';
-import Button from '@/components/Button';
+import Logo from '@/components/Logo';
 
 export default function LoginPage() {
   const [phone, setPhone] = useState('');
@@ -26,7 +26,7 @@ export default function LoginPage() {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ phone: phone.trim(), password }),
       });
 
       const data = await res.json();
@@ -59,88 +59,93 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#080808] flex flex-col items-center justify-center py-10 px-4 sm:px-6 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(217,119,87,0.05),transparent_50%)] pointer-events-none"></div>
-      <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="min-h-screen bg-[#F8F8F8] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+         <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] bg-[#FF5A3C]/5 rounded-full blur-[120px]"></div>
+         <div className="absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-[#FF5A3C]/5 rounded-full blur-[100px]"></div>
+      </div>
       
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md z-10"
       >
-        <div className="text-center mb-10">
-           <div className="inline-flex items-center justify-center w-16 h-16 bg-white/5 rounded-2xl border border-white/10 mb-6 shadow-2xl">
-              <ShieldCheck size={32} className="text-primary" />
-           </div>
-           <h1 className="text-4xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-4 leading-none italic">Relink <span className="text-primary">Nexus.</span></h1>
-           <p className="text-gray-500 font-medium text-sm sm:text-base px-6">Access your encrypted delivery portal and fulfill active missions.</p>
+        <div className="flex flex-col items-center text-center mb-12">
+           <Logo className="mb-10 scale-125" />
+           <h1 className="text-4xl lg:text-5xl font-black text-[#0A0A0A] tracking-tighter leading-none mb-4">Welcome <span className="text-[#FF5A3C] italic">back.</span></h1>
+           <p className="text-gray-400 font-bold max-w-[280px]">Access your account to manage orders and explore new tastes.</p>
         </div>
 
-        <div className="card-responsive !bg-[#111111] !p-8 sm:!p-12 border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-           
-           <form onSubmit={handleLogin} className="space-y-8">
+        <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 border border-gray-100 shadow-[0_40px_100px_rgba(0,0,0,0.04)] relative">
+           <form onSubmit={handleLogin} className="space-y-10">
               <div className="space-y-6">
-                 <Input 
-                    label="Operational Phone Index"
-                    type="tel"
-                    placeholder="+1234..."
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                 />
+                 <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Phone Number</label>
+                    <input 
+                       type="tel"
+                       placeholder="+1..."
+                       required
+                       value={phone}
+                       onChange={(e) => setPhone(e.target.value)}
+                       className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg placeholder-gray-300 focus:outline-none focus:border-[#FF5A3C] transition-all"
+                    />
+                 </div>
 
                  <div className="relative">
-                    <Input 
-                       label="Access Key"
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Security Key</label>
+                    <input 
                        type={showPassword ? 'text' : 'password'}
                        placeholder="••••••••"
                        required
                        value={password}
                        onChange={(e) => setPassword(e.target.value)}
+                       className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg placeholder-gray-300 focus:outline-none focus:border-[#FF5A3C] transition-all"
                     />
                     <button 
                        type="button"
                        onClick={() => setShowPassword(!showPassword)}
-                       className="absolute right-5 bottom-4 text-gray-600 hover:text-white transition-colors p-2"
+                       className="absolute right-5 bottom-4 text-gray-300 hover:text-[#FF5A3C] transition-colors p-2"
                     >
-                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                  </div>
               </div>
 
-              <Button
+              <button
                  type="submit"
                  disabled={loading}
-                 className="w-full h-18 text-base bg-primary text-white shadow-2xl shadow-primary/20"
+                 className="w-full h-20 bg-[#FF5A3C] text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-[#FF5A3C]/30 hover:bg-[#E84A2C] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group"
               >
                  {loading ? (
                     <div className="flex items-center gap-3">
                        <Zap size={20} className="animate-pulse" />
-                       <span>Decrypting...</span>
+                       <span>Authenticating...</span>
                     </div>
                  ) : (
                     <>
-                       <LogIn size={20} className="mr-3" />
-                       <span>Synchronize</span>
+                       <span>Log In</span>
+                       <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </>
                  )}
-              </Button>
+              </button>
            </form>
 
-           <div className="mt-10 pt-8 border-t border-white/5 text-center">
-              <p className="text-gray-500 text-sm font-medium">
-                 New operator?{' '}
-                 <Link href="/register" className="text-primary font-black hover:underline underline-offset-8 transition-all">
-                    Initialize Registry
+           <div className="mt-12 pt-8 border-t border-gray-50 text-center">
+              <p className="text-gray-400 font-bold text-sm">
+                 New to Delivray?{' '}
+                 <Link href="/register" className="text-[#FF5A3C] hover:underline underline-offset-8 transition-all">
+                    Create Account
                  </Link>
               </p>
            </div>
         </div>
 
-        <div className="mt-12 text-center opacity-30 hover:opacity-100 transition-opacity">
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">Delivray Protocol v4.2</p>
+        <div className="mt-12 flex items-center justify-center gap-4 opacity-40">
+           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#0A0A0A]">
+              <Lock size={12} fill="currentColor" />
+              Secure Authentication
+           </div>
         </div>
       </motion.div>
     </div>

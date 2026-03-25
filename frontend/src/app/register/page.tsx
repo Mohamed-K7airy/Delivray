@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
-import { ShoppingBag, User, Truck, Eye, EyeOff, ShieldCheck, Zap, ChevronDown } from 'lucide-react';
+import { ShoppingBag, User, Truck, Eye, EyeOff, ShieldCheck, Zap, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { API_URL } from '@/config/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import Input from '@/components/Input';
-import Button from '@/components/Button';
+import Logo from '@/components/Logo';
 
 export default function RegisterPage() {
   const [role, setRole] = useState<'customer' | 'merchant' | 'driver'>('customer');
@@ -73,7 +73,7 @@ export default function RegisterPage() {
         toast.success(`Welcome to Delivray, ${loginData.name}!`);
         router.push('/');
       } else { // Merchant or Driver (Pending)
-        toast.success('Protocol Initialized! Awaiting Admin authorization.');
+        toast.success('Registration successful! Awaiting admin approval.');
         router.push('/login');
       }
     } catch (err: any) {
@@ -84,97 +84,105 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#080808] flex flex-col items-center justify-center py-10 px-4 sm:px-6 relative overflow-hidden">
-      {/* Background Ambience */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(217,119,87,0.05),transparent_50%)] pointer-events-none"></div>
+    <div className="min-h-screen bg-[#F8F8F8] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden opacity-50">
+         <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-[#FF5A3C]/5 rounded-full blur-[100px]"></div>
+         <div className="absolute -bottom-[10%] -right-[10%] w-[60%] h-[60%] bg-[#FF5A3C]/5 rounded-full blur-[120px]"></div>
+      </div>
       
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-2xl z-10"
       >
-        <div className="text-center mb-10">
-           <h1 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-4 leading-none italic">New <span className="text-primary">Identity.</span></h1>
-           <p className="text-gray-500 font-medium text-sm sm:text-base px-6">Select your operational role and join the Delivray logistics fleet.</p>
+        <div className="flex flex-col items-center text-center mb-12">
+           <Logo className="mb-10 scale-125" />
+           <h1 className="text-4xl lg:text-5xl font-black text-[#0A0A0A] tracking-tighter leading-none mb-4">Start your <span className="text-[#FF5A3C] italic">journey.</span></h1>
+           <p className="text-gray-400 font-bold max-w-sm">Select your role and become part of the fastest delivery network in the city.</p>
         </div>
 
-        {/* Role Selection Tabs */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* Role Selection */}
+        <div className="grid grid-cols-3 gap-4 mb-10">
            {[
-             { id: 'customer', label: 'Client', icon: <User size={20} /> },
-             { id: 'merchant', label: 'Partner', icon: <ShoppingBag size={20} /> },
-             { id: 'driver', label: 'Fleet', icon: <Truck size={20} /> }
+             { id: 'customer', label: 'Customer', icon: <User size={20} /> },
+             { id: 'merchant', label: 'Merchant', icon: <ShoppingBag size={20} /> },
+             { id: 'driver', label: 'Courier', icon: <Truck size={20} /> }
            ].map((item) => (
              <button
                key={item.id}
                type="button"
                onClick={() => setRole(item.id as any)}
-               className={`flex flex-col items-center justify-center p-5 sm:p-8 rounded-[2rem] transition-all border-2 gap-4
+               className={`flex flex-col items-center justify-center p-4 sm:p-8 rounded-[2rem] transition-all border shrink-0 gap-4
                  ${role === item.id 
-                   ? 'border-primary bg-primary/5 text-primary shadow-2xl shadow-primary/10' 
-                   : 'border-white/5 bg-white/[0.02] text-gray-500 hover:bg-white/[0.05] hover:border-white/10'}`}
+                   ? 'bg-white border-[#FF5A3C] text-[#FF5A3C] shadow-xl shadow-[#FF5A3C]/10 ring-2 ring-[#FF5A3C]/5' 
+                   : 'bg-white/50 border-gray-100 text-gray-400 hover:bg-white hover:border-gray-200 hover:text-[#0A0A0A]'}`}
              >
-               {item.icon}
+               <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${role === item.id ? 'bg-[#FFF9F8]' : 'bg-gray-50'}`}>
+                  {item.icon}
+               </div>
                <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
              </button>
            ))}
         </div>
 
-        <div className="card-responsive !bg-[#111111] !p-8 sm:!p-12 border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-           
-           <form onSubmit={handleRegister} className="space-y-8">
-              <div className="space-y-6">
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="bg-white rounded-[3rem] p-8 sm:p-12 border border-gray-100 shadow-[0_40px_100px_rgba(0,0,0,0.04)] relative">
+           <form onSubmit={handleRegister} className="space-y-10">
+              <div className="space-y-8">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div className="sm:col-span-2">
-                       <Input 
-                          label="Legal Full Name"
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Full Name</label>
+                       <input 
                           name="name"
-                          placeholder="Your Name"
+                          placeholder="John Doe"
                           required
                           value={formData.name}
                           onChange={handleInputChange}
+                          className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg focus:outline-none focus:border-[#FF5A3C] transition-all"
                        />
                     </div>
                     <div>
-                       <Input 
-                          label="Mobile Index"
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Phone Number</label>
+                       <input 
                           name="phone"
                           type="tel"
-                          placeholder="+20..."
+                          placeholder="+1..."
                           required
                           value={formData.phone}
                           onChange={handleInputChange}
+                          className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg focus:outline-none focus:border-[#FF5A3C] transition-all"
                        />
                     </div>
                     <div>
-                       <Input 
-                          label="Encrypted Email"
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Email Address</label>
+                       <input 
                           name="email"
                           type="email"
-                          placeholder="Email"
+                          placeholder="john@example.com"
                           value={formData.email}
                           onChange={handleInputChange}
+                          className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg focus:outline-none focus:border-[#FF5A3C] transition-all"
                        />
                     </div>
                  </div>
 
                  <div className="relative">
-                    <Input 
-                       label="Access Protocol (Password)"
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Choose a Password</label>
+                    <input 
                        name="password"
                        type={showPassword ? 'text' : 'password'}
                        placeholder="••••••••"
                        required
                        value={formData.password}
                        onChange={handleInputChange}
+                       className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg focus:outline-none focus:border-[#FF5A3C] transition-all"
                     />
                     <button 
                        type="button"
                        onClick={() => setShowPassword(!showPassword)}
-                       className="absolute right-5 bottom-4 text-gray-600 hover:text-white transition-colors p-2"
+                       className="absolute right-5 bottom-4 text-gray-300 hover:text-[#FF5A3C] transition-colors p-2"
                     >
-                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                  </div>
 
@@ -182,37 +190,37 @@ export default function RegisterPage() {
                     {role === 'merchant' && (
                        <motion.div 
                           key="merchant-fields"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-white/5"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-gray-50"
                        >
                           <div>
-                             <Input 
-                                label="Store Registered Name"
+                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Store Name</label>
+                             <input 
                                 name="store_name"
-                                placeholder="Store Name"
+                                placeholder="The Burger Joint"
                                 required
                                 value={formData.store_name}
                                 onChange={handleInputChange}
+                                className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-bold text-lg focus:outline-none focus:border-[#FF5A3C] transition-all"
                              />
                           </div>
                           <div>
-                             <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1">Establishment Type</label>
+                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Business Category</label>
                              <div className="relative">
                                 <select
                                    name="store_type"
                                    value={formData.store_type}
                                    onChange={handleInputChange}
-                                   className="w-full px-6 py-5 bg-white/5 border border-white/5 rounded-2xl text-white outline-none focus:border-primary transition-all font-black uppercase text-xs tracking-widest appearance-none cursor-pointer"
+                                   className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-black text-xs uppercase tracking-[0.2em] outline-none focus:border-[#FF5A3C] transition-all appearance-none cursor-pointer"
                                    required
                                 >
-                                   <option value="" disabled className="bg-[#111]">Select...</option>
-                                   <option value="Restaurant" className="bg-[#111]">Restaurant</option>
-                                   <option value="Grocery" className="bg-[#111]">Grocery</option>
-                                   <option value="Pharmacy" className="bg-[#111]">Pharmacy</option>
+                                   <option value="" disabled>Select...</option>
+                                   <option value="Restaurant">Restaurant</option>
+                                   <option value="Grocery">Grocery</option>
+                                   <option value="Pharmacy">Pharmacy</option>
                                 </select>
-                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
                              </div>
                           </div>
                        </motion.div>
@@ -221,35 +229,35 @@ export default function RegisterPage() {
                     {role === 'driver' && (
                        <motion.div 
                           key="driver-fields"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="pt-6 border-t border-white/5"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="pt-8 border-t border-gray-50"
                        >
-                          <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3 ml-1">Fleet Vehicle Designation</label>
+                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block ml-1">Transportation Type</label>
                           <div className="relative">
                              <select
                                 name="vehicle_type"
                                 value={formData.vehicle_type}
                                 onChange={handleInputChange}
-                                className="w-full px-6 py-5 bg-white/5 border border-white/5 rounded-2xl text-white outline-none focus:border-primary transition-all font-black uppercase text-xs tracking-widest appearance-none cursor-pointer"
+                                className="w-full h-16 px-6 rounded-2xl bg-gray-50 border border-gray-100 text-[#0A0A0A] font-black text-xs uppercase tracking-[0.2em] outline-none focus:border-[#FF5A3C] transition-all appearance-none cursor-pointer"
                                 required
                              >
-                                <option value="" disabled className="bg-[#111]">Select vehicle...</option>
-                                <option value="Motorcycle" className="bg-[#111]">Motorcycle</option>
-                                <option value="Car" className="bg-[#111]">Car</option>
+                                <option value="" disabled>Select vehicle...</option>
+                                <option value="Motorcycle">Motorcycle</option>
+                                <option value="Car">Car</option>
+                                <option value="Bicycle">Bicycle</option>
                              </select>
-                             <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500" />
+                             <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
                           </div>
                        </motion.div>
                     )}
                  </AnimatePresence>
               </div>
 
-              <Button
+              <button
                  type="submit"
                  disabled={loading}
-                 className="w-full h-18 text-base bg-primary text-white shadow-2xl shadow-primary/20"
+                 className="w-full h-20 bg-[#FF5A3C] text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-[#FF5A3C]/30 hover:bg-[#E84A2C] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group"
               >
                  {loading ? (
                     <div className="flex items-center gap-3">
@@ -258,25 +266,28 @@ export default function RegisterPage() {
                     </div>
                  ) : (
                     <>
-                       <ShieldCheck size={20} className="mr-3" />
-                       <span>Create Registry</span>
+                       <CheckCircle2 size={24} className="group-hover:scale-110 transition-transform" />
+                       <span>Create Account</span>
                     </>
                  )}
-              </Button>
+              </button>
            </form>
 
-           <div className="mt-10 pt-8 border-t border-white/5 text-center">
-              <p className="text-gray-500 text-sm font-medium">
-                 Established operator?{' '}
-                 <Link href="/login" className="text-primary font-black hover:underline underline-offset-8 transition-all">
-                    Link Identity
+           <div className="mt-12 pt-8 border-t border-gray-50 text-center">
+              <p className="text-gray-400 font-bold text-sm">
+                 Already registered?{' '}
+                 <Link href="/login" className="text-[#FF5A3C] hover:underline underline-offset-8 transition-all">
+                    Log In Here
                  </Link>
               </p>
            </div>
         </div>
 
-        <div className="mt-12 text-center opacity-30 hover:opacity-100 transition-opacity">
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">Delivray Protocol v4.2</p>
+        <div className="mt-12 flex items-center justify-center gap-4 opacity-40">
+           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#0A0A0A]">
+              <Lock size={12} fill="currentColor" />
+              Secure Data Protocol
+           </div>
         </div>
       </motion.div>
     </div>
