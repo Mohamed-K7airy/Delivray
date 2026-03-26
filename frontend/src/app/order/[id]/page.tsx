@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import io from 'socket.io-client';
 import { MapPin, Package, Navigation, CheckCircle, Car, Clock, MessageSquare, Snowflake, ShieldCheck, ChevronLeft, Zap, Star, Phone, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSocket } from '@/context/SocketContext';
 import Button from '@/components/Button';
 import { API_URL } from '@/config/api';
 import Logo from '@/components/Logo';
@@ -22,17 +22,22 @@ interface Order {
     user_id: string;
     users: { name: string };
   };
+  stores?: {
+    name: string;
+  };
 }
 
 export default function OrderTracking() {
   const { id } = useParams();
-  const { token, user } = useAuthStore();
+  const { token, user, _hasHydrated } = useAuthStore();
+  const { socket, isConnected } = useSocket();
   const router = useRouter();
   
   const [order, setOrder] = useState<Order | null>(null);
   const [driverLocation, setDriverLocation] = useState<{lat: number, lng: number} | null>(null);
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) return router.push('/login');
 
     const fetchOrder = async () => {
@@ -50,13 +55,20 @@ export default function OrderTracking() {
     };
     fetchOrder();
 
-    const socket = io(API_URL, { withCredentials: true });
-    socket.emit('join_order', id);
-    socket.on('order_status_updated', (updatedOrder) => setOrder(updatedOrder));
-    socket.on('driver_location_updated', (loc) => setDriverLocation(loc));
+    if (socket) {
+       socket.emit('join_order', id);
+       
+       const handleUpdate = (updatedOrder: Order) => {
+          setOrder(updatedOrder);
+       };
 
-    return () => { socket.disconnect(); };
-  }, [id, token, router]);
+       socket.on('order_status_updated', handleUpdate);
+       
+       return () => {
+          socket.off('order_status_updated', handleUpdate);
+       };
+    }
+  }, [id, token, router, _hasHydrated, socket]);
 
   const stages = [
     { label: 'PICKUP', status: ['pending', 'accepted', 'preparing', 'ready_for_pickup'] },
@@ -115,18 +127,26 @@ export default function OrderTracking() {
                  <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-md rounded-[2rem] p-6 lg:p-8 flex items-center justify-between border border-white/20 shadow-2xl">
                     <div className="flex items-center gap-6">
                        <div className="w-14 h-14 bg-[#FF5A3C]/10 rounded-2xl flex items-center justify-center text-[#FF5A3C]">
-                          <Car size={24} />
+                          {order.drivers ? <Car size={24} /> : <Package size={24} />}
                        </div>
                        <div>
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">CURRENT LOCATION</p>
-                          <p className="text-sm font-black text-[#0A0A0A]">Mission District, 18th St</p>
+                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                             {order.drivers ? 'CURRENT LOCATION' : 'STATUS'}
+                          </p>
+                          <p className="text-sm font-black text-[#0A0A0A]">
+                             {order.drivers ? 'Mission District, 18th St' : `Preparing at ${order.stores?.name || 'Restaurant'}`}
+                          </p>
                        </div>
                     </div>
-                    <div className="h-full w-px bg-gray-100 hidden md:block" />
-                    <div className="hidden md:block text-right">
-                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">DISTANCE</p>
-                       <p className="text-sm font-black text-[#0A0A0A]">1.2 miles away</p>
-                    </div>
+                    {order.drivers && (
+                       <>
+                         <div className="h-full w-px bg-gray-100 hidden md:block" />
+                         <div className="hidden md:block text-right">
+                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">DISTANCE</p>
+                            <p className="text-sm font-black text-[#0A0A0A]">1.2 miles away</p>
+                         </div>
+                       </>
+                    )}
                  </div>
               </div>
 
@@ -168,33 +188,64 @@ export default function OrderTracking() {
            <div className="lg:col-span-4 space-y-10">
               {/* Driver Card */}
               <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm text-center">
-                 <div className="relative inline-block mb-6">
-                    <img 
-                      src={order?.drivers?.user_id ? `https://i.pravatar.cc/150?u=${order.drivers.user_id}` : "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&h=200&auto=format&fit=crop"} 
-                      alt="Driver"
-                      className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-lg object-cover"
-                    />
-                    <div className="absolute top-1 right-1 w-8 h-8 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#FF5A3C] shadow-md">
-                       <ShieldCheck size={16} fill="currentColor" />
-                    </div>
-                 </div>
-                 
-                 <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-2">{order?.drivers?.users?.name || 'Marco R.'}</h3>
-                 <div className="flex items-center justify-center gap-1 mb-10">
-                    {[1,2,3,4,5].map(s => <Star key={s} size={14} className="text-[#FF5A3C]" fill="currentColor" />)}
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">5.0 Rating</span>
-                 </div>
-
-                 <div className="space-y-4">
-                    <button className="w-full h-16 bg-[#FF5A3C] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-[#E84A2C] transition-all shadow-xl shadow-[#FF5A3C]/20">
-                       <MessageCircle size={18} fill="currentColor" />
-                       Message Marco
-                    </button>
-                    <button className="w-full h-16 bg-gray-50 text-[#0A0A0A] rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-gray-100 transition-all border border-gray-100">
-                       <Phone size={18} fill="currentColor" />
-                       Call Driver
-                    </button>
-                 </div>
+                 {!order.drivers ? (
+                   <div className="py-6 space-y-6">
+                      <div className="relative inline-block">
+                         <div className="w-28 h-28 rounded-full bg-gray-50 flex items-center justify-center border-4 border-dashed border-gray-100 group">
+                            <Car size={40} className="text-gray-200 animate-bounce" />
+                         </div>
+                         <div className="absolute -top-1 -right-1 w-8 h-8 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#FF5A3C] shadow-sm">
+                            <Clock size={16} className="animate-pulse" />
+                         </div>
+                      </div>
+                      <div>
+                         <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-2 italic">Finding courier...</h3>
+                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-relaxed px-4">
+                            We're matching your order with the <span className="text-[#FF5A3C]">best driver</span> nearby.
+                         </p>
+                      </div>
+                      <div className="pt-4">
+                         <div className="w-full h-1.5 bg-gray-50 rounded-full overflow-hidden">
+                            <motion.div 
+                               initial={{ x: '-100%' }}
+                               animate={{ x: '100%' }}
+                               transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+                               className="w-1/2 h-full bg-[#FF5A3C] rounded-full" 
+                            />
+                         </div>
+                      </div>
+                   </div>
+                 ) : (
+                   <>
+                     <div className="relative inline-block mb-6">
+                        <img 
+                          src={`https://i.pravatar.cc/150?u=${order.drivers.user_id}`} 
+                          alt="Driver"
+                          className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-lg object-cover"
+                        />
+                        <div className="absolute top-1 right-1 w-8 h-8 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#FF5A3C] shadow-md">
+                           <ShieldCheck size={16} fill="currentColor" />
+                        </div>
+                     </div>
+                     
+                     <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-2">{order.drivers.users.name}</h3>
+                     <div className="flex items-center justify-center gap-1 mb-10">
+                        {[1,2,3,4,5].map(s => <Star key={s} size={14} className="text-[#FF5A3C]" fill="currentColor" />)}
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">5.0 Rating</span>
+                     </div>
+    
+                     <div className="space-y-4">
+                        <button className="w-full h-16 bg-[#FF5A3C] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-[#E84A2C] transition-all shadow-xl shadow-[#FF5A3C]/20">
+                           <MessageCircle size={18} fill="currentColor" />
+                           Message {order.drivers.users.name.split(' ')[0]}
+                        </button>
+                        <button className="w-full h-16 bg-gray-50 text-[#0A0A0A] rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-gray-100 transition-all border border-gray-100">
+                           <Phone size={18} fill="currentColor" />
+                           Call Driver
+                        </button>
+                     </div>
+                   </>
+                 )}
               </div>
 
               {/* Order Details Bill */}

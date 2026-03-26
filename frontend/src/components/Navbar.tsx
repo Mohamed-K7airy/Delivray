@@ -44,15 +44,19 @@ export default function Navbar() {
 
             {user && (
               <div className="hidden lg:flex items-center gap-8">
-                {['Explore', 'Orders', 'Offers'].map((item) => (
+                {[
+                  { label: 'Explore', href: '/' },
+                  { label: 'Orders', href: '/profile' },
+                  { label: 'Offers', href: '/' }
+                ].map((item) => (
                   <Link 
-                    key={item} 
-                    href={`#${item.toLowerCase()}`}
+                    key={item.label} 
+                    href={item.href}
                     className={`text-sm font-bold tracking-tight transition-colors ${
-                      item === 'Explore' ? 'text-[#FF5A3C]' : 'text-gray-500 hover:text-[#0A0A0A]'
+                      (pathname === item.href) ? 'text-[#FF5A3C]' : 'text-gray-500 hover:text-[#0A0A0A]'
                     }`}
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 ))}
               </div>
@@ -61,22 +65,35 @@ export default function Navbar() {
 
           {/* 2. Right: Search, Auth / User Section */}
           <div className="flex items-center gap-4 md:gap-8">
-            <div className="hidden md:flex items-center gap-6">
-               <button className="text-gray-400 hover:text-[#0A0A0A] transition-colors">
-                  <Search size={20} />
-               </button>
-               {user && (
-                 <>
-                   <button className="text-gray-400 hover:text-[#0A0A0A] transition-colors relative">
-                      <Bell size={20} />
-                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full border-2 border-white"></span>
-                   </button>
-                   <button className="text-gray-400 hover:text-[#0A0A0A] transition-colors">
-                      <Settings size={20} />
-                   </button>
-                 </>
-               )}
-            </div>
+             <div className="hidden md:flex items-center gap-6">
+                <button 
+                  onClick={() => {
+                    import('sonner').then(({ toast }) => toast.info('Universal Search coming soon!'));
+                  }}
+                  className="text-gray-400 hover:text-[#0A0A0A] transition-colors"
+                >
+                   <Search size={20} />
+                </button>
+                {user && (
+                  <>
+                    <button 
+                      onClick={() => {
+                        import('sonner').then(({ toast }) => toast.info('No new notifications'));
+                      }}
+                      className="text-gray-400 hover:text-[#0A0A0A] transition-colors relative"
+                    >
+                       <Bell size={20} />
+                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full border-2 border-white"></span>
+                    </button>
+                    <button 
+                      onClick={() => router.push('/profile')}
+                      className="text-gray-400 hover:text-[#0A0A0A] transition-colors"
+                    >
+                       <Settings size={20} />
+                    </button>
+                  </>
+                )}
+             </div>
 
             <div className="flex items-center gap-3">
               {user ? (

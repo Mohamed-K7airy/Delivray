@@ -39,7 +39,7 @@ const itemVariants: Variants = {
 
 export default function Home() {
   const router = useRouter();
-  const { token } = useAuthStore();
+  const { token, _hasHydrated } = useAuthStore();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('All Offers');
@@ -60,6 +60,14 @@ export default function Home() {
     };
     fetchStores();
   }, [filterType]);
+
+  if (!_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#FF5A3C] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!token) {
     return (

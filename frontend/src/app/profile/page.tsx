@@ -5,17 +5,20 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Package, MapPin, CheckCircle, Navigation, Info, LogOut, Phone, Mail, Search, Filter, Box, Truck, ChevronDown, User as UserIcon, ShieldCheck, Activity, Clock, ChevronRight, Bell, Settings, CreditCard, LifeBuoy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useCartStore } from '@/store/cartStore';
+import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
 import Button from '@/components/Button';
 import Logo from '@/components/Logo';
 
 export default function UserProfile() {
-  const { token, user, setUser, setToken } = useAuthStore();
+  const { token, user, setUser, setToken, _hasHydrated } = useAuthStore();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!_hasHydrated) return; // Wait for hydration before checking auth
     if (!token) return router.push('/login');
 
     const fetchProfileData = async () => {
@@ -48,6 +51,58 @@ export default function UserProfile() {
     fetchProfileData();
   }, [token, router, setUser]);
 
+  const { addItem } = useCartStore();
+
+  const handleOrderAgain = async (order: any) => {
+    try {
+      if (order.id.startsWith('DV-')) {
+        // Mock logic for demo/mock orders
+        toast.info('Re-ordering from history...');
+        addItem({
+          id: Math.random().toString(36).substr(2, 9),
+          product_id: 'mock-p1',
+          quantity: 1,
+          products: {
+            id: 'mock-p1',
+            name: 'Classic Burger (Re-ordered)',
+            price: order.price || 15.00,
+            image: order.image,
+            store_id: 'mock-s1'
+          }
+        });
+        toast.success('Items added to cart!');
+        router.push('/cart');
+        return;
+      }
+
+      // Real logic: Fetch order items and add to cart
+      const res = await fetch(`${API_URL}/orders/${order.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Order details not found');
+      const data = await res.json();
+      
+      for (const item of data.order_items) {
+        addItem({
+          id: Math.random().toString(36).substr(2, 9),
+          product_id: item.product_id,
+          quantity: item.quantity,
+          products: item.products
+        });
+      }
+      toast.success('All items added to cart!');
+      router.push('/cart');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to re-order');
+    }
+  };
+
+  const handleViewReceipt = (orderId: string) => {
+    toast.success(`Opening receipt for ${orderId}...`);
+    // Simulated receipt view
+    window.open(`${API_URL}/orders/${orderId}/receipt`, '_blank');
+  };
+
   const handleLogout = () => {
     setToken(null);
     setUser(null);
@@ -76,13 +131,19 @@ export default function UserProfile() {
                 {/* Visual Accent */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-[#FF5A3C]/5 rounded-full -mr-12 -mt-12" />
                 
-                <div className="relative inline-block mb-8">
-                   <div className="w-32 h-32 rounded-full border-4 border-gray-50 shadow-xl overflow-hidden bg-gray-100">
+                <div className="relative inline-block mb-8 group/avatar">
+                   <div 
+                      onClick={() => toast.info('Avatar upload coming soon!')}
+                      className="w-32 h-32 rounded-full border-4 border-gray-50 shadow-xl overflow-hidden bg-gray-100 cursor-pointer relative"
+                   >
                       <img 
                         src={`https://i.pravatar.cc/150?u=${user?.id || 'john'}`} 
                         alt="Profile" 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover/avatar:scale-110 transition-transform duration-500"
                       />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition-opacity">
+                         <UserIcon size={24} className="text-white" />
+                      </div>
                    </div>
                    <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full" />
                 </div>
@@ -94,13 +155,17 @@ export default function UserProfile() {
                    ● PREMIUM MEMBER
                 </span>
 
-                <div className="space-y-3">
+                 <div className="space-y-3">
                    {[
-                     { icon: <UserIcon size={18} />, label: 'Edit Profile' },
-                     { icon: <MapPin size={18} />, label: 'Saved Addresses' },
-                     { icon: <Bell size={18} />, label: 'Notifications' },
+                     { icon: <UserIcon size={18} />, label: 'Edit Profile', onClick: () => toast.info('Profile Settings coming soon!') },
+                     { icon: <MapPin size={18} />, label: 'Saved Addresses', onClick: () => toast.info('Address Management coming soon!') },
+                     { icon: <Bell size={18} />, label: 'Notifications', onClick: () => toast.info('No new notifications') },
                    ].map(item => (
-                     <button key={item.label} className="w-full h-16 bg-gray-50 hover:bg-gray-100 rounded-2xl p-5 flex items-center justify-between group transition-all border border-transparent hover:border-gray-200">
+                     <button 
+                       key={item.label} 
+                       onClick={item.onClick}
+                       className="w-full h-16 bg-gray-50 hover:bg-gray-100 rounded-2xl p-5 flex items-center justify-between group transition-all border border-transparent hover:border-gray-200"
+                     >
                         <div className="flex items-center gap-4 text-[#0A0A0A]">
                            <span className="text-gray-400 group-hover:text-[#FF5A3C] transition-colors">{item.icon}</span>
                            <span className="text-[11px] font-black uppercase tracking-widest leading-none">{item.label}</span>
@@ -203,7 +268,7 @@ export default function UserProfile() {
 
                         {/* Actions */}
                         <div className="flex items-center gap-3 w-full md:w-auto">
-                           {order.status === 'In Progress' || order.status === 'DELIVERING' ? (
+                           {order.status === 'In Progress' || order.status === 'DELIVERING' || order.status === 'PENDING' ? (
                              <>
                                <button 
                                  onClick={() => router.push(`/order/${order.id}`)}
@@ -212,17 +277,26 @@ export default function UserProfile() {
                                   <Navigation size={16} fill="currentColor" />
                                   Track Order
                                </button>
-                               <button className="h-16 w-16 bg-gray-50 text-gray-400 hover:text-[#0A0A0A] rounded-2xl flex items-center justify-center border border-gray-100 transition-all">
+                               <button 
+                                 onClick={() => toast.info('Sharing live location...')}
+                                 className="h-16 w-16 bg-gray-50 text-gray-400 hover:text-[#0A0A0A] rounded-2xl flex items-center justify-center border border-gray-100 transition-all"
+                               >
                                   <Activity size={20} />
-                               </button>
+                                </button>
                              </>
                            ) : (
                              <>
-                               <button className="flex-1 md:flex-none h-16 bg-gray-50 hover:bg-gray-100 text-[#0A0A0A] rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all">
+                               <button 
+                                 onClick={() => handleOrderAgain(order)}
+                                 className="flex-1 md:flex-none h-16 bg-gray-50 hover:bg-gray-100 text-[#0A0A0A] rounded-2xl px-10 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all"
+                               >
                                   <Box size={16} />
                                   Order Again
                                </button>
-                               <button className="h-16 bg-white border border-gray-100 hover:border-gray-200 text-[#0A0A0A] rounded-2xl px-8 text-[10px] font-black uppercase tracking-widest transition-all">
+                               <button 
+                                 onClick={() => handleViewReceipt(order.id)}
+                                 className="h-16 bg-white border border-gray-100 hover:border-gray-200 text-[#0A0A0A] rounded-2xl px-8 text-[10px] font-black uppercase tracking-widest transition-all"
+                               >
                                   View Receipt
                                </button>
                              </>

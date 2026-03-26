@@ -27,12 +27,16 @@ const upsellItems = [
 ];
 
 export default function CartPage() {
-  const { token, user } = useAuthStore();
-  const { items, total, loading, setCart, removeItem, updateItemQuantity, setLoading } = useCartStore();
+  const { token, user, _hasHydrated } = useAuthStore();
+  const { items, total, loading, setCart, removeItem, updateItemQuantity, setLoading, addItem } = useCartStore();
   const router = useRouter();
   const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
 
   useEffect(() => {
+    if (!_hasHydrated) return; // Wait for hydration before checking auth
+    
     if (!token || user?.role !== 'customer') {
       router.push('/login');
       return;
@@ -91,6 +95,57 @@ export default function CartPage() {
       toast.success('Item removed from cart');
     } catch (err: any) {
       toast.error(err.message);
+    }
+  };
+
+  const handleAddUpsell = async (upsell: typeof upsellItems[0]) => {
+    try {
+      const res = await fetch(`${API_URL}/cart/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ product_id: upsell.id, quantity: 1 })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to add item');
+      
+      // Since upsell items are mock, we simulate store update
+      const mockProduct = { 
+        id: upsell.id, 
+        name: upsell.name, 
+        price: upsell.price, 
+        image: upsell.image,
+        store_id: items[0]?.products?.store_id || 'mock-store' 
+      };
+      
+      addItem({
+        id: data.id || Math.random().toString(36).substr(2, 9),
+        product_id: upsell.id,
+        quantity: 1,
+        products: mockProduct
+      });
+      
+      toast.success(`${upsell.name} added to cart!`);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleApplyPromo = () => {
+    const code = promoCode.toUpperCase().trim();
+    if (code === 'SAVE10') {
+      const discountAmount = total * 0.1;
+      setDiscount(discountAmount);
+      setIsPromoApplied(true);
+      toast.success('Promo applied: 10% discount! 🎉');
+    } else if (code === 'DELIVRAY') {
+      setDiscount(5);
+      setIsPromoApplied(true);
+      toast.success('Promo applied: $5 discount! 🚀');
+    } else {
+      toast.error('Invalid promo code');
     }
   };
 
@@ -233,9 +288,12 @@ export default function CartPage() {
                         <div key={item.id} className="min-w-[200px] bg-white border border-gray-100 rounded-[2rem] p-4 group hover:shadow-xl hover:shadow-black/5 transition-all">
                            <div className="aspect-square rounded-[1.5rem] bg-gray-50 overflow-hidden mb-4 relative">
                               <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                              <button className="absolute bottom-3 right-3 w-10 h-10 bg-white rounded-xl border border-gray-100 flex items-center justify-center text-[#FF5A3C] shadow-sm hover:bg-[#FF5A3C] hover:text-white transition-all">
-                                 <Plus size={20} />
-                              </button>
+                               <button 
+                                 onClick={() => handleAddUpsell(item)}
+                                 className="absolute bottom-3 right-3 w-10 h-10 bg-white rounded-xl border border-gray-100 flex items-center justify-center text-[#FF5A3C] shadow-sm hover:bg-[#FF5A3C] hover:text-white transition-all"
+                               >
+                                  <Plus size={20} />
+                               </button>
                            </div>
                            <p className="text-sm font-black text-[#0A0A0A] tracking-tight">{item.name}</p>
                            <p className="text-xs text-gray-400 font-bold">${item.price.toFixed(2)}</p>
@@ -263,17 +321,23 @@ export default function CartPage() {
                           <span className="text-gray-500 font-bold text-sm">Delivery Fee</span>
                           <span className="text-[#0A0A0A] font-bold text-lg">$2.99</span>
                        </div>
-                       <div className="flex justify-between items-center">
-                          <span className="text-gray-500 font-bold text-sm">Service Tax (10%)</span>
-                          <span className="text-[#0A0A0A] font-bold text-lg">${(total * 0.1).toFixed(2)}</span>
-                       </div>
-                    </div>
+                        <div className="flex justify-between items-center">
+                           <span className="text-gray-500 font-bold text-sm">Service Tax (10%)</span>
+                           <span className="text-[#0A0A0A] font-bold text-lg">${(total * 0.1).toFixed(2)}</span>
+                        </div>
+                        {isPromoApplied && (
+                          <div className="flex justify-between items-center text-[#FF5A3C]">
+                             <span className="font-bold text-sm">Promo Discount</span>
+                             <span className="font-bold text-lg">-${discount.toFixed(2)}</span>
+                          </div>
+                        )}
+                     </div>
 
                     <div className="pt-8 border-t border-gray-200 mb-10">
                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">TOTAL AMOUNT</p>
-                       <p className="text-6xl font-black text-[#0A0A0A] tracking-tighter">
-                          ${(total + 2.99 + (total * 0.1)).toFixed(2)}
-                       </p>
+                        <p className="text-6xl font-black text-[#0A0A0A] tracking-tighter">
+                           ${Math.max(0, (total + 2.99 + (total * 0.1) - discount)).toFixed(2)}
+                        </p>
                     </div>
 
                     {/* Promo Code */}
@@ -285,8 +349,13 @@ export default function CartPage() {
                          value={promoCode}
                          onChange={(e) => setPromoCode(e.target.value)}
                        />
-                       <button className="text-[#FF5A3C] text-sm font-black uppercase tracking-widest hover:underline">Apply</button>
-                    </div>
+                        <button 
+                          onClick={handleApplyPromo}
+                          className="text-[#FF5A3C] text-sm font-black uppercase tracking-widest hover:underline"
+                        >
+                          Apply
+                        </button>
+                     </div>
 
                     <button 
                       onClick={handleCheckout}
