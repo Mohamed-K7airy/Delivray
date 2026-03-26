@@ -42,7 +42,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="sm:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
+          className="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
         >
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -64,7 +64,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
           )}
         </AnimatePresence>
 
-        <div className="hidden sm:flex items-center space-x-6 sm:space-x-10">
+        <div className="hidden md:flex items-center space-x-6 sm:space-x-10">
           {['Dashboard', 'Earnings', 'Schedule'].map((link) => (
             <Link 
               key={link} 
@@ -156,14 +156,14 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] sm:hidden"
+              className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] md:hidden"
             />
             <motion.div 
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] sm:hidden shadow-2xl p-8 flex flex-col"
+              className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] md:hidden shadow-2xl p-8 flex flex-col"
             >
               <div className="flex items-center space-x-4 mb-12">
                  <div className="w-10 h-10 bg-[#d97757] rounded-xl flex items-center justify-center border border-[#fee2e2]">

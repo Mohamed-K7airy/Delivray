@@ -125,10 +125,10 @@ export default function DriverDashboard() {
     <div className="space-y-10 lg:space-y-12 pb-24">
       
       {/* Driver Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-        <div>
-          <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter mb-2">Navigator: <span className="text-[#d97757]">{user?.name?.split(' ')[0]}</span></h1>
-          <p className="text-sm font-bold text-[#888888]">Your fleet status is active. High-priority orders will appear here instantly.</p>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative z-10">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter leading-tight">Navigator: <span className="text-[#d97757]">{user?.name?.split(' ')[0]}</span></h1>
+          <p className="text-sm font-bold text-[#888888] max-w-xl">Your fleet status is active. High-priority orders will appear here instantly.</p>
         </div>
         <div className="bg-white px-6 py-4 rounded-xl border border-gray-100 flex items-center space-x-4 shadow-sm whitespace-nowrap">
           <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>

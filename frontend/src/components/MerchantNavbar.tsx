@@ -68,7 +68,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
           )}
         </AnimatePresence>
         
-        <div className="hidden sm:flex items-center space-x-6 sm:space-x-10 ml-2 md:ml-4 lg:ml-8">
+        <div className="hidden md:flex items-center space-x-6 sm:space-x-10 ml-2 md:ml-4 lg:ml-8">
           {navLinks.map((link) => {
             const isActive = pathname === link.path;
             return (
