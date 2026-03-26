@@ -59,10 +59,10 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
             <Link 
               key={link} 
               href={`/driver/${link.toLowerCase()}`}
-              className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 hover:text-white transition-all relative group"
+              className="text-[10px] font-black uppercase tracking-[0.25em] text-[#888888] hover:text-[#111111] transition-all relative group"
             >
                {link}
-               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#FF5A3C] transition-all group-hover:w-full" />
+               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#d97757] transition-all group-hover:w-full" />
             </Link>
           ))}
         </div>
@@ -70,14 +70,14 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
 
       <div className="flex items-center space-x-4 sm:space-x-10">
         {/* Search */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#0A0A0A] hover:bg-gray-100 transition-all active:scale-95 border border-gray-100">
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-white transition-all active:scale-95 border border-gray-100">
           <Search size={18} />
         </button>
 
         {/* Notifications */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#0A0A0A] hover:bg-gray-100 transition-all relative group active:scale-95 border border-gray-100">
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-white transition-all relative group active:scale-95 border border-gray-100">
           <Bell size={18} />
-          <span className="absolute top-3 right-3 w-2 h-2 bg-[#FF5A3C] rounded-full shadow-[0_0_8px_#FF5A3C]" />
+          <span className="absolute top-3 right-3 w-2 h-2 bg-[#d97757] rounded-full shadow-[0_0_8px_rgba(217,119,87,0.8)]" />
         </button>
 
         <div className="h-8 w-px bg-gray-100" />
@@ -86,19 +86,19 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         <div className="relative" ref={dropdownRef}>
            <button 
              onClick={() => setShowProfile(!showProfile)}
-             className="flex items-center space-x-2 sm:space-x-4 bg-white/5 p-1.5 sm:p-2 pr-4 sm:pr-6 rounded-full sm:rounded-[2rem] border border-white/5 hover:bg-white/10 transition-all group"
+             className="flex items-center space-x-2 sm:space-x-4 bg-white p-1.5 sm:p-2 pr-4 sm:pr-6 rounded-2xl border border-gray-100 hover:bg-[#f9f9f9] transition-all group shadow-sm"
            >
-              <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#ff8564] rounded-full flex items-center justify-center text-black font-black text-base sm:text-xl shadow-lg group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#fef3f2] rounded-full flex items-center justify-center text-[#d97757] font-black text-base sm:text-lg border border-[#fee2e2] shadow-sm group-hover:scale-105 transition-transform">
                  {user?.name?.[0]?.toUpperCase() || 'D'}
               </div>
               <div className="text-left hidden md:block">
-                 <p className="text-sm font-black text-white">{user?.name || 'Driver'}</p>
+                 <p className="text-sm font-black text-[#111111]">{user?.name || 'Driver'}</p>
                  <div className="flex items-center space-x-2">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#ff8564]">Online</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#d97757]">Online</span>
                  </div>
               </div>
-              <ChevronDown size={16} className={`text-gray-500 transition-transform duration-300 ${showProfile ? 'rotate-180' : ''}`} />
+              <ChevronDown size={16} className={`text-[#888888] transition-transform duration-300 ${showProfile ? 'rotate-180' : ''}`} />
            </button>
 
            <AnimatePresence>
@@ -107,30 +107,31 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
                  animate={{ opacity: 1, y: 0, scale: 1 }}
                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                 className="absolute right-0 top-full mt-4 w-72 bg-[#1a1a1a] border border-white/5 rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.9)] p-3 z-50 overflow-hidden"
+                 className="absolute right-0 top-full mt-4 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 z-50 overflow-hidden"
                >
-                 <div className="p-4 mb-2 border-b border-white/5">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600">Account Managed by</p>
-                    <p className="text-md font-black text-white">{user?.email}</p>
+                 <div className="p-4 mb-2 border-b border-gray-100">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888]">Account Managed by</p>
+                    <p className="text-md font-black text-[#111111]">{user?.email}</p>
                  </div>
                  <div className="space-y-1">
-                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-white/[0.03] transition-all text-gray-400 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] font-black uppercase tracking-widest text-[10px]">
                        <SettingsIcon size={18} />
                        <span>Profile Settings</span>
                     </button>
-                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-white/[0.03] transition-all text-gray-400 hover:text-white font-black uppercase tracking-widest text-[10px]">
+                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] font-black uppercase tracking-widest text-[10px]">
                        <Activity size={18} />
                        <span>Performance Stat</span>
                     </button>
-                    <div className="h-px bg-white/5 my-2" />
+                    <div className="h-px bg-gray-100 my-2" />
                     <button 
                       onClick={() => logout()}
-                      className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-500/10 transition-all text-red-400 font-black uppercase tracking-widest text-[10px]"
+                      className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-50 transition-all text-red-500 font-black uppercase tracking-widest text-[10px]"
                     >
                        <LogOut size={18} />
                        <span>Logout Hub</span>
                     </button>
                  </div>
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
                </motion.div>
              )}
            </AnimatePresence>

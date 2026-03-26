@@ -68,18 +68,18 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
                 key={link.label}
                 href={link.path}
                 className={`text-[10px] font-black uppercase tracking-[0.25em] transition-all relative group ${
-                  isActive ? 'text-[#FF5A3C]' : 'text-gray-400 hover:text-[#0A0A0A]'
+                  isActive ? 'text-[#d97757]' : 'text-[#888888] hover:text-[#111111]'
                 }`}
               >
                 <span className="relative z-10">{link.label}</span>
                 {isActive && (
                   <motion.div 
                     layoutId="activeNav"
-                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-[#FF5A3C] rounded-full shadow-[0_0_15px_rgba(255,90,60,0.6)]"
+                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-[#d97757] rounded-full shadow-[0_0_10px_rgba(217,119,87,0.4)]"
                   />
                 )}
                 {!isActive && (
-                   <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-white/20 rounded-full transition-all group-hover:w-full"></div>
+                   <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-gray-100 rounded-full transition-all group-hover:w-full"></div>
                 )}
               </Link>
             );
@@ -90,23 +90,23 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
         <div className="flex items-center space-x-8">
         <div className="hidden md:flex items-center space-x-6 pr-6 border-r border-gray-100">
           <button 
-            onClick={() => toast.info('Neural Search initiated...', { icon: <Search className="text-[#FF5A3C]" /> })}
-            className="text-gray-400 hover:text-[#0A0A0A] transition-all hover:scale-110 active:scale-95"
+            onClick={() => toast.info('Neural Search initiated...', { icon: <Search className="text-[#d97757]" /> })}
+            className="text-[#888888] hover:text-[#111111] transition-all hover:scale-110 active:scale-95"
           >
             <Search size={18} />
           </button>
           
           <button 
             onClick={() => toast('🔔 Notifications', { description: 'All systems operational. No critical alerts.' })}
-            className="text-gray-400 hover:text-[#0A0A0A] transition-all relative hover:scale-110 active:scale-95"
+            className="text-[#888888] hover:text-[#111111] transition-all relative hover:scale-110 active:scale-95"
           >
             <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#FF5A3C] rounded-full animate-pulse shadow-[0_0_8px_rgba(255,90,60,1)]"></span>
+            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d97757] rounded-full animate-pulse shadow-[0_0_8px_rgba(217,119,87,0.8)]"></span>
           </button>
           
           <button 
             onClick={() => router.push('/merchant/settings')}
-            className="text-gray-400 hover:text-[#0A0A0A] transition-all hover:scale-110 active:scale-95"
+            className="text-[#888888] hover:text-[#111111] transition-all hover:scale-110 active:scale-95"
           >
             <Settings size={18} />
           </button>
@@ -115,16 +115,16 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
         <div className="relative" ref={profileRef}>
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center space-x-4 group p-1 pr-3 hover:bg-gray-50 rounded-2xl transition-all border border-transparent hover:border-gray-100"
+            className="flex items-center space-x-4 group p-1 pr-3 hover:bg-[#f9f9f9] rounded-2xl transition-all border border-transparent hover:border-gray-100"
           >
-            <div className="w-10 h-10 bg-gray-100 border border-gray-100 rounded-2xl overflow-hidden flex items-center justify-center p-0.5 shadow-sm transition-transform group-hover:scale-105">
-               <div className="w-full h-full bg-[#FF5A3C]/10 rounded-xl flex items-center justify-center text-[#FF5A3C] font-black text-xs uppercase tracking-tighter">
+            <div className="w-10 h-10 bg-white border border-gray-100 rounded-2xl overflow-hidden flex items-center justify-center p-0.5 shadow-sm transition-transform group-hover:scale-105">
+               <div className="w-full h-full bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] font-black text-xs uppercase tracking-tighter">
                   {user?.name?.substring(0, 2).toUpperCase() || 'MC'}
                </div>
             </div>
             <div className="hidden sm:block text-left">
-               <p className="text-[10px] font-black text-[#0A0A0A] uppercase tracking-widest leading-none mb-1">{user?.name || 'Merchant'}</p>
-               <p className="text-[8px] font-bold text-gray-400 uppercase tracking-tighter">Premium Partner</p>
+               <p className="text-[10px] font-black text-[#111111] uppercase tracking-widest leading-none mb-1">{user?.name || 'Merchant'}</p>
+               <p className="text-[8px] font-bold text-[#888888] uppercase tracking-tighter">Premium Partner</p>
             </div>
           </button>
 
@@ -134,23 +134,23 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute right-0 mt-4 w-64 bg-white border border-gray-100 rounded-[2rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] p-4 z-50 overflow-hidden"
+                className="absolute right-0 mt-4 w-64 bg-white border border-gray-100 rounded-2xl shadow-xl p-4 z-50 overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF5A3C]/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
                 
                 <div className="space-y-1 relative z-10">
                   <button 
                     onClick={() => { router.push('/profile'); setIsProfileOpen(false); }}
-                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-gray-50 transition-all text-gray-400 hover:text-[#0A0A0A] group"
+                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] group"
                   >
-                    <User size={18} className="group-hover:text-[#FF5A3C] transition-colors" />
+                    <User size={18} className="group-hover:text-[#d97757] transition-colors" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Public Profile</span>
                   </button>
                   <button 
                     onClick={() => { router.push('/merchant/dashboard'); setIsProfileOpen(false); }}
-                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-gray-50 transition-all text-gray-400 hover:text-[#0A0A0A] group"
+                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] group"
                   >
-                    <LayoutGrid size={18} className="group-hover:text-[#FF5A3C] transition-colors" />
+                    <LayoutGrid size={18} className="group-hover:text-[#d97757] transition-colors" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Control Center</span>
                   </button>
                   
@@ -158,7 +158,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
                   
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-50 transition-all text-gray-400 hover:text-red-500 group"
+                    className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-50 transition-all text-[#888888] hover:text-red-500 group"
                   >
                     <LogOut size={18} className="transition-transform group-hover:translate-x-1" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Terminate Session</span>

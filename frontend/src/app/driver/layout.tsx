@@ -37,14 +37,14 @@ export default function DriverLayout({
 
   if (!mounted || !token || user?.role !== 'driver') {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#ff8564] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8F8F8] text-[#0A0A0A] relative overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#f9f9f9] text-[#111111] relative overflow-x-hidden">
       <DriverSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
       <div 
         className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
@@ -54,7 +54,7 @@ export default function DriverLayout({
         <DriverNavbar isCollapsed={isCollapsed} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 custom-scrollbar relative">
            {/* Background Decor */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#FF5A3C]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#d97757]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
           
           <AnimatePresence mode="wait">
             <motion.div

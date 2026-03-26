@@ -32,7 +32,7 @@ export default function Navbar() {
     <motion.nav 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="bg-white border-b border-gray-100 sticky top-0 z-50 py-3 md:py-4 transition-all"
+      className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 py-3 transition-all"
     >
       <div className="container-responsive">
         <div className="flex justify-between items-center">
@@ -53,7 +53,7 @@ export default function Navbar() {
                     key={item.label} 
                     href={item.href}
                     className={`text-sm font-bold tracking-tight transition-colors ${
-                      (pathname === item.href) ? 'text-[#FF5A3C]' : 'text-gray-500 hover:text-[#0A0A0A]'
+                      (pathname === item.href) ? 'text-[#d97757]' : 'text-[#888888] hover:text-[#111111]'
                     }`}
                   >
                     {item.label}
@@ -64,33 +64,16 @@ export default function Navbar() {
           </div>
 
           {/* 2. Right: Search, Auth / User Section */}
-          <div className="flex items-center gap-4 md:gap-8">
+          <div className="flex items-center gap-4">
              <div className="hidden md:flex items-center gap-6">
-                <button 
-                  onClick={() => {
-                    import('sonner').then(({ toast }) => toast.info('Universal Search coming soon!'));
-                  }}
-                  className="text-gray-400 hover:text-[#0A0A0A] transition-colors"
-                >
-                   <Search size={20} />
-                </button>
+                <button className="text-gray-400 hover:text-[#111111] transition-colors"><Search size={20} /></button>
                 {user && (
                   <>
-                    <button 
-                      onClick={() => {
-                        import('sonner').then(({ toast }) => toast.info('No new notifications'));
-                      }}
-                      className="text-gray-400 hover:text-[#0A0A0A] transition-colors relative"
-                    >
+                    <button className="text-gray-400 hover:text-[#111111] transition-colors relative">
                        <Bell size={20} />
-                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-orange-400 rounded-full border-2 border-white"></span>
+                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d97757] rounded-full border-2 border-white"></span>
                     </button>
-                    <button 
-                      onClick={() => router.push('/profile')}
-                      className="text-gray-400 hover:text-[#0A0A0A] transition-colors"
-                    >
-                       <Settings size={20} />
-                    </button>
+                    <button onClick={() => router.push('/profile')} className="text-gray-400 hover:text-[#111111] transition-colors"><Settings size={20} /></button>
                   </>
                 )}
              </div>
@@ -99,26 +82,28 @@ export default function Navbar() {
               {user ? (
                 <div className="flex items-center gap-4 relative ml-2">
                    {user.role === 'customer' && cartItemCount > 0 && (
-                     <Link href="/cart" className="relative p-2 text-gray-500 hover:text-[#0A0A0A]">
-                        <ShoppingCart size={22} />
-                        <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-[10px] font-bold text-white bg-[#FF5A3C] rounded-full border-2 border-white">
-                           {cartItemCount}
-                        </span>
-                     </Link>
+                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                       <Link href="/cart" className="relative p-2 text-gray-500 hover:text-[#111111] transition-all">
+                          <ShoppingCart size={22} />
+                          <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-[10px] font-black text-white bg-[#d97757] rounded-full border-2 border-white">
+                             {cartItemCount}
+                          </span>
+                       </Link>
+                     </motion.div>
                    )}
                    
                    <button 
                      onClick={() => setIsProfileOpen(!isProfileOpen)}
-                     className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-2xl transition-all border border-gray-100"
+                     className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl transition-all border border-gray-100"
                    >
-                     <div className="w-10 h-10 bg-gray-200 rounded-xl overflow-hidden shadow-sm">
-                        <div className="w-full h-full bg-[#3B3B3B] flex items-center justify-center text-white text-xs font-bold uppercase italic">
-                           {user.name?.slice(0, 2)}
+                     <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden shadow-sm">
+                        <div className="w-full h-full bg-[#111111] flex items-center justify-center text-white text-xs font-bold">
+                           {user.name?.slice(0, 2).toUpperCase()}
                         </div>
                      </div>
                      <div className="hidden sm:block text-left">
-                        <p className="text-[11px] font-black text-[#0A0A0A] uppercase tracking-tight leading-none mb-1">{user.name?.split(' ')[0]}</p>
-                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{user.role} Partner</p>
+                        <p className="text-[11px] font-black text-[#111111] uppercase tracking-tight leading-none mb-1">{user.name?.split(' ')[0]}</p>
+                        <p className="text-[9px] font-bold text-[#888888] uppercase tracking-widest">{user.role}</p>
                      </div>
                    </button>
 
@@ -128,12 +113,12 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 15, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                        className="absolute right-0 top-full mt-4 w-56 bg-white border border-gray-100 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden z-[60]"
+                        className="absolute right-0 top-full mt-4 w-56 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-[60]"
                       >
                          <div className="p-2">
                            <Link 
                              href={user.role === 'merchant' ? '/merchant/dashboard' : user.role === 'driver' ? '/driver/dashboard' : '/profile'}
-                             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-600 hover:text-[#0A0A0A] transition-all text-xs font-bold"
+                             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 text-[#888888] hover:text-[#111111] transition-all text-xs font-bold"
                              onClick={() => setIsProfileOpen(false)}
                            >
                              <User size={16} />
@@ -141,7 +126,7 @@ export default function Navbar() {
                            </Link>
                            <button 
                              onClick={handleLogout}
-                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-500 transition-all text-xs font-bold text-left"
+                             className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-500 transition-all text-xs font-bold text-left"
                            >
                              <LogOut size={16} />
                              <span>Sign Out</span>
@@ -153,10 +138,10 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-[#0A0A0A] transition-all px-4">
+                  <Link href="/login" className="text-sm font-bold text-[#111111] hover:text-[#d97757] transition-all px-4">
                     Log In
                   </Link>
-                  <Link href="/register" className="bg-[#FF5A3C] text-white text-sm font-bold px-8 py-3.5 rounded-2xl hover:bg-[#E84A2C] transition-all shadow-lg shadow-[#FF5A3C]/20 text-center">
+                  <Link href="/register" className="bg-[#d97757] text-white text-sm font-bold px-8 py-3.5 rounded-xl hover:bg-[#c2654a] transition-all shadow-md text-center">
                     Sign Up
                   </Link>
                 </div>
@@ -166,7 +151,7 @@ export default function Navbar() {
             {/* Mobile Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-600"
+              className="lg:hidden p-2 text-[#111111]"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -185,14 +170,14 @@ export default function Navbar() {
           >
             <div className="container-responsive py-6 flex flex-col gap-4">
                {user && ['Explore', 'Orders', 'Offers'].map((item) => (
-                  <Link key={item} href="#" className="text-lg font-bold text-gray-700 p-2" onClick={() => setMobileMenuOpen(false)}>
+                  <Link key={item} href="#" className="text-lg font-bold text-[#111111] p-2" onClick={() => setMobileMenuOpen(false)}>
                     {item}
                   </Link>
                ))}
                {!user && (
                  <>
-                   <Link href="/login" className="text-lg font-bold text-gray-700 p-2" onClick={() => setMobileMenuOpen(false)}>Log In</Link>
-                   <Link href="/register" className="bg-[#FF5A3C] text-white text-lg font-bold p-4 rounded-xl text-center" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                   <Link href="/login" className="text-lg font-bold text-[#111111] p-2" onClick={() => setMobileMenuOpen(false)}>Log In</Link>
+                   <Link href="/register" className="bg-[#d97757] text-white text-lg font-bold p-4 rounded-xl text-center" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
                  </>
                )}
             </div>

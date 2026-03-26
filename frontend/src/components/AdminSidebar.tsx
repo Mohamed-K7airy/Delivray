@@ -45,7 +45,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
 
   return (
     <aside 
-      className={`h-screen bg-[#0a0a0a] border-r border-white/5 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+      className={`h-screen bg-white border-r border-gray-100 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
         isCollapsed ? 'w-24' : 'w-80'
       }`}
     >
@@ -57,26 +57,26 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-4"
           >
-            <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center border border-red-500/20 shadow-[0_8px_20px_-5px_rgba(239,68,68,0.3)]">
-               <ShieldAlert className="text-red-500" size={20} />
+            <div className="w-10 h-10 bg-[#fef3f2] rounded-xl flex items-center justify-center border border-[#fee2e2] shadow-sm">
+               <ShieldAlert className="text-[#d97757]" size={20} />
             </div>
             <div>
-               <h1 className="text-xs font-black uppercase tracking-widest text-white leading-none">Admin Nexus</h1>
-               <p className="text-[8px] font-bold text-gray-500 uppercase tracking-tighter mt-1">Core Access Layer</p>
+               <h1 className="text-xs font-black uppercase tracking-widest text-[#111111] leading-none">Admin Nexus</h1>
+               <p className="text-[8px] font-bold text-[#888888] uppercase tracking-tighter mt-1">Core Access Layer</p>
             </div>
           </motion.div>
         )}
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`p-2 rounded-xl bg-gray-50 border border-gray-100 text-[#888888] hover:text-[#111111] hover:bg-gray-100 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
         >
           {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar">
+      <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar pt-4">
         {navItems.map(item => {
           const isActive = pathname === item.path;
           return (
@@ -85,11 +85,11 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
               onClick={() => router.push(item.path)}
               className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                 isActive 
-                  ? 'bg-red-500/5 text-white border border-red-500/20 shadow-[0_10px_30px_-10px_rgba(239,68,68,0.2)]' 
-                  : 'text-gray-500 hover:text-white hover:bg-white/[0.02]'
+                  ? 'bg-[#fef3f2] text-[#d97757] border border-[#fee2e2] shadow-sm' 
+                  : 'text-[#888888] hover:text-[#111111] hover:bg-gray-50'
               } ${isCollapsed ? 'justify-center px-0' : ''}`}
             >
-              <div className={`${isActive ? 'text-red-500 scale-110' : 'text-gray-600 group-hover:text-white group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${isCollapsed ? 'mx-auto' : ''}`}>
+              <div className={`${isActive ? 'text-[#d97757] scale-110' : 'text-gray-400 group-hover:text-[#111111] group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${isCollapsed ? 'mx-auto' : ''}`}>
                 {item.icon}
               </div>
               {!isCollapsed && (
@@ -100,7 +100,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
               {isActive && !isCollapsed && (
                 <motion.div 
                   layoutId="activePin"
-                  className="absolute right-0 w-1.5 h-10 bg-red-500 rounded-l-full shadow-[0_0_15px_rgba(239,68,68,1)]"
+                  className="absolute right-0 w-1 h-8 bg-[#d97757] rounded-l-full shadow-[0_0_10px_rgba(217,119,87,0.5)]"
                 />
               )}
             </button>
@@ -111,20 +111,20 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
       {/* Bottom Actions */}
       <div className="p-6 space-y-6">
         {!isCollapsed && (
-          <div className="p-5 bg-white/[0.02] rounded-3xl border border-white/5 flex items-center space-x-4">
-             <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500">
+          <div className="p-5 bg-white border border-gray-100 rounded-3xl flex items-center space-x-4 shadow-sm">
+             <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 border border-blue-100 shadow-inner">
                 <Activity size={20} />
              </div>
              <div>
-                <p className="text-[8px] font-black uppercase tracking-widest text-blue-400">System State</p>
-                <p className="text-[10px] font-black text-white uppercase">Operational</p>
+                <p className="text-[8px] font-black uppercase tracking-widest text-[#d97757]">System State</p>
+                <p className="text-[10px] font-black text-[#111111] uppercase">Operational</p>
              </div>
           </div>
         )}
 
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 text-gray-500 hover:text-white transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
+          className={`w-full flex items-center space-x-4 text-[#888888] hover:text-[#111111] transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
         >
           <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
           {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest italic leading-none">Logout Hub</span>}

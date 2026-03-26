@@ -155,10 +155,10 @@ export default function StorePage() {
   if (!store) {
     return (
       <div className="container-responsive py-32 flex flex-col items-center justify-center text-center">
-        <h2 className="text-4xl font-black text-[#0A0A0A] mb-8 tracking-tight">Store <span className="text-[#FF5A3C] italic">not found.</span></h2>
+        <h2 className="text-4xl font-black text-[#111111] mb-8 tracking-tight">Store <span className="text-[#d97757]">not found.</span></h2>
         <button
           onClick={() => router.push('/')}
-          className="bg-[#FF5A3C] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-[#E84A2C] transition-all"
+          className="bg-[#d97757] text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-[#c2654a] transition-all"
         >
           Back to Discovery
         </button>
@@ -167,7 +167,7 @@ export default function StorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F8F8]">
+    <div className="min-h-screen bg-[#f9f9f9]">
       {/* Premium Store Hero */}
       <div className="bg-white border-b border-gray-100">
         <div className="container-responsive py-12 lg:py-16">
@@ -176,14 +176,22 @@ export default function StorePage() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="w-full lg:w-[45%] aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl relative group"
+              className="w-full lg:w-[45%] aspect-[4/3] rounded-2xl overflow-hidden shadow-md relative group"
             >
               <img
-                src={`https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=1200&auto=format&fit=crop`}
+                src={
+                  store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&auto=format&fit=crop' :
+                  store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop' :
+                  store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&auto=format&fit=crop' :
+                  store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=1200&auto=format&fit=crop' :
+                  store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop' :
+                  store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&auto=format&fit=crop' :
+                  `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=1200&auto=format&fit=crop`
+                }
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                 alt={store.name}
               />
-              <div className="absolute top-8 left-8 bg-[#FF5A3C] text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#FF5A3C]/20">
+              <div className="absolute top-8 left-8 bg-[#d97757] text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-md">
                 {store.type}
               </div>
             </motion.div>
@@ -192,40 +200,40 @@ export default function StorePage() {
             <div className="flex-1 space-y-8 text-center lg:text-left">
               <div className="space-y-4">
                 <div className="flex items-center justify-center lg:justify-start gap-4 mb-4">
-                  <div className="flex items-center gap-1.5 bg-[#FFF9F8] px-4 py-2 rounded-xl border border-[#FFE7E2]">
-                    <Star size={14} className="text-[#FFDA3C] fill-[#FFDA3C]" />
-                    <span className="text-[11px] font-black text-[#FF5A3C] uppercase tracking-widest">4.8 (500+ Reviews)</span>
+                  <div className="flex items-center gap-1.5 bg-[#f9f9f9] px-4 py-2 rounded-xl border border-gray-100">
+                    <Star size={14} className="text-[#d97757] fill-[#d97757]" />
+                    <span className="text-[11px] font-bold text-[#d97757] uppercase tracking-widest">4.8 (500+ Reviews)</span>
                   </div>
                 </div>
                 <motion.h1
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="text-5xl lg:text-8xl font-black text-[#0A0A0A] tracking-tighter leading-none"
+                  className="text-5xl lg:text-7xl font-black text-[#111111] tracking-tight leading-none"
                 >
                   {store.name}
                 </motion.h1>
-                <p className="text-gray-400 font-bold text-lg max-w-xl mx-auto lg:mx-0">
+                <p className="text-[#555555] font-medium text-lg max-w-xl mx-auto lg:mx-0">
                   Experience the finest craft flavors from {store.name}, delivered fresh and fast right to your doorstep.
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-8 pt-4">
                 <div className="flex items-center gap-4 group">
-                  <div className="w-14 h-14 bg-[#F8F8F8] rounded-2xl flex items-center justify-center text-[#FF5A3C] group-hover:bg-[#FF5A3C] group-hover:text-white transition-all">
+                  <div className="w-14 h-14 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#d97757] group-hover:bg-[#d97757] group-hover:text-white transition-all">
                     <Clock size={24} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-black text-[#0A0A0A] uppercase tracking-tight">Delivery</p>
-                    <p className="text-xs font-bold text-gray-400">20 - 30 mins</p>
+                    <p className="text-sm font-black text-[#111111] uppercase tracking-tight">Delivery</p>
+                    <p className="text-xs font-bold text-[#888888]">20 - 30 mins</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 group">
-                  <div className="w-14 h-14 bg-[#F8F8F8] rounded-2xl flex items-center justify-center text-[#FF5A3C] group-hover:bg-[#FF5A3C] group-hover:text-white transition-all">
+                  <div className="w-14 h-14 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#d97757] group-hover:bg-[#d97757] group-hover:text-white transition-all">
                     <MapPin size={24} />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-black text-[#0A0A0A] uppercase tracking-tight">Proximity</p>
-                    <p className="text-xs font-bold text-gray-400">1.2 miles away</p>
+                    <p className="text-sm font-black text-[#111111] uppercase tracking-tight">Proximity</p>
+                    <p className="text-xs font-bold text-[#888888]">1.2 miles away</p>
                   </div>
                 </div>
               </div>
@@ -237,16 +245,16 @@ export default function StorePage() {
       <div className="container-responsive py-12 lg:py-20 space-y-16">
         {/* Menu Navigation */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-gray-100 pb-8">
-          <h2 className="text-4xl font-black text-[#0A0A0A] tracking-tight">Explore the <span className="text-[#FF5A3C] italic">menu</span></h2>
+          <h2 className="text-4xl font-black text-[#111111] tracking-tight">Explore the <span className="text-[#d97757]">menu</span></h2>
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2 md:pb-0">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all whitespace-nowrap shrink-0 border
+                className={`px-6 py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all whitespace-nowrap shrink-0 border
                     ${selectedCategory === cat
-                    ? 'bg-[#FF5A3C] text-white border-[#FF5A3C] shadow-lg shadow-[#FF5A3C]/20'
-                    : 'bg-white text-gray-400 border-gray-100 hover:border-gray-200 hover:text-[#0A0A0A]'}`}
+                    ? 'bg-[#d97757] text-white border-[#d97757] shadow-md'
+                    : 'bg-white text-[#888888] border-gray-100 hover:border-gray-200 hover:text-[#111111]'}`}
               >
                 {cat}
               </button>
@@ -285,43 +293,43 @@ export default function StorePage() {
                   <motion.div
                     variants={itemVariants}
                     key={product.id}
-                    className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] transition-all duration-500 flex flex-col group h-full"
+                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 flex flex-col group h-full"
                   >
                     <div className="h-56 relative overflow-hidden bg-gray-50 flex items-center justify-center p-8">
                       <img
                         src={product.image || `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=400&auto=format&fit=crop`}
-                        className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-700"
+                        className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-700"
                         alt={product.name}
                       />
-                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-white font-black text-[13px] text-[#0A0A0A] shadow-sm">
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white font-black text-[13px] text-[#111111] shadow-sm">
                         ${Number(product.price).toFixed(2)}
                       </div>
                     </div>
 
-                    <div className="p-8 flex-1 flex flex-col space-y-4">
+                    <div className="p-6 flex-1 flex flex-col space-y-4">
                       <div>
-                        <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tight group-hover:text-[#FF5A3C] transition-colors line-clamp-1">{product.name}</h3>
-                        <p className="text-gray-400 text-sm font-medium mt-2 line-clamp-2 leading-relaxed">
+                        <h3 className="text-xl font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{product.name}</h3>
+                        <p className="text-[#555555] text-sm font-medium mt-2 line-clamp-2 leading-relaxed">
                           {product.description || 'Premium ingredients sourced locally for the best taste experience.'}
                         </p>
                       </div>
 
                       <div className="pt-6 border-t border-gray-50 mt-auto flex items-center justify-between">
-                        <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Available Now</span>
+                        <span className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Available Now</span>
 
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-2xl p-1.5 border border-gray-100">
+                        <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1.5 border border-gray-100">
                           {qty > 0 ? (
                             <>
                               <button
                                 onClick={() => handleRemoveFromCart(product.id, cartItemId)}
-                                className="w-10 h-10 bg-white text-[#0A0A0A] rounded-xl flex items-center justify-center hover:bg-gray-100 transition-all border border-gray-100"
+                                className="w-10 h-10 bg-white text-[#111111] rounded-lg flex items-center justify-center hover:bg-gray-100 transition-all border border-gray-100"
                               >
                                 <Minus size={18} />
                               </button>
-                              <span className="w-8 text-center font-black text-sm text-[#FF5A3C]">{qty}</span>
+                              <span className="w-8 text-center font-black text-sm text-[#d97757]">{qty}</span>
                               <button
                                 onClick={() => handleAddToCart(product)}
-                                className="w-10 h-10 bg-[#FF5A3C] text-white rounded-xl flex items-center justify-center hover:bg-[#E84A2C] transition-all shadow-md shadow-[#FF5A3C]/20"
+                                className="w-10 h-10 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all shadow-md"
                               >
                                 <Plus size={18} />
                               </button>
@@ -329,7 +337,7 @@ export default function StorePage() {
                           ) : (
                             <button
                               onClick={() => handleAddToCart(product)}
-                              className="w-12 h-12 bg-[#FF5A3C] text-white rounded-xl flex items-center justify-center hover:bg-[#E84A2C] transition-all shadow-lg shadow-[#FF5A3C]/20"
+                              className="w-12 h-12 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all shadow-md"
                             >
                               <Plus size={20} />
                             </button>
@@ -356,19 +364,19 @@ export default function StorePage() {
           >
             <Link
               href="/cart"
-              className="bg-[#0A0A0A] text-white px-8 py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-2xl flex items-center gap-6 group hover:scale-105 transition-all"
+              className="bg-[#111111] text-white px-8 py-6 rounded-2xl font-black uppercase tracking-widest shadow-xl flex items-center gap-6 group hover:scale-105 transition-all"
             >
               <div className="relative">
-                <div className="w-12 h-12 bg-[#FF5A3C] rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#d97757] rounded-xl flex items-center justify-center">
                   <ShoppingBag size={24} />
                 </div>
-                <span className="absolute -top-2 -right-2 bg-white text-[#FF5A3C] text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#0A0A0A]">
+                <span className="absolute -top-2 -right-2 bg-white text-[#d97757] text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#111111]">
                   {items.length}
                 </span>
               </div>
               <div className="text-left pr-4">
                 <p className="text-xs font-black">View Order</p>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Checkout Now</p>
+                <p className="text-[10px] text-[#888888] font-bold uppercase tracking-widest mt-0.5">Checkout Now</p>
               </div>
               <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </Link>

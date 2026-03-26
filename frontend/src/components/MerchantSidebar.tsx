@@ -56,39 +56,39 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
       <div className={`p-8 lg:p-10 border-b border-gray-100 flex items-center justify-between ${isCollapsed ? 'px-4 lg:px-6' : ''}`}>
         {!isCollapsed && (
           <div className="flex items-center space-x-5 group cursor-pointer" onClick={() => router.push('/')}>
-            <div className="w-12 h-12 bg-[#FF5A3C] rounded-2xl flex items-center justify-center shadow-2xl shadow-[#FF5A3C]/20 group-hover:scale-110 transition-transform duration-500">
+            <div className="w-12 h-12 bg-[#d97757] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
               <Zap size={24} className="text-white fill-current" />
             </div>
             <div className="flex flex-col">
-               <span className="text-xl font-black text-[#0A0A0A] tracking-tighter uppercase leading-none">Delivray</span>
-               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Merchant Portal</span>
+               <span className="text-xl font-black text-[#111111] tracking-tighter uppercase leading-none">Delivray</span>
+               <span className="text-[10px] font-black text-[#888888] uppercase tracking-widest mt-1">Merchant Portal</span>
             </div>
           </div>
         )}
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-gray-400 hover:text-[#0A0A0A] hover:bg-gray-100 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-[#888888] hover:text-[#111111] hover:bg-gray-100 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
         >
           {isCollapsed ? <Menu size={20} /> : <ChevronLeft size={20} />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar">
+      <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar pt-6">
         {navItems.map(item => {
           const isActive = pathname === item.path;
           return (
             <button 
               key={item.id}
               onClick={() => router.push(item.path)}
-              className={`w-full flex items-center space-x-3 lg:space-x-4 px-4 lg:px-5 py-3 lg:py-4 rounded-xl lg:rounded-2xl transition-all group relative overflow-hidden ${
+              className={`w-full flex items-center space-x-3 lg:space-x-4 px-4 lg:px-5 py-3 lg:py-4 rounded-xl transition-all group relative overflow-hidden ${
                 isActive 
-                  ? 'bg-[#FFF9F8] text-[#FF5A3C] border border-[#FFE7E2] shadow-sm' 
-                  : 'text-gray-500 hover:text-[#0A0A0A] hover:bg-gray-50'
+                  ? 'bg-[#fef3f2] text-[#d97757] border border-[#fee2e2] shadow-sm' 
+                  : 'text-[#888888] hover:text-[#111111] hover:bg-gray-50'
               } ${isCollapsed ? 'justify-center px-0' : ''}`}
             >
-              <div className={`${isActive ? 'text-[#FF5A3C] scale-110' : 'text-gray-400 group-hover:text-[#0A0A0A] group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${isCollapsed ? 'mx-auto' : ''}`}>
+              <div className={`${isActive ? 'text-[#d97757] scale-110' : 'text-gray-400 group-hover:text-[#111111] group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${isCollapsed ? 'mx-auto' : ''}`}>
                 {item.icon}
               </div>
               {!isCollapsed && (
@@ -99,7 +99,7 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
               {isActive && !isCollapsed && (
                 <motion.div 
                   layoutId="activePin"
-                  className="absolute right-0 w-1.5 h-10 bg-primary rounded-l-full shadow-[0_0_15px_rgba(217,119,87,1)]"
+                  className="absolute right-0 w-1 h-8 bg-[#d97757] rounded-l-full shadow-[0_0_10px_rgba(217,119,87,0.5)]"
                 />
               )}
             </button>
@@ -112,14 +112,14 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
         {!isCollapsed && (
           <button 
             onClick={() => toast.success('Connecting to Delivery Terminal... System LIVE!')}
-            className="w-full bg-[#FF5A3C] text-white py-4 lg:py-5 rounded-[1.25rem] font-black uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_20px_50px_-10px_rgba(255,90,60,0.4)]"
+            className="w-full bg-[#d97757] text-white py-4 lg:py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#c2654a] transition-all shadow-md"
           >
             Go Live
           </button>
         )}
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 text-gray-400 hover:text-red-500 transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
+          className={`w-full flex items-center space-x-4 text-[#888888] hover:text-red-500 transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
         >
           <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
           {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest italic leading-none">Logout</span>}

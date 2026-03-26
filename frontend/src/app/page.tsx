@@ -16,7 +16,7 @@ interface Store {
 }
 
 const categories = [
-  { name: 'All Offers', icon: <Zap size={14} />, color: 'bg-[#FF5A3C]' },
+  { name: 'All Offers', icon: <Zap size={14} />, color: 'bg-[#d97757]' },
   { name: 'Restaurant', icon: <Utensils size={14} />, color: 'bg-white' },
   { name: 'Grocery', icon: <ShoppingCart size={14} />, color: 'bg-white' },
   { name: 'Bakery', icon: <Croissant size={14} />, color: 'bg-white' },
@@ -63,8 +63,8 @@ export default function Home() {
 
   if (!_hasHydrated) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#FF5A3C] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -79,20 +79,20 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 bg-[#FFF9F8] px-4 py-2 rounded-full border border-[#FFE7E2]"
+                className="inline-flex items-center gap-2 bg-[#fef3f2] px-4 py-2 rounded-full border border-[#fee2e2]"
               >
-                <Zap size={14} className="text-[#FF5A3C]" fill="currentColor" />
-                <span className="text-[10px] sm:text-[11px] font-black text-[#FF5A3C] uppercase tracking-widest text-[#FF5A3C]">Lightning Fast Delivery</span>
+                <Zap size={14} className="text-[#d97757]" fill="currentColor" />
+                <span className="text-[10px] sm:text-[11px] font-black text-[#d97757] uppercase tracking-widest">Lightning Fast Delivery</span>
               </motion.div>
 
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-[3.5rem] sm:text-[5.5rem] lg:text-[7.5rem] font-black tracking-tight leading-[0.9] text-[#0A0A0A]"
+                className="text-[3.5rem] sm:text-[5.5rem] lg:text-[7.5rem] font-black tracking-tight leading-[0.9] text-[#111111]"
               >
-                Craving <span className="text-[#FF5A3C]">it.</span> <br />
-                We deliver <span className="text-[#FF5A3C]">it.</span>
+                Craving <span className="text-[#d97757]">it.</span> <br />
+                We deliver <span className="text-[#d97757]">it.</span>
               </motion.h1>
 
               <motion.div
@@ -101,16 +101,16 @@ export default function Home() {
                 transition={{ delay: 0.2 }}
                 className="max-w-xl mx-auto lg:mx-0 relative"
               >
-                <div className="bg-white rounded-3xl p-3 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.1)] border border-gray-100 flex flex-col sm:flex-row items-center gap-3">
+                <div className="bg-white rounded-2xl p-3 shadow-md border border-gray-100 flex flex-col sm:flex-row items-center gap-3">
                   <div className="flex-1 flex items-center w-full group">
-                    <MapPin className="ml-4 text-gray-300 group-focus-within:text-[#FF5A3C] transition-colors" size={20} />
+                    <MapPin className="ml-4 text-gray-400 group-focus-within:text-[#d97757] transition-colors" size={20} />
                     <input
                       type="text"
                       placeholder="Enter delivery address..."
-                      className="w-full px-4 py-4 md:py-5 outline-none text-sm md:text-base font-bold text-[#0A0A0A] placeholder-gray-300 bg-transparent focus:ring-0"
+                      className="w-full px-4 py-4 md:py-5 outline-none text-sm md:text-base font-bold text-[#111111] placeholder-gray-300 bg-transparent focus:ring-0"
                     />
                   </div>
-                  <button className="w-full sm:w-auto bg-[#FF5A3C] text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-[#FF5A3C]/30 hover:bg-[#E84A2C] transition-all flex items-center justify-center gap-2">
+                  <button className="w-full sm:w-auto bg-[#d97757] text-white px-10 py-5 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md hover:bg-[#c2654a] transition-all flex items-center justify-center gap-2">
                     Order Now <ChevronRight size={18} />
                   </button>
                 </div>
@@ -122,13 +122,13 @@ export default function Home() {
                 transition={{ delay: 0.3 }}
                 className="flex flex-wrap items-center justify-center lg:justify-start gap-12 pt-8"
               >
-                <div className="text-left border-l-4 border-gray-100 pl-6">
-                  <p className="text-3xl font-black text-[#0A0A0A]">15k+</p>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Active Riders</p>
+                <div className="text-left border-l-4 border-[#fef3f2] pl-6">
+                  <p className="text-3xl font-black text-[#111111]">15k+</p>
+                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-1">Active Riders</p>
                 </div>
-                <div className="text-left border-l-4 border-gray-100 pl-6">
-                  <p className="text-3xl font-black text-[#0A0A0A]">4.9/5</p>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">User Rating</p>
+                <div className="text-left border-l-4 border-[#fef3f2] pl-6">
+                  <p className="text-3xl font-black text-[#111111]">4.9/5</p>
+                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-1">User Rating</p>
                 </div>
               </motion.div>
             </div>
@@ -141,7 +141,7 @@ export default function Home() {
                  transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
                  className="relative aspect-[4/5] sm:aspect-square"
                >
-                  <div className="w-full h-full rounded-[3.5rem] sm:rounded-[4.5rem] overflow-hidden rotate-[-2deg] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.2)]">
+                  <div className="w-full h-full rounded-2xl sm:rounded-[4rem] overflow-hidden rotate-[-2deg] shadow-xl border border-gray-100">
                      <img 
                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=3000&auto=format&fit=crop" 
                        className="w-full h-full object-cover" 
@@ -153,16 +153,16 @@ export default function Home() {
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                    className="absolute -top-8 -right-4 sm:-right-8 bg-white/90 backdrop-blur-xl p-3 sm:p-5 rounded-3xl shadow-2xl border border-white/50 flex items-center gap-4 z-20"
+                    className="absolute -top-8 -right-4 sm:-right-8 bg-white p-3 sm:p-5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-4 z-20"
                   >
-                     <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-2xl overflow-hidden border-2 border-[#FF5A3C]/20 shadow-sm">
+                     <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 border-[#d97757]/20 shadow-sm">
                         <img src="https://i.pravatar.cc/150?img=12" className="w-full h-full object-cover" alt="Courier" />
                      </div>
                      <div className="text-left pr-4">
-                        <p className="text-sm font-black text-[#0A0A0A] tracking-tight">Marco R.</p>
+                        <p className="text-sm font-black text-[#111111] tracking-tight">Marco R.</p>
                         <div className="flex items-center gap-1 mt-0.5">
                            <Star size={10} className="text-[#FFDA3C] fill-[#FFDA3C]" />
-                           <span className="text-[10px] font-bold text-gray-400">5.0 Courier</span>
+                           <span className="text-[10px] font-bold text-[#888888]">5.0 Courier</span>
                         </div>
                      </div>
                   </motion.div>
@@ -171,21 +171,21 @@ export default function Home() {
                   <motion.div
                     animate={{ y: [0, 10, 0] }}
                     transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                    className="absolute -bottom-10 sm:-bottom-12 -left-4 sm:-left-12 bg-white/90 backdrop-blur-3xl p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] shadow-2xl border border-white/50 w-[85%] sm:w-[320px] z-20 text-left"
+                    className="absolute -bottom-10 sm:-bottom-12 -left-4 sm:-left-12 bg-white p-6 sm:p-10 rounded-2xl shadow-xl border border-gray-100 w-[85%] sm:w-[320px] z-20 text-left"
                   >
                      <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#FFF5F3] rounded-2xl flex items-center justify-center text-[#FF5A3C]">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] border border-[#fee2e2] shadow-inner">
                             <Zap size={24} />
                         </div>
-                        <span className="bg-[#FFF9F8] text-[#FF5A3C] px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border border-[#FFE7E2]">In Transit</span>
+                        <span className="bg-[#fef3f2] text-[#d97757] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-[#fee2e2]">In Transit</span>
                      </div>
-                     <h4 className="text-lg sm:text-2xl font-black text-[#0A0A0A] tracking-tight leading-none">Your order is arriving</h4>
-                     <p className="text-[10px] sm:text-xs font-bold text-gray-400 mt-2">Estimated arrival in <span className="text-[#0A0A0A]">12 mins</span></p>
+                     <h4 className="text-lg sm:text-2xl font-black text-[#111111] tracking-tight leading-none">Your order is arriving</h4>
+                     <p className="text-[10px] sm:text-xs font-bold text-[#888888] mt-2">Estimated arrival in <span className="text-[#111111]">12 mins</span></p>
                      
                      <div className="mt-8 flex gap-1.5 h-1.5">
-                        <div className="flex-1 bg-[#FF5A3C] rounded-full shadow-[0_0_10px_rgba(255,90,60,0.3)]"></div>
-                        <div className="flex-1 bg-[#FF5A3C] rounded-full"></div>
-                        <div className="flex-1 bg-[#FF5A3C] rounded-full opacity-40"></div>
+                        <div className="flex-1 bg-[#d97757] rounded-full shadow-[0_0_8px_rgba(217,119,87,0.4)]"></div>
+                        <div className="flex-1 bg-[#d97757] rounded-full"></div>
+                        <div className="flex-1 bg-[#d97757] rounded-full opacity-40"></div>
                         <div className="flex-1 bg-gray-100 rounded-full"></div>
                      </div>
                   </motion.div>
@@ -199,12 +199,12 @@ export default function Home() {
 
   // Logged In Home
   return (
-    <div className="bg-[#F8F8F8] min-h-screen">
+    <div className="bg-[#f9f9f9] min-h-screen">
       <div className="container-responsive py-12 lg:py-20 space-y-12">
         {/* Header */}
         <div className="space-y-4">
-          <h2 className="text-5xl lg:text-7xl font-black text-[#0A0A0A] tracking-tighter">What's on the <span className="text-[#FF5A3C] italic">menu?</span></h2>
-          <p className="text-gray-400 font-bold max-w-xl text-lg lg:text-xl">Discover the best local restaurants and groceries delivered straight to your doorstep with lightning speed.</p>
+          <h2 className="text-5xl lg:text-6xl font-black text-[#111111] tracking-tight">What's on the <span className="text-[#d97757]">menu?</span></h2>
+          <p className="text-[#555555] font-medium max-w-xl text-lg lg:text-xl">Discover the best local restaurants and groceries delivered straight to your doorstep.</p>
         </div>
 
         {/* Categories */}
@@ -213,10 +213,10 @@ export default function Home() {
             <button
               key={cat.name}
               onClick={() => setFilterType(cat.name)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-3xl font-black text-[13px] whitespace-nowrap transition-all border shrink-0 ${
+              className={`flex items-center gap-3 px-6 py-4 rounded-xl font-bold text-sm whitespace-nowrap transition-all border shrink-0 ${
                 filterType === cat.name 
-                  ? 'bg-[#FF5A3C] text-white border-[#FF5A3C] shadow-xl shadow-[#FF5A3C]/20' 
-                  : 'bg-white text-gray-700 border-gray-100 hover:border-gray-200'
+                  ? 'bg-[#d97757] text-white border-[#d97757] shadow-md' 
+                  : 'bg-white text-[#555555] border-gray-100 hover:border-gray-200 shadow-sm'
               }`}
             >
               <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${filterType === cat.name ? 'bg-white/20' : 'bg-gray-50'}`}>
@@ -252,47 +252,49 @@ export default function Home() {
               {stores.map((store) => (
                 <motion.div key={store.id} variants={itemVariants}>
                   <Link href={`/store/${store.id}`} className="group block h-full">
-                    <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.03)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] group-hover:-translate-y-2 transition-all duration-500 relative h-full flex flex-col">
-                      <div className="relative h-64 overflow-hidden">
+                    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group-hover:shadow-lg transition-all duration-500 relative h-full flex flex-col">
+                      <div className="relative h-56 overflow-hidden">
                         <img 
-                          src={`https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`} 
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                          src={
+                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop' :
+                            store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop' :
+                            store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&auto=format&fit=crop' :
+                            store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=800&auto=format&fit=crop' :
+                            store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop' :
+                            store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop' :
+                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`
+                          }
+                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                           alt={store.name} 
                         />
-                        <div className="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/50 flex items-center gap-1.5 shadow-sm">
-                           <Star size={12} className="text-[#FFDA3C] fill-[#FFDA3C]" />
-                           <span className="text-[11px] font-black text-[#0A0A0A]">4.8</span>
+                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/50 flex items-center gap-1 shadow-sm">
+                           <Star size={12} className="text-[#d97757] fill-[#d97757]" />
+                           <span className="text-xs font-bold text-[#111111]">4.8</span>
                         </div>
                       </div>
 
-                      <div className="p-8 space-y-6 flex-1 flex flex-col">
+                      <div className="p-6 space-y-4 flex-1 flex flex-col">
                         <div>
-                           <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tight group-hover:text-[#FF5A3C] transition-colors line-clamp-1">{store.name}</h3>
-                           <div className="flex items-center gap-4 mt-3">
-                              <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-wider">
-                                 <Clock size={14} className="text-[#FF5A3C]" />
+                           <h3 className="text-xl font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{store.name}</h3>
+                           <div className="flex items-center gap-4 mt-2">
+                              <div className="flex items-center gap-1.5 text-[#555555] font-bold text-[10px] uppercase tracking-wider">
+                                 <Clock size={12} className="text-[#d97757]" />
                                  <span>20-30 min</span>
                               </div>
-                              <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-wider">
-                                 <ShoppingCart size={14} className="text-[#FF5A3C]" />
+                              <div className="flex items-center gap-1.5 text-[#555555] font-bold text-[10px] uppercase tracking-wider">
+                                 <ShoppingCart size={12} className="text-[#d97757]" />
                                  <span>$2.99 Fee</span>
                               </div>
                            </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
-                           <span className="text-[10px] font-black text-[#FF5A3C] uppercase tracking-[0.2em]">{filterType === 'All Offers' ? 'Signature Merchant' : store.type}</span>
-                           <div className="w-12 h-12 bg-gray-50 group-hover:bg-[#FF5A3C] rounded-full flex items-center justify-center transition-all">
-                              <ChevronRight size={20} className="text-gray-400 group-hover:text-white transition-colors" />
+                           <span className="text-[10px] font-black text-[#d97757] uppercase tracking-wider">{store.type}</span>
+                           <div className="w-10 h-10 bg-gray-50 group-hover:bg-[#d97757] rounded-full flex items-center justify-center transition-all">
+                              <ChevronRight size={18} className="text-gray-400 group-hover:text-white transition-colors" />
                            </div>
                         </div>
                       </div>
-
-                      {store.name === 'Lumina Fine Dining' && (
-                        <div className="absolute bottom-40 right-10 w-12 h-12 bg-[#FF5A3C] text-white rounded-full flex items-center justify-center shadow-lg shadow-[#FF5A3C]/40 z-30">
-                           <ShoppingCart size={20} />
-                        </div>
-                      )}
                     </div>
                   </Link>
                 </motion.div>

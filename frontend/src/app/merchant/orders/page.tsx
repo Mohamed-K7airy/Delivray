@@ -109,28 +109,28 @@ export default function MerchantOrders() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-white rounded-[2.5rem] p-8 lg:p-10 border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-xl hover:shadow-black/5 transition-all"
+            className="bg-white rounded-2xl p-8 lg:p-10 border border-gray-100 shadow-md relative overflow-hidden group hover:shadow-lg transition-all"
           >
             <div className="flex items-center justify-between mb-8 relative z-10">
-               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
-                  stat.color === 'orange' ? 'bg-orange-50 text-orange-500' : 
-                  stat.color === 'red' ? 'bg-red-50 text-red-500' : 
-                  'bg-green-50 text-green-500'
+               <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                  stat.color === 'orange' ? 'bg-[#fef3f2] text-[#d97757]' : 
+                  stat.color === 'red' ? 'bg-red-50 text-red-600' : 
+                  'bg-green-50 text-green-600'
                }`}>
                   {stat.icon}
                </div>
                {stat.change && (
-                  <span className="bg-green-50 text-green-500 text-[9px] font-black px-3 py-1 rounded-full border border-green-100">
+                  <span className="bg-green-50 text-green-600 text-[9px] font-black px-3 py-1 rounded-full border border-green-100">
                      {stat.change}
                   </span>
                )}
             </div>
             <div className="relative z-10">
-               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">{stat.label}</p>
-               <h3 className="text-5xl font-black text-[#0A0A0A] tracking-tighter leading-none">{stat.value}</h3>
+               <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-2">{stat.label}</p>
+               <h3 className="text-5xl font-black text-[#111111] tracking-tighter leading-none">{stat.value}</h3>
             </div>
             <div className={`absolute -right-4 -bottom-4 w-24 h-24 opacity-[0.03] group-hover:scale-110 transition-transform duration-700 ${
-               stat.color === 'orange' ? 'text-orange-500' : stat.color === 'red' ? 'text-red-500' : 'text-green-500'
+               stat.color === 'orange' ? 'text-[#d97757]' : stat.color === 'red' ? 'text-red-600' : 'text-green-600'
             }`}>
                {stat.icon}
             </div>
@@ -139,17 +139,17 @@ export default function MerchantOrders() {
       </div>
 
       {/* Main Content: Recent Orders */}
-      <div className="bg-white rounded-[3rem] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-md overflow-hidden">
         <div className="p-10 flex flex-col sm:flex-row items-center justify-between gap-6 border-b border-gray-50">
            <div>
-              <h2 className="text-2xl font-black text-[#0A0A0A] tracking-tighter">Recent Orders</h2>
+              <h2 className="text-2xl font-black text-[#111111] tracking-tighter">Recent Orders</h2>
            </div>
            <div className="flex items-center gap-4">
-              <button className="h-12 px-6 bg-[#F8F8F8] text-[#0A0A0A] rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-3 hover:bg-gray-100 transition-all">
+              <button className="h-12 px-6 bg-[#f9f9f9] text-[#111111] rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-3 hover:bg-gray-100 transition-all">
                  <Filter size={14} />
                  Filter
               </button>
-              <button className="h-12 px-6 bg-[#F8F8F8] text-[#0A0A0A] rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-3 hover:bg-gray-100 transition-all">
+              <button className="h-12 px-6 bg-[#f9f9f9] text-[#111111] rounded-xl font-black uppercase tracking-widest text-[9px] flex items-center gap-3 hover:bg-gray-100 transition-all">
                  <Download size={14} />
                  Export
               </button>
@@ -176,27 +176,27 @@ export default function MerchantOrders() {
                        initial={{ opacity: 0 }}
                        animate={{ opacity: 1 }}
                        transition={{ delay: idx * 0.05 }}
-                       className="group hover:bg-[#F8F8F8] transition-all cursor-pointer"
+                       className="group hover:bg-[#f9f9f9] transition-all cursor-pointer"
                     >
                        <td className="px-10 py-8">
-                          <span className="text-sm font-black text-[#FF5A3C] tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</span>
+                          <span className="text-sm font-black text-[#d97757] tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</span>
                        </td>
                        <td className="px-10 py-8">
                           <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-gray-400 border border-white">
+                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-[#888888] border border-white">
                                 {order.customer?.users?.name?.[0] || 'U'}
                              </div>
-                             <span className="text-sm font-bold text-[#0A0A0A]">{order.customer?.users?.name || 'Customer'}</span>
+                             <span className="text-sm font-bold text-[#111111]">{order.customer?.users?.name || 'Customer'}</span>
                           </div>
                        </td>
                        <td className="px-10 py-8">
-                          <span className="text-sm font-medium text-gray-500 max-w-[200px] block truncate">
+                          <span className="text-sm font-medium text-[#555555] max-w-[200px] block truncate">
                              {order.order_items?.[0]?.quantity}x {order.order_items?.[0]?.products?.name}
                              {order.order_items?.length > 1 && `, +${order.order_items.length - 1} more`}
                           </span>
                        </td>
                        <td className="px-10 py-8">
-                          <span className="text-sm font-black text-[#0A0A0A]">${Number(order.total_price).toFixed(2)}</span>
+                          <span className="text-sm font-black text-[#111111]">${Number(order.total_price).toFixed(2)}</span>
                        </td>
                        <td className="px-10 py-8">
                           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${getStatusStyle(order.status)}`}>
@@ -208,13 +208,13 @@ export default function MerchantOrders() {
                        </td>
                        <td className="px-10 py-8 text-right">
                           <div className="flex items-center justify-end gap-4">
-                             <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-[#0A0A0A] transition-all">
+                             <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-[#111111] transition-all">
                                 <Eye size={16} />
                              </button>
                              {order.status === 'pending' && (
                                 <button 
                                    onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'accepted'); }}
-                                   className="h-10 px-6 bg-[#0A0A0A] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#333] transition-all"
+                                   className="h-10 px-6 bg-[#111111] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#333] transition-all"
                                 >
                                    Accept
                                 </button>
@@ -222,7 +222,7 @@ export default function MerchantOrders() {
                              {order.status === 'accepted' && (
                                 <button 
                                    onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'preparing'); }}
-                                   className="h-10 px-6 bg-[#FF5A3C] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#E84A2C] transition-all"
+                                   className="h-10 px-6 bg-[#d97757] text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-[#c2654a] transition-all"
                                 >
                                    Prepare
                                 </button>
@@ -230,7 +230,7 @@ export default function MerchantOrders() {
                              {order.status === 'preparing' && (
                                 <button 
                                    onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'ready_for_pickup'); }}
-                                   className="h-10 px-6 bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
+                                   className="h-10 px-6 bg-blue-600 text-white rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md"
                                 >
                                    Ready
                                 </button>
@@ -258,16 +258,16 @@ export default function MerchantOrders() {
         </div>
 
         {/* Pagination Placeholder */}
-        <div className="p-10 bg-[#F8F8F8]/50 border-t border-gray-50 flex items-center justify-between">
-           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Showing 1-10 of 48 orders</p>
+        <div className="p-10 bg-[#f9f9f9] border-t border-gray-50 flex items-center justify-between">
+           <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Showing 1-10 of 48 orders</p>
            <div className="flex items-center gap-2">
-              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-300 hover:text-[#0A0A0A] transition-all">
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-300 hover:text-[#111111] transition-all">
                  <ChevronLeft size={16} />
               </button>
-              <button className="w-10 h-10 flex items-center justify-center bg-[#FF5A3C] text-white rounded-xl text-[10px] font-black">1</button>
-              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 hover:bg-gray-50 transition-all">2</button>
-              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-[10px] font-black text-gray-400 hover:bg-gray-50 transition-all">3</button>
-              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-300 hover:text-[#0A0A0A] transition-all">
+              <button className="w-10 h-10 flex items-center justify-center bg-[#d97757] text-white rounded-xl text-[10px] font-black">1</button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-[10px] font-black text-[#888888] hover:bg-gray-50 transition-all">2</button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-[10px] font-black text-[#888888] hover:bg-gray-50 transition-all">3</button>
+              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-300 hover:text-[#111111] transition-all">
                  <ChevronRight size={16} />
               </button>
            </div>
@@ -278,18 +278,18 @@ export default function MerchantOrders() {
       <motion.div 
          initial={{ opacity: 0, y: 20 }}
          animate={{ opacity: 1, y: 0 }}
-         className="bg-[#F8F8F8] border-l-4 border-orange-500 rounded-3xl p-8 lg:p-10 flex flex-col md:flex-row items-center justify-between gap-8"
+         className="bg-[#f9f9f9] border-l-4 border-orange-500 rounded-2xl p-8 lg:p-10 flex flex-col md:flex-row items-center justify-between gap-8"
       >
          <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-orange-500 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-orange-500/20">
+            <div className="w-16 h-16 bg-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
                <Zap size={24} className="fill-current" />
             </div>
             <div>
-               <h4 className="text-xl font-black text-[#0A0A0A] tracking-tighter mb-1">Lunch Rush Detected</h4>
-               <p className="text-sm font-medium text-gray-400">Order volume is 30% higher than average. Consider increasing prep time slightly.</p>
+               <h4 className="text-xl font-black text-[#111111] tracking-tighter mb-1">Lunch Rush Detected</h4>
+               <p className="text-sm font-medium text-[#888888]">Order volume is 30% higher than average. Consider increasing prep time slightly.</p>
             </div>
          </div>
-         <button className="h-14 px-10 bg-white text-[#0A0A0A] border border-gray-100 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-50 transition-all shadow-sm">
+         <button className="h-14 px-10 bg-white text-[#111111] border border-gray-100 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-100 transition-all shadow-sm">
             Adjust Prep Time
          </button>
       </motion.div>
