@@ -49,11 +49,11 @@ export default function MerchantSidebar({ isCollapsed, setIsCollapsed }: Merchan
   return (
     <aside 
       className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:flex ${
-        isCollapsed ? 'w-20 lg:w-24' : 'w-64 lg:w-80'
+        isCollapsed ? 'w-16 lg:w-20' : 'w-56 lg:w-64'
       }`}
     >
       {/* Sidebar Header */}
-      <div className={`p-8 lg:p-10 border-b border-gray-100 flex items-center justify-between ${isCollapsed ? 'px-4 lg:px-6' : ''}`}>
+      <div className={`p-4 lg:p-6 border-b border-gray-100 flex items-center justify-between ${isCollapsed ? 'px-2 lg:px-4' : ''}`}>
         {!isCollapsed && (
           <div className="flex items-center space-x-5 group cursor-pointer" onClick={() => router.push('/')}>
             <div className="w-12 h-12 bg-[#d97757] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">

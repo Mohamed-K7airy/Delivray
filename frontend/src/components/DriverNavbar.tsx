@@ -7,7 +7,9 @@ import {
   Activity,
   LogOut,
   Settings as SettingsIcon,
-  Truck
+  Truck,
+  Menu,
+  X
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useState, useRef, useEffect } from 'react';
@@ -21,6 +23,7 @@ interface DriverNavbarProps {
 export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps) {
   const { user, logout } = useAuthStore();
   const [showProfile, setShowProfile] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,7 +38,14 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
 
   return (
     <nav className="h-16 sm:h-24 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
-      <div className="flex items-center gap-x-6 sm:gap-x-12">
+      <div className="flex items-center gap-x-4 sm:gap-x-12">
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="sm:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
         {/* Only show logo in navbar if sidebar is collapsed */}
         <AnimatePresence mode="wait">
           {isCollapsed && (
@@ -137,6 +147,55 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
            </AnimatePresence>
         </div>
       </div>
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] sm:hidden"
+            />
+            <motion.div 
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] sm:hidden shadow-2xl p-8 flex flex-col"
+            >
+              <div className="flex items-center space-x-4 mb-12">
+                 <div className="w-10 h-10 bg-[#d97757] rounded-xl flex items-center justify-center border border-[#fee2e2]">
+                    <Truck className="text-white" size={20} />
+                 </div>
+                 <h2 className="text-lg font-black tracking-tighter uppercase">Driver Hub</h2>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                {['Dashboard', 'Earnings', 'Schedule'].map((link) => (
+                  <Link 
+                    key={link}
+                    href={`/driver/${link.toLowerCase()}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] hover:bg-gray-50 hover:text-[#d97757] transition-all"
+                  >
+                    {link}
+                  </Link>
+                ))}
+              </div>
+
+              <button 
+                onClick={() => logout()}
+                className="w-full h-14 bg-gray-50 text-[#888888] rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3"
+              >
+                <LogOut size={16} />
+                Logout Hub
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

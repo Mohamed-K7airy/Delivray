@@ -129,25 +129,25 @@ export default function MerchantDashboard() {
     <div className="space-y-10 lg:space-y-12 pb-24">
       
       {/* Page Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
          <div>
-            <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter mb-2">Merchant Portal</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter mb-2">Merchant Portal</h1>
             <div className="flex items-center gap-4">
                <span className="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-100">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  Live Sync: Active
+                  Live Sync
                </span>
-               <span className="text-[10px] font-bold text-[#888888] uppercase tracking-widest">Real-time gateway connected</span>
+               <span className="text-[10px] font-bold text-[#888888] uppercase tracking-widest hidden sm:inline">Real-time gateway connected</span>
             </div>
          </div>
-         <div className="flex items-center gap-4">
-            <button className="h-14 px-8 bg-white text-[#111111] border border-gray-100 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-50 transition-all flex items-center gap-3 shadow-sm">
+         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <button className="flex-1 sm:flex-none h-12 sm:h-14 px-4 sm:px-8 bg-white text-[#111111] border border-gray-100 rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm">
                <Upload size={16} />
-               Export Reports
+               Export
             </button>
             <button 
                onClick={() => router.push('/merchant/inventory')}
-               className="h-14 px-8 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-[#c2654a] transition-all flex items-center gap-3 shadow-md"
+               className="flex-1 sm:flex-none h-12 sm:h-14 px-4 sm:px-8 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[9px] sm:text-[10px] hover:bg-[#c2654a] transition-all flex items-center justify-center gap-2 shadow-md"
             >
                <Plus size={18} />
                New Listing
@@ -192,9 +192,9 @@ export default function MerchantDashboard() {
                              {idx === 0 ? '🍔' : idx === 1 ? '🍕' : '🥐'}
                           </div>
                           <div>
-                             <div className="flex flex-wrap items-center gap-4 mb-2">
-                                <span className="text-lg font-black text-[#111111] tracking-tight">{order.id.slice(0, 8).toUpperCase()} — {firstItem}</span>
-                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusInfo.color}`}>
+                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                                <span className="text-base sm:text-lg font-black text-[#111111] tracking-tight">{order.id.slice(0, 8).toUpperCase()} — {firstItem}</span>
+                                <span className={`w-fit px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusInfo.color}`}>
                                    {statusInfo.label}
                                 </span>
                              </div>

@@ -45,11 +45,11 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
   return (
     <aside 
       className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:flex ${
-        isCollapsed ? 'w-20 lg:w-24' : 'w-64 lg:w-80'
+        isCollapsed ? 'w-16 lg:w-20' : 'w-56 lg:w-64'
       }`}
     >
       {/* Brand Header */}
-      <div className={`p-6 lg:p-8 mb-8 lg:mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-4 lg:px-6' : 'px-6 lg:px-8'}`}>
+      <div className={`p-4 lg:p-6 mb-6 lg:mb-8 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-2 lg:px-4' : 'px-4 lg:px-6'}`}>
         {!isCollapsed && (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}

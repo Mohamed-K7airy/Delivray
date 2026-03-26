@@ -47,8 +47,8 @@ export default function DriverLayout({
     <div className="flex min-h-screen bg-[#f9f9f9] text-[#111111] relative overflow-x-hidden">
       <DriverSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
       <div 
-        className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-          isCollapsed ? 'md:ml-20 lg:ml-24' : 'md:ml-64 lg:ml-80'
+        className={`flex-1 flex flex-col min-h-screen relative z-10 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+          isCollapsed ? 'md:ml-16 lg:ml-20' : 'md:ml-56 lg:ml-64'
         }`}
       >
         <DriverNavbar isCollapsed={isCollapsed} />

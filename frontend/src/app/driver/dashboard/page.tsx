@@ -197,11 +197,11 @@ export default function DriverDashboard() {
                     </div>
                   </div>
 
-                  <button
+                   <button
                     onClick={completeOrder}
-                    className="w-full h-24 bg-[#d97757] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xl shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4"
+                    className="w-full h-20 bg-[#d97757] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-lg shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4"
                   >
-                    <ShieldCheck size={32} />
+                    <ShieldCheck size={24} />
                     Complete Mission & Exit
                   </button>
               </div>
@@ -281,16 +281,16 @@ export default function DriverDashboard() {
             >
               <div className="flex flex-col items-center">
                 {/* Icon Box */}
-                <div className="w-24 h-24 bg-[#d97757] rounded-2xl flex items-center justify-center text-white mb-8 shadow-md">
-                  <Truck size={40} className="fill-current" />
+                <div className="w-16 h-16 bg-[#d97757] rounded-2xl flex items-center justify-center text-white mb-6 shadow-md">
+                  <Truck size={28} className="fill-current" />
                 </div>
                 
                 {/* Title */}
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#d97757] mb-4">NEW DELIVERY REQUEST</span>
                 
                 {/* Amount */}
-                <div className="flex flex-col items-center mb-10">
-                  <h3 className="text-7xl font-black text-[#111111] tracking-tighter leading-none">${Number(availableOrder.total_price).toFixed(2)}</h3>
+                <div className="flex flex-col items-center mb-8">
+                  <h3 className="text-5xl font-black text-[#111111] tracking-tighter leading-none">${Number(availableOrder.total_price).toFixed(2)}</h3>
                   <p className="text-[10px] font-bold text-[#888888] mt-3 italic tracking-tight underline border-gray-200">Estimated payout incl. tip</p>
                 </div>
 

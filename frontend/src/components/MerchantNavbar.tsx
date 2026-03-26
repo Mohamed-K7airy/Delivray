@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, Settings, Search, LayoutGrid, LogOut, User } from 'lucide-react';
+import { Bell, Settings, Search, LayoutGrid, LogOut, User, Menu, X } from 'lucide-react';
 import Logo from './Logo';
 import { useAuthStore } from '@/store/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,6 +16,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,7 +43,14 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
 
   return (
     <nav className="h-14 sm:h-20 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
-      <div className="flex items-center gap-x-8 sm:gap-x-24">
+      <div className="flex items-center gap-x-4 sm:gap-x-24">
+        {/* Mobile Menu Toggle */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
         {/* Only show logo in navbar if sidebar is collapsed */}
         <AnimatePresence mode="wait">
           {isCollapsed && (
@@ -169,6 +177,58 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"
+            />
+            <motion.div 
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] md:hidden shadow-2xl p-8 flex flex-col"
+            >
+              <div className="flex items-center space-x-4 mb-12">
+                 <div className="w-10 h-10 bg-[#d97757] rounded-xl flex items-center justify-center">
+                    <Logo className="w-6 h-6 text-white" />
+                 </div>
+                 <h2 className="text-lg font-black tracking-tighter uppercase">Merchant Hub</h2>
+              </div>
+              
+              <div className="flex-1 space-y-4">
+                {navLinks.map((link) => (
+                  <Link 
+                    key={link.label}
+                    href={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
+                      pathname === link.path ? 'bg-[#fef3f2] text-[#d97757] border border-[#fee2e2]' : 'text-[#888888] hover:bg-gray-50'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+
+              <button 
+                onClick={handleLogout}
+                className="w-full h-14 bg-gray-50 text-[#888888] rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
