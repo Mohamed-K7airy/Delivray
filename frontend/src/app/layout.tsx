@@ -16,6 +16,7 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
     apple: '/icon.svg',
   },
+  manifest: '/manifest.json',
 };
 
 import { SocketProvider } from '@/context/SocketContext';
@@ -36,6 +37,17 @@ export default function RootLayout({
           </LayoutWrapper>
         </SocketProvider>
         <Toaster position="bottom-right" richColors />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js');
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );
