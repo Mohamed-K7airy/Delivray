@@ -22,18 +22,17 @@ import {
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/apiClient';
 
-const [stats, setStats] = useState({
-  totalOrdersToday: 0,
-  pendingOrders: 0,
-  completedOrders: 0,
-  todayRevenue: 0
-});
-
 export default function MerchantOrders() {
   const { token, user } = useAuthStore();
   const { socket, isConnected } = useSocket();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    totalOrdersToday: 0,
+    pendingOrders: 0,
+    completedOrders: 0,
+    todayRevenue: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
