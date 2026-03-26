@@ -30,23 +30,33 @@ export default function MerchantDashboard() {
   const { socket, isConnected } = useSocket();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    totalOrdersToday: 0,
+    pendingOrders: 0,
+    completedOrders: 0,
+    todayRevenue: 0
+  });
   const [loading, setLoading] = useState(true);
   const [productForm, setProductForm] = useState({ title: '', price: '', category: 'Main Courses' });
 
   useEffect(() => {
     if (!token || user?.role !== 'merchant') return router.push('/login');
 
-    const fetchOrders = async () => {
+    const fetchData = async () => {
       try {
-        const data = await apiClient('/orders/merchant');
-        if (data) setOrders(data.slice(0, 3)); // Only show top 3 on dashboard
+        const [ordersData, statsData] = await Promise.all([
+          apiClient('/orders/merchant'),
+          apiClient('/orders/merchant/stats')
+        ]);
+        if (ordersData) setOrders(ordersData.slice(0, 3));
+        if (statsData) setStats(statsData);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchOrders();
+    fetchData();
   }, [token, user, router]);
 
   useEffect(() => {
@@ -189,7 +199,7 @@ export default function MerchantDashboard() {
                                 </span>
                              </div>
                              <p className="text-xs font-bold text-[#888888]">
-                                Ordered by <span className="text-[#111111]">{order.customer?.users?.name || 'Operational Node'}</span> • {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                Ordered by <span className="text-[#111111]">{order.customer?.name || 'Operational Node'}</span> • {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                              </p>
                           </div>
                        </div>
@@ -245,9 +255,9 @@ export default function MerchantDashboard() {
             {/* Statistics Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
                {[
-                 { label: 'TOTAL SALES (TODAY)', value: `$${(orders.reduce((acc, o) => acc + Number(o.total_price), 0)).toFixed(2)}`, sub: '+Real-time calculation', icon: <DollarSign size={20} />, color: '#d97757' },
-                 { label: 'SUCCESS RATE', value: '100%', sub: 'Target: 95%', icon: <TrendingUp size={20} />, color: '#111111' },
-                 { label: 'PENDING TASKS', value: orders.filter(o => o.status === 'pending').length, sub: 'ACTION NEEDED', icon: <Tag size={20} />, color: '#111111' },
+                 { label: 'TOTAL SALES (TODAY)', value: `$${stats.todayRevenue.toFixed(2)}`, sub: '+Real-time calculation', icon: <DollarSign size={20} />, color: '#d97757' },
+                 { label: 'COMPLETED ORDERS', value: stats.completedOrders, sub: 'Total History', icon: <TrendingUp size={20} />, color: '#111111' },
+                 { label: 'PENDING TASKS', value: stats.pendingOrders, sub: 'ACTION NEEDED', icon: <Tag size={20} />, color: '#111111' },
                ].map((stat, idx) => (
                  <motion.div 
                     key={stat.label}

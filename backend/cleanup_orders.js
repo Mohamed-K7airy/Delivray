@@ -24,7 +24,8 @@ async function cleanup() {
     // Actually orders reference store_id.
     
     // b. Delete orders associated with this store
-    console.log('Deleting orders for MINI-FPL...');
+    console.log('Skipping orders deletion to preserve history for MINI-FPL...');
+    /*
     const { error: orderError } = await supabase
       .from('orders')
       .delete()
@@ -44,6 +45,7 @@ async function cleanup() {
     } else {
       console.log('Successfully deleted MINI-FPL store.');
     }
+    */
   } else {
     console.log('MINI-FPL store not found or already deleted.');
   }

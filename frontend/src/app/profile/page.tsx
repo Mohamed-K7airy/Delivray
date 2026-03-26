@@ -33,14 +33,17 @@ export default function UserProfile() {
         });
         if (ordersRes.ok) {
            const data = await ordersRes.json();
-           setOrders(data);
+           // Enrich orders with store name mapping if missing
+           const enriched = data.map((o: any) => ({
+             ...o,
+             restaurant: o.stores?.name,
+             date: new Date(o.created_at).toLocaleDateString(),
+             price: o.total_price
+           }));
+           setOrders(enriched);
         } else {
-           // Mock data for high-fidelity preview matching mockup
-           setOrders([
-             { id: 'DV-88219', status: 'In Progress', restaurant: 'The Burger Collective', date: 'Oct 24, 2023', eta: '15-20 mins', price: 42.50, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop' },
-             { id: 'DV-88012', status: 'Completed', restaurant: 'Napoli Pizzeria', date: 'Oct 21, 2023', price: 28.90, image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&h=300&auto=format&fit=crop' },
-             { id: 'DV-87955', status: 'Completed', restaurant: 'Green Garden Salads', date: 'Oct 18, 2023', price: 19.20, image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=300&h=300&auto=format&fit=crop' }
-           ]);
+           console.error('Failed to fetch orders');
+           setOrders([]);
         }
       } catch (err) {
         console.error(err);

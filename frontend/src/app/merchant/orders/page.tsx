@@ -22,11 +22,12 @@ import {
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/apiClient';
 
-const statsData = [
-  { label: 'TOTAL ORDERS TODAY', value: '148', change: '+12% vs yesterday', icon: <ShoppingBag size={20} />, color: 'orange' },
-  { label: 'PENDING ORDERS', value: '24', change: '', icon: <Timer size={20} />, color: 'red' },
-  { label: 'COMPLETED ORDERS', value: '112', change: '', icon: <CheckCircle2 size={20} />, color: 'green' },
-];
+const [stats, setStats] = useState({
+  totalOrdersToday: 0,
+  pendingOrders: 0,
+  completedOrders: 0,
+  todayRevenue: 0
+});
 
 export default function MerchantOrders() {
   const { token, user } = useAuthStore();
@@ -43,8 +44,12 @@ export default function MerchantOrders() {
 
     const fetchOrders = async () => {
       try {
-        const data = await apiClient('/orders/merchant');
-        if (data) setOrders(data);
+        const [ordersData, statsData] = await Promise.all([
+          apiClient('/orders/merchant'),
+          apiClient('/orders/merchant/stats')
+        ]);
+        if (ordersData) setOrders(ordersData);
+        if (statsData) setStats(statsData);
       } catch (err) {
         console.error('[MerchantOrders] Load failed:', err);
       } finally {
@@ -103,7 +108,11 @@ export default function MerchantOrders() {
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
-        {statsData.map((stat, idx) => (
+        {[
+          { label: 'TOTAL ORDERS TODAY', value: stats.totalOrdersToday, icon: <ShoppingBag size={20} />, color: 'orange' },
+          { label: 'PENDING ORDERS', value: stats.pendingOrders, icon: <Timer size={20} />, color: 'red' },
+          { label: 'COMPLETED ORDERS', value: stats.completedOrders, icon: <CheckCircle2 size={20} />, color: 'green' },
+        ].map((stat, idx) => (
           <motion.div 
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
@@ -119,11 +128,6 @@ export default function MerchantOrders() {
                }`}>
                   {stat.icon}
                </div>
-               {stat.change && (
-                  <span className="bg-green-50 text-green-600 text-[9px] font-black px-3 py-1 rounded-full border border-green-100">
-                     {stat.change}
-                  </span>
-               )}
             </div>
             <div className="relative z-10">
                <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-2">{stat.label}</p>
@@ -181,14 +185,14 @@ export default function MerchantOrders() {
                        <td className="px-10 py-8">
                           <span className="text-sm font-black text-[#d97757] tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</span>
                        </td>
-                       <td className="px-10 py-8">
-                          <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-[#888888] border border-white">
-                                {order.customer?.users?.name?.[0] || 'U'}
-                             </div>
-                             <span className="text-sm font-bold text-[#111111]">{order.customer?.users?.name || 'Customer'}</span>
-                          </div>
-                       </td>
+                        <td className="px-10 py-8">
+                           <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-black text-[#888888] border border-white">
+                                 {order.customer?.name?.[0] || 'U'}
+                              </div>
+                              <span className="text-sm font-bold text-[#111111]">{order.customer?.name || 'Customer'}</span>
+                           </div>
+                        </td>
                        <td className="px-10 py-8">
                           <span className="text-sm font-medium text-[#555555] max-w-[200px] block truncate">
                              {order.order_items?.[0]?.quantity}x {order.order_items?.[0]?.products?.name}
@@ -203,9 +207,9 @@ export default function MerchantOrders() {
                              {order.status.replace(/_/g, ' ')}
                           </span>
                        </td>
-                       <td className="px-10 py-8 text-xs font-bold text-gray-400">
-                          Today, {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                       </td>
+                        <td className="px-10 py-8 text-xs font-bold text-gray-400">
+                           {new Date(order.created_at).toDateString() === new Date().toDateString() ? 'Today' : new Date(order.created_at).toLocaleDateString()}, {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </td>
                        <td className="px-10 py-8 text-right">
                           <div className="flex items-center justify-end gap-4">
                              <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-[#111111] transition-all">

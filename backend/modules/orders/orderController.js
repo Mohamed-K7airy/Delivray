@@ -93,7 +93,7 @@ export const getMerchantOrders = async (req, res) => {
 
     const { data: orders, error } = await supabase
       .from('orders')
-      .select('*, order_items(*, products(name))')
+      .select('*, customer:users(name), order_items(*, products(name))')
       .in('store_id', storeIds)
       .order('created_at', { ascending: false });
 
@@ -262,6 +262,68 @@ export const getOrderById = async (req, res) => {
     // (Simplified for now, but usually role-based)
     
     res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Get merchant statistics
+// @route   GET /orders/merchant/stats
+// @access  Private/Merchant
+export const getMerchantStats = async (req, res) => {
+  try {
+    const { data: stores } = await supabase.from('stores').select('id').eq('owner_id', req.user.id);
+    const storeIds = stores.map(s => s.id);
+
+    if (storeIds.length === 0) {
+      return res.json({
+        totalOrdersToday: 0,
+        pendingOrders: 0,
+        completedOrders: 0,
+        todayRevenue: 0
+      });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // 1. Total Orders Today
+    const { count: totalToday } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .in('store_id', storeIds)
+      .gte('created_at', today.toISOString());
+
+    // 2. Pending Orders (Total)
+    const { count: pending } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .in('store_id', storeIds)
+      .eq('status', 'pending');
+
+    // 3. Completed Orders (Total)
+    const { count: completed } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .in('store_id', storeIds)
+      .eq('status', 'completed');
+
+    // 4. Today's Revenue
+    const { data: revenueData } = await supabase
+      .from('orders')
+      .select('total_price')
+      .in('store_id', storeIds)
+      .eq('status', 'completed')
+      .gte('created_at', today.toISOString());
+
+    const revenue = revenueData ? revenueData.reduce((acc, o) => acc + Number(o.total_price), 0) : 0;
+
+    res.json({
+      totalOrdersToday: totalToday || 0,
+      pendingOrders: pending || 0,
+      completedOrders: completed || 0,
+      todayRevenue: revenue
+    });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
   }

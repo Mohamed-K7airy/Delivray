@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOrder, getMerchantOrders, updateOrderStatus, getCustomerOrders, getDriverOrders, getOrderById } from './orderController.js';
+import { createOrder, getMerchantOrders, updateOrderStatus, getCustomerOrders, getDriverOrders, getOrderById, getMerchantStats } from './orderController.js';
 import { protect, authorizeRoles } from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -14,6 +14,7 @@ router.get('/:id', getOrderById);
 
 // Merchant routes
 router.get('/merchant', authorizeRoles('merchant'), getMerchantOrders);
+router.get('/merchant/stats', authorizeRoles('merchant'), getMerchantStats);
 router.patch('/:id/status', authorizeRoles('merchant'), updateOrderStatus);
 
 // Driver routes

@@ -154,7 +154,7 @@ export default function DriverDashboard() {
                   <div className="flex bg-[#f9f9f9] px-8 py-5 rounded-xl border border-gray-100 items-center gap-4 shadow-sm">
                     <div className="flex flex-col items-end">
                       <span className="text-[9px] font-black text-[#888888] uppercase tracking-widest leading-none mb-1">Guaranteed Payout</span>
-                      <span className="text-3xl font-black text-[#111111] tracking-tighter">$12.50</span>
+                      <span className="text-3xl font-black text-[#111111] tracking-tighter">${Number(activeOrder.total_price).toFixed(2)}</span>
                     </div>
                     <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#d97757] shadow-sm">
                        <Wallet size={24} />
@@ -178,7 +178,7 @@ export default function DriverDashboard() {
                       </div>
                       <div>
                         <h4 className="text-xl lg:text-2xl font-black text-[#111111] tracking-tight">{activeOrder.stores?.name || 'Restaurant Terminal'}</h4>
-                        <p className="text-[#888888] font-bold text-sm italic">Pickup Location • Open until 11:00 PM</p>
+                        <p className="text-[#888888] font-bold text-sm italic">Pickup Location • Order #{activeOrder.id.slice(0, 8).toUpperCase()}</p>
                       </div>
                     </div>
 
