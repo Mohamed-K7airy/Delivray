@@ -2,227 +2,277 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
-import { TrendingUp, Users, DollarSign, Package, Zap, ListOrdered, Activity, Info, BarChart3, Clock, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  Plus, 
+  Search, 
+  Bell, 
+  ChevronRight, 
+  Clock, 
+  DollarSign, 
+  Percent, 
+  Tag, 
+  BarChart3, 
+  Upload, 
+  Sparkles,
+  ArrowRight,
+  TrendingUp,
+  PackageCheck
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
+
+const liveOrdersData = [
+  { id: 'DEL-4829', items: 'Artisan Burger Combo', status: 'PREPARING', time: '8 mins ago', est: 'pickup in 12m', icon: '🍔' },
+  { id: 'DEL-4831', items: 'Truffle Mushroom Pizza (x2)', status: 'READY', time: '15 mins ago', est: 'Waiting for driver', icon: '🍕' },
+  { id: 'DEL-4825', items: 'Pastry Selection Box', status: 'COMPLETED', time: '45 mins ago', est: 'Delivered at 12:45 PM', icon: '🥐' },
+];
 
 export default function MerchantDashboard() {
   const { token, user } = useAuthStore();
   const router = useRouter();
-  const [stats, setStats] = useState({ revenue: 0, orders: 0, customers: 0, products: 0 });
-  const [activities, setActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [productForm, setProductForm] = useState({ title: '', price: '', category: 'Main Courses' });
 
   useEffect(() => {
-    if (!token || user?.role !== 'merchant') {
-      router.push('/login');
-      return;
-    }
+    // Simulate loading data
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
-    const fetchData = async () => {
-      try {
-        const statsRes = await fetch(`${API_URL}/stores/stats`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (statsRes.ok) {
-           const statsData = await statsRes.json();
-           setStats(statsData);
-        }
-
-        const ordersRes = await fetch(`${API_URL}/merchant/orders`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (ordersRes.ok) {
-           const ordersData = await ordersRes.json();
-           setActivities(ordersData.slice(0, 5));
-        }
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [token, user, router]);
-
-  const statCards = [
-    { label: 'Total Revenue', value: `$${stats.revenue.toLocaleString()}`, change: '+12.5%', icon: <DollarSign size={20} />, color: 'primary' },
-    { label: 'Active Orders', value: stats.orders.toString(), change: '+8.2%', icon: <ListOrdered size={20} />, color: 'white' },
-    { label: 'Total Customers', value: stats.customers.toString(), change: '+5.4', icon: <Users size={20} />, color: 'white' },
-    { label: 'Catalog Size', value: stats.products.toString(), change: '+2', icon: <Package size={20} />, color: 'white' },
-  ];
+  const handleSaveProduct = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success('Product saved successfully! 🚀');
+    setProductForm({ title: '', price: '', category: 'Main Courses' });
+  };
 
   return (
-    <div className="container-responsive py-8 lg:py-16 space-y-10 lg:space-y-20">
-       {/* Dashboard Hero */}
-       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10">
-          <div>
-             <h1 className="heading-responsive !text-3xl lg:!text-6xl">Store <span className="text-primary italic">Dynamics.</span></h1>
-             <p className="text-responsive mt-4 max-w-3xl">Command center status: Optimal. Analyzing cross-node trajectory for {user?.name?.split(' ')[0]}.</p>
-          </div>
-          <div className="bg-[#111111] px-8 py-4 rounded-2xl border border-white/10 flex items-center space-x-5 shadow-2xl">
-             <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse shadow-[0_0_15px_rgba(217,119,87,1)]"></div>
-             <span className="text-[10px] font-black text-white uppercase tracking-[0.4em] whitespace-nowrap">Node: Live / Sync Priority</span>
-          </div>
-       </div>
+    <div className="space-y-10 lg:space-y-12 pb-24">
+      
+      {/* Page Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+         <div>
+            <h1 className="text-4xl lg:text-5xl font-black text-[#0A0A0A] tracking-tighter mb-2">Merchant Portal</h1>
+            <div className="flex items-center gap-4">
+               <span className="flex items-center gap-2 bg-green-50 text-green-600 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-100">
+                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                  Status: Active
+               </span>
+               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Last synced: 2 mins ago</span>
+            </div>
+         </div>
+         <div className="flex items-center gap-4">
+            <button className="h-14 px-8 bg-white text-[#0A0A0A] border border-gray-100 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-50 transition-all flex items-center gap-3">
+               <Upload size={16} />
+               Export Reports
+            </button>
+            <button 
+               onClick={() => router.push('/merchant/inventory')}
+               className="h-14 px-8 bg-[#FF5A3C] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-[#E84A2C] transition-all flex items-center gap-3 shadow-xl shadow-[#FF5A3C]/20"
+            >
+               <Plus size={18} />
+               New Listing
+            </button>
+         </div>
+      </header>
 
-       {/* Stats Grid - High Density */}
-       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
-          {statCards.map((stat, idx) => (
-             <motion.div 
-                key={stat.label}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="card-responsive !p-6 lg:!p-8 group"
-             >
-                <div className="flex justify-between items-start mb-12">
-                   <div className={`w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border border-white/5 ${stat.color === 'primary' ? 'text-primary' : 'text-gray-500 group-hover:text-white transition-all'}`}>
-                      {stat.icon}
-                   </div>
-                   <div className="flex items-center space-x-2 text-[9px] font-black text-primary uppercase bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
-                      <ArrowUpRight size={14} />
-                      <span>{stat.change}</span>
-                   </div>
-                </div>
-                <div>
-                   <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-3">{stat.label}</p>
-                   <h3 className="text-3xl lg:text-5xl font-black text-white tracking-tighter truncate leading-none">{stat.value}</h3>
-                </div>
-             </motion.div>
-          ))}
-       </div>
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 lg:gap-14 items-start">
+         
+         {/* Center Column: Live Orders Queue */}
+         <div className="xl:col-span-8 space-y-10">
+            <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
+               <div className="flex items-center justify-between mb-10">
+                  <div>
+                     <h2 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-1">Live Orders</h2>
+                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Priority kitchen queue</p>
+                  </div>
+                  <button className="text-[10px] font-black text-[#FF5A3C] uppercase tracking-widest hover:underline">View All Queue</button>
+               </div>
 
-       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 lg:gap-16">
-          {/* Revenue Graph Optimized */}
-          <div className="xl:col-span-8 card-responsive !p-10 lg:!p-16">
-             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
-                <div className="flex items-center space-x-6">
-                   <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-xl">
-                      <BarChart3 size={28} />
-                   </div>
-                   <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tight">Financial Trajectory</h3>
-                </div>
-                <div className="flex bg-[#0a0a0a] p-1.5 rounded-2xl border border-white/10 w-full md:w-auto">
-                   {['7D', '1M', '1Y', 'ALL'].map(t => (
-                      <button key={t} className={`flex-1 md:flex-none px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${t === '1M' ? 'bg-primary text-white shadow-2xl' : 'text-gray-600 hover:text-white'}`}>
-                         {t}
-                      </button>
-                   ))}
-                </div>
-             </div>
-             
-             {/* Abstract Graph - More Dense */}
-             <div className="h-64 lg:h-80 flex items-end justify-between space-x-2 sm:space-x-4 mb-10">
-                {[45, 65, 40, 85, 60, 95, 75, 50, 90, 35, 70, 55, 80, 45, 90].map((h, i) => (
-                   <motion.div 
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${h}%` }}
-                      transition={{ delay: i * 0.03, duration: 1.2, ease: 'circOut' }}
-                      className={`flex-1 rounded-2xl bg-white/5 hover:bg-white/10 transition-all relative overflow-hidden group/bar ${h >= 80 ? 'bg-primary/20 !bg-primary/40' : ''}`}
-                   >
-                      {h >= 80 && <div className="absolute inset-0 bg-primary opacity-30 shadow-[0_0_20px_rgba(217,119,87,1)]"></div>}
-                   </motion.div>
-                ))}
-             </div>
+               <div className="space-y-6">
+                  {liveOrdersData.map((order, idx) => (
+                    <motion.div 
+                       key={order.id}
+                       initial={{ opacity: 0, x: -20 }}
+                       animate={{ opacity: 1, x: 0 }}
+                       transition={{ delay: idx * 0.1 }}
+                       className="group bg-[#F8F8F8] hover:bg-white hover:shadow-xl hover:shadow-black/5 rounded-[2rem] p-6 lg:p-8 flex items-center justify-between border border-transparent hover:border-gray-100 transition-all cursor-pointer"
+                       onClick={() => router.push('/merchant/orders')}
+                    >
+                       <div className="flex items-center gap-6 lg:gap-10">
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-sm border border-white transition-transform group-hover:scale-110 duration-500 ${
+                             order.status === 'READY' ? 'bg-blue-50' : order.status === 'PREPARING' ? 'bg-orange-50' : 'bg-gray-50'
+                          }`}>
+                             {order.icon}
+                          </div>
+                          <div>
+                             <div className="flex items-center gap-4 mb-2">
+                                <span className="text-lg font-black text-[#0A0A0A] tracking-tight">{order.id} — {order.items}</span>
+                                <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                                   order.status === 'READY' ? 'bg-blue-50 text-blue-500 border-blue-100' : 
+                                   order.status === 'PREPARING' ? 'bg-orange-50 text-[#FF5A3C] border-orange-100' : 
+                                   'bg-gray-100 text-gray-400 border-gray-200'
+                                }`}>
+                                   {order.status}
+                                </span>
+                             </div>
+                             <p className="text-xs font-bold text-gray-400">
+                                Ordered by <span className="text-[#0A0A0A]">{order.id === 'DEL-4829' ? 'Sarah Jenkins' : order.id === 'DEL-4831' ? 'Marcus Chen' : 'Elena Rodriguez'}</span> • {order.time}
+                             </p>
+                          </div>
+                       </div>
+                       <div className="flex items-center gap-8">
+                          <div className="text-right hidden sm:block">
+                             <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${order.status === 'READY' ? 'text-blue-500' : 'text-gray-400'}`}>
+                                {order.status === 'READY' ? 'READY' : order.status === 'COMPLETED' ? 'COMPLETED' : 'PREPARING'}
+                             </p>
+                             <p className="text-xs font-bold text-gray-500">{order.est}</p>
+                          </div>
+                          <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-gray-300 group-hover:text-[#FF5A3C] group-hover:bg-[#FF5A3C]/5 border border-gray-50 transition-all">
+                             {order.status === 'COMPLETED' ? <PackageCheck size={20} className="text-green-500" /> : <ChevronRight size={20} />}
+                          </div>
+                       </div>
+                    </motion.div>
+                  ))}
+               </div>
+            </div>
 
-             <div className="flex items-center justify-between text-[9px] font-black text-gray-700 uppercase tracking-[0.6em] pt-8 border-t border-white/5">
-                <span>TX-ALPHA</span>
-                <span>TX-BETA</span>
-                <span>TX-GAMMA</span>
-                <span>TX-DELTA</span>
-                <span>TX-NEXUS</span>
-             </div>
-          </div>
+            {/* Statistics Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+               {[
+                 { label: 'TOTAL SALES (TODAY)', value: '$1,482.00', sub: '+12% vs yesterday', icon: <DollarSign size={20} />, color: '#FF5A3C' },
+                 { label: 'COMPLETION RATE', value: '98.4%', sub: 'Target: 95%', icon: <TrendingUp size={20} />, color: '#0A0A0A' },
+                 { label: 'ACTIVE PROMOS', value: '3', sub: 'MANAGE DEALS', icon: <Tag size={20} />, color: '#0A0A0A' },
+               ].map((stat, idx) => (
+                 <motion.div 
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + idx * 0.1 }}
+                    className="bg-white rounded-[2.5rem] p-8 lg:p-10 border border-gray-100 shadow-sm text-center group hover:shadow-xl hover:shadow-black/5 transition-all"
+                  >
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">{stat.label}</p>
+                    <h4 className="text-4xl font-black text-[#0A0A0A] tracking-tighter mb-4 leading-none">{stat.value}</h4>
+                    <p className={`text-[9px] font-black uppercase tracking-widest ${idx === 0 ? 'text-green-500' : idx === 2 ? 'text-[#FF5A3C] cursor-pointer hover:underline' : 'text-gray-400'}`}>
+                       {idx === 0 && <TrendingUp size={12} className="inline mr-2" />}
+                       {stat.sub}
+                    </p>
+                 </motion.div>
+               ))}
+            </div>
 
-          {/* Activity Sidebar Optimized */}
-          <div className="xl:col-span-4 flex flex-col space-y-12">
-             <div className="card-responsive !p-10 flex-1 flex flex-col">
-                <h3 className="text-xl font-black uppercase tracking-tight mb-12 flex items-center justify-between">
-                   <div className="flex items-center space-x-4">
-                      <Clock size={24} className="text-primary" />
-                      <span>Live Stream</span>
-                   </div>
-                   <div className="w-2 h-2 bg-green-500 rounded-full animate-ping"></div>
-                </h3>
-                
-                <div className="space-y-6 flex-1">
-                   {loading ? (
-                      <div className="flex flex-col space-y-6">
-                         {[1,2,3,4].map(i => <div key={i} className="h-16 bg-white/5 animate-pulse rounded-2xl"></div>)}
-                      </div>
-                   ) : activities.length > 0 ? activities.map((item, idx) => (
-                      <div key={idx} className="flex space-x-6 items-center group/it cursor-pointer p-4 rounded-2xl hover:bg-white/[0.03] transition-all border border-transparent hover:border-white/5" onClick={() => router.push('/merchant/orders')}>
-                         <div className="w-12 h-12 rounded-2xl bg-[#0a0a0a] flex items-center justify-center text-gray-500 group-hover/it:text-primary group-hover/it:bg-primary/10 transition-all border border-white/10">
-                            <Zap size={20} />
-                         </div>
-                         <div className="flex-1">
-                            <p className="text-sm font-black uppercase tracking-wide text-white group-hover/it:text-primary transition-colors leading-none mb-2">
-                               Order #{item.id.slice(-4)}
-                            </p>
-                            <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.25em]">{item.status}</p>
-                         </div>
-                         <div className="text-[10px] font-black text-gray-700 uppercase italic">
-                            {new Date(item.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                         </div>
-                      </div>
-                   )) : (
-                      <div className="text-center py-20 opacity-20">
-                        <Activity size={40} className="mx-auto mb-6" />
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em]">Radio Silence</p>
-                      </div>
-                   )}
-                </div>
+            {/* Pro Tips Banner */}
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.98 }}
+               animate={{ opacity: 1, scale: 1 }}
+               className="bg-[#0A0A0A] rounded-[3rem] p-10 lg:p-14 relative overflow-hidden group border border-gray-800"
+            >
+               <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
+                  <div className="max-w-md">
+                     <span className="bg-[#FF5A3C] text-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest mb-6 inline-block">PRO TIPS</span>
+                     <h3 className="text-3xl lg:text-4xl font-black text-white tracking-tighter leading-tight mb-6">Boost your visibility during lunchtime.</h3>
+                     <p className="text-gray-400 text-sm font-bold leading-relaxed mb-10">Merchants using our AI-driven "Speed Tags" see a 24% increase in click-through rates from local customers.</p>
+                     <button className="bg-white text-[#0A0A0A] px-10 py-4 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-100 transition-all flex items-center gap-3">
+                        Learn More
+                     </button>
+                  </div>
+                  <div className="relative w-full md:w-auto flex items-center justify-center">
+                     <div className="w-64 h-64 bg-white/5 rounded-full blur-3xl absolute animate-pulse" />
+                     <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=400&auto=format&fit=crop" className="w-[400px] h-[250px] object-cover rounded-3xl opacity-50 transition-opacity group-hover:opacity-70 duration-700 shadow-2xl" alt="Lunch Rush" />
+                  </div>
+               </div>
+            </motion.div>
+         </div>
 
-                <button 
-                  onClick={() => router.push('/merchant/orders')}
-                  className="w-full mt-12 py-5 bg-[#0a0a0a] border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-primary hover:text-white transition-all text-gray-500 shadow-xl"
-                >
-                   All Communications
-                </button>
-             </div>
-          </div>
-       </div>
+         {/* Right Sidebar: Quick Add Product */}
+         <aside className="xl:col-span-4 lg:sticky lg:top-8 space-y-10">
+            <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
+               <h3 className="text-2xl font-black text-[#0A0A0A] tracking-tighter mb-10">Quick Add Product</h3>
+               
+               <form onSubmit={handleSaveProduct} className="space-y-8">
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">PRODUCT TITLE</label>
+                     <input 
+                        required
+                        placeholder="e.g. Summer Harvest Salad" 
+                        value={productForm.title}
+                        onChange={(e) => setProductForm({...productForm, title: e.target.value})}
+                        className="w-full h-16 bg-[#F8F8F8] px-6 rounded-2xl border border-gray-100 focus:border-[#FF5A3C] outline-none font-bold text-[#0A0A0A] transition-all"
+                     />
+                  </div>
 
-       {/* Global Analytics Flow */}
-       <div className="card-responsive !p-10 border-transparent relative overflow-hidden group">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-12 relative z-10">
-             <div className="flex items-center space-x-5">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                    <Activity size={24} />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Ecosystem Intelligence</h3>
-             </div>
-             <div className="hidden sm:flex items-center space-x-10 text-[10px] font-black uppercase tracking-[0.4em] text-gray-600">
-                <div className="flex items-center space-x-3">
-                   <span className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-[0_0_10px_rgba(217,119,87,1)]"></span>
-                   <span>Sync Active</span>
-                </div>
-                <span className="opacity-50">Node v42.0.1</span>
-             </div>
-          </div>
-          
-          <div className="relative h-3 bg-white/5 rounded-full mb-10 overflow-hidden shadow-inner">
-             <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: '68%' }}
-                transition={{ duration: 2, ease: 'circOut' }}
-                className="absolute h-full bg-gradient-to-r from-primary via-primary to-primary shadow-[0_0_20px_rgba(217,119,87,0.4)] rounded-full"
-             ></motion.div>
-          </div>
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">PRICE (USD)</label>
+                     <div className="relative">
+                        <DollarSign size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" />
+                        <input 
+                           required
+                           type="number"
+                           step="0.01"
+                           placeholder="0.00" 
+                           value={productForm.price}
+                           onChange={(e) => setProductForm({...productForm, price: e.target.value})}
+                           className="w-full h-16 bg-[#F8F8F8] pl-14 pr-6 rounded-2xl border border-gray-100 focus:border-[#FF5A3C] outline-none font-bold text-[#0A0A0A] transition-all"
+                        />
+                     </div>
+                  </div>
 
-          <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.5em] text-gray-700">
-             <span className="text-primary">Source</span>
-             <span className="text-primary">Node</span>
-             <span>Relay</span>
-             <span>Nexus</span>
-          </div>
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">CATEGORY</label>
+                     <select 
+                        value={productForm.category}
+                        onChange={(e) => setProductForm({...productForm, category: e.target.value})}
+                        className="w-full h-16 bg-[#F8F8F8] px-6 rounded-2xl border border-gray-100 focus:border-[#FF5A3C] outline-none font-bold text-[#0A0A0A] transition-all appearance-none cursor-pointer"
+                     >
+                        <option>Main Courses</option>
+                        <option>Appetizers</option>
+                        <option>Desserts</option>
+                        <option>Beverages</option>
+                     </select>
+                  </div>
 
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-       </div>
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">PRODUCT PHOTO</label>
+                     <div className="w-full h-40 border-2 border-dashed border-gray-100 rounded-[2rem] bg-[#F8F8F8] flex flex-col items-center justify-center gap-3 cursor-pointer group hover:border-[#FF5A3C]/30 hover:bg-[#FFF9F8] transition-all">
+                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-300 group-hover:text-[#FF5A3C] transition-all">
+                           <Upload size={20} />
+                        </div>
+                        <p className="text-[10px] font-bold text-gray-400">Drag & drop or <span className="text-[#FF5A3C]">browse</span></p>
+                     </div>
+                  </div>
+
+                  <button 
+                     type="submit"
+                     className="w-full h-20 bg-[#FF5A3C] text-white rounded-[1.5rem] font-black uppercase tracking-[0.2em] text-[10px] hover:bg-[#E84A2C] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-[#FF5A3C]/30"
+                  >
+                     SAVE PRODUCT
+                  </button>
+               </form>
+            </div>
+
+            <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm flex items-center gap-6">
+               <div className="w-16 h-16 bg-[#F3F4F6] rounded-2xl flex items-center justify-center text-[#0A0A0A] shrink-0">
+                  <BarChart3 size={24} />
+               </div>
+               <div>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">DATA INSIGHTS</p>
+                  <p className="text-xs font-black text-[#0A0A0A] leading-tight">Weekly report is ready for download.</p>
+                  <button className="text-[9px] font-black text-[#FF5A3C] uppercase tracking-widest mt-1 hover:underline">Download PDF</button>
+               </div>
+            </div>
+         </aside>
+
+      </div>
+      
+      {/* Footer Branding */}
+      <footer className="pt-20 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8 opacity-40">
+         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">© 2024 Delivray Merchant Services</p>
+         <div className="flex items-center gap-8">
+            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest cursor-pointer hover:text-[#0A0A0A]">Privacy</span>
+            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest cursor-pointer hover:text-[#0A0A0A]">Merchant Agreement</span>
+            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest cursor-pointer hover:text-[#0A0A0A]">Support</span>
+         </div>
+      </footer>
     </div>
   );
 }

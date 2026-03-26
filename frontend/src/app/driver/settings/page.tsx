@@ -2,13 +2,13 @@
 import { Settings as SettingsIcon, LifeBuoy } from 'lucide-react';
 
 const Card = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => (
-  <div className="max-w-4xl mx-auto py-20 text-center space-y-12">
-    <div className="w-32 h-32 sm:w-48 sm:h-48 bg-white/5 rounded-3xl sm:rounded-[4rem] border border-white/5 flex items-center justify-center mx-auto group shadow-2xl transition-all hover:border-[#ff8564]/30 duration-700">
-       <Icon size={80} className="text-gray-700 group-hover:text-[#ff8564] group-hover:scale-110 transition-all duration-700" />
+  <div className="max-w-4xl mx-auto py-20 lg:py-32 text-center space-y-12">
+    <div className="w-32 h-32 lg:w-48 lg:h-48 bg-white rounded-3xl lg:rounded-[3.5rem] border border-gray-100 flex items-center justify-center mx-auto group shadow-sm transition-all hover:bg-gray-50 duration-700">
+       <Icon size={80} className="text-gray-200 group-hover:text-[#FF5A3C] group-hover:scale-110 transition-all duration-700" />
     </div>
-    <div className="space-y-4">
-       <h1 className="text-3xl sm:text-6xl font-black tracking-tighter uppercase italic">{title}</h1>
-       <p className="text-gray-500 text-base sm:text-xl font-bold max-w-lg mx-auto leading-relaxed">{description}</p>
+    <div className="space-y-6">
+       <h1 className="text-4xl lg:text-7xl font-black tracking-tighter uppercase italic text-[#0A0A0A]">{title}</h1>
+       <p className="text-gray-400 text-base lg:text-xl font-bold max-w-lg mx-auto leading-relaxed border-t border-gray-50 pt-8 uppercase tracking-widest">{description}</p>
     </div>
   </div>
 );

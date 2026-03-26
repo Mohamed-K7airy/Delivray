@@ -52,12 +52,21 @@ export const acceptOrder = async (req, res) => {
     // Emit event
     const io = getIo();
     if (io) {
-      io.to(`order_${id}`).emit('order_status_updated', updatedOrder);
-      
-      // Get store owner to notify merchant room
-      const { data: store } = await supabase.from('stores').select('owner_id').eq('id', updatedOrder.store_id).single();
-      if (store) {
-        io.to(`merchant_${store.owner_id}`).emit('order_status_updated', updatedOrder);
+      // Refetch full order with drivers and users for the tracking page
+      const { data: fullOrder } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          stores(name, owner_id, location_lat, location_lng),
+          order_items(*, products(name)),
+          drivers(id, user_id, current_location_lat, current_location_lng, users(name))
+        `)
+        .eq('id', id)
+        .single();
+
+      if (fullOrder) {
+        io.to(`order_${id}`).emit('order_status_updated', fullOrder);
+        io.to(`merchant_${fullOrder.stores.owner_id}`).emit('order_status_updated', fullOrder);
       }
     }
 
@@ -97,12 +106,20 @@ export const completeOrder = async (req, res) => {
     // Emit event
     const io = getIo();
     if (io) {
-      io.to(`order_${id}`).emit('order_status_updated', completedOrder);
-      
-      // Get store owner to notify merchant room
-      const { data: store } = await supabase.from('stores').select('owner_id').eq('id', completedOrder.store_id).single();
-      if (store) {
-        io.to(`merchant_${store.owner_id}`).emit('order_status_updated', completedOrder);
+      const { data: fullOrder } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          stores(name, owner_id),
+          order_items(*, products(name)),
+          drivers(id, user_id, users(name))
+        `)
+        .eq('id', id)
+        .single();
+
+      if (fullOrder) {
+        io.to(`order_${id}`).emit('order_status_updated', fullOrder);
+        io.to(`merchant_${fullOrder.stores.owner_id}`).emit('order_status_updated', fullOrder);
       }
     }
 

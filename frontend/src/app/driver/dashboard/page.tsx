@@ -3,333 +3,342 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import {
-   Navigation,
-   CheckCircle,
-   Package,
-   MapPin,
-   Store as StoreIcon,
-   Activity,
-   Truck,
-   Timer,
-   Wallet,
-   Check,
-   X,
-   Clock,
-   ExternalLink,
-   ShieldCheck,
-   ChevronRight,
-   Zap
+  Navigation,
+  MapPin,
+  Store as StoreIcon,
+  Activity,
+  Truck,
+  Timer,
+  Wallet,
+  Check,
+  X,
+  Clock,
+  ExternalLink,
+  ShieldCheck,
+  ChevronRight,
+  Zap,
+  TrendingUp,
+  AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
 import Button from '@/components/Button';
 import { useSocket } from '@/context/SocketContext';
+import { apiClient } from '@/lib/apiClient';
 
 export default function DriverDashboard() {
-   const { token, user } = useAuthStore();
-   const { socket, isConnected } = useSocket();
-   const router = useRouter();
-   const [availableOrder, setAvailableOrder] = useState<any | null>(null);
-   const [activeOrder, setActiveOrder] = useState<any | null>(null);
-   const [loading, setLoading] = useState(true);
-   const [countdown, setCountdown] = useState(30);
-   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { token, user } = useAuthStore();
+  const { socket, isConnected } = useSocket();
+  const router = useRouter();
+  const [availableOrder, setAvailableOrder] = useState<any | null>(null);
+  const [activeOrder, setActiveOrder] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(24);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-   const [stats, setStats] = useState({ earnings: 0, deliveries: 0, activeTime: '0h 0m' });
+  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, activeTime: '4h 22m' });
 
-   useEffect(() => {
-      if (!token || user?.role !== 'driver') return router.push('/login');
+  useEffect(() => {
+    if (!token || user?.role !== 'driver') return router.push('/login');
 
-      const fetchStats = async () => {
-         try {
-            const res = await fetch(`${API_URL}/delivery/stats`, {
-               headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-               const data = await res.json();
-               setStats({ earnings: data.earnings, deliveries: data.deliveries, activeTime: 'Active Now' });
-            }
-         } catch (err) {
-            console.error('Error fetching driver stats:', err);
-         }
-      };
-      fetchStats();
-
-      const fetchActiveOrder = async () => {
-         try {
-            const res = await fetch(`${API_URL}/orders/driver`, {
-               headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-               const data = await res.json();
-               if (Array.isArray(data)) {
-                  const current = data.find((o: any) => o.status === 'delivering' || o.status === 'picked_up');
-                  if (current) setActiveOrder(current);
-               }
-            }
-         } catch (err) {
-            console.error(err);
-         } finally {
-            setLoading(false);
-         }
-      };
-      fetchActiveOrder();
-   }, [token, user, router]);
-
-   useEffect(() => {
-      if (!socket || !isConnected) return;
-
-      socket.on('order_ready_for_pickup', (order) => {
-         setAvailableOrder(order);
-         setCountdown(30);
-         if (timerRef.current) clearInterval(timerRef.current);
-         timerRef.current = setInterval(() => {
-            setCountdown(prev => {
-               if (prev <= 1) {
-                  clearInterval(timerRef.current!);
-                  setAvailableOrder(null);
-                  return 0;
-               }
-               return prev - 1;
-            });
-         }, 1000);
-      });
-
-      return () => {
-         socket.off('order_ready_for_pickup');
-         if (timerRef.current) clearInterval(timerRef.current);
-      };
-   }, [socket, isConnected]);
-
-   const acceptOrder = async (orderId: string) => {
+    const fetchStats = async () => {
       try {
-         const res = await fetch(`${API_URL}/delivery/accept-order/${orderId}`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` }
-         });
-         if (res.ok) {
-            const data = await res.json();
-            setActiveOrder(data);
+        const data = await apiClient('/delivery/stats');
+        if (data) {
+          setStats({ earnings: data.earnings, deliveries: data.deliveries, activeTime: 'Active Now' });
+        }
+      } catch (err) {
+        console.error('Error fetching driver stats:', err);
+      }
+    };
+    fetchStats();
+
+    const fetchActiveOrder = async () => {
+      try {
+        const data = await apiClient('/orders/driver');
+        if (data && Array.isArray(data)) {
+          const current = data.find((o: any) => o.status === 'delivering' || o.status === 'picked_up' || o.status === 'accepted');
+          if (current) setActiveOrder(current);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchActiveOrder();
+  }, [token, user, router]);
+
+  useEffect(() => {
+    if (!socket || !isConnected) return;
+
+    socket.on('order_ready_for_pickup', (order) => {
+      setAvailableOrder(order);
+      setCountdown(24);
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current!);
             setAvailableOrder(null);
-            toast.success("Mission Accepted! Route initialized.");
-         }
-      } catch (err: any) {
-         toast.error(err.message);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    });
+
+    return () => {
+      socket.off('order_ready_for_pickup');
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [socket, isConnected]);
+
+  const acceptOrder = async (orderId: string) => {
+    try {
+      const data = await apiClient(`/delivery/accept-order/${orderId}`, { method: 'POST' });
+      if (data) {
+        setActiveOrder(data);
+        setAvailableOrder(null);
+        toast.success("Mission Accepted! Route initialized.");
       }
-   };
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
 
-   const completeOrder = async () => {
-      if (!activeOrder) return;
-      try {
-         const res = await fetch(`${API_URL}/delivery/complete-order/${activeOrder.id}`, {
-            method: 'PATCH',
-            headers: { Authorization: `Bearer ${token}` }
-         });
-         if (res.ok) {
-            toast.success('Nice work! Mission completed.');
-            setActiveOrder(null);
-         }
-      } catch (err: any) {
-         toast.error(err.message);
+  const completeOrder = async () => {
+    if (!activeOrder) return;
+    try {
+      const data = await apiClient(`/delivery/complete-order/${activeOrder.id}`, { method: 'PATCH' });
+      if (data) {
+        toast.success('Nice work! Mission completed.');
+        setActiveOrder(null);
       }
-   };
+    } catch (err: any) {
+       console.error(err);
+    }
+  };
 
-   return (
-      <div className="container-responsive py-6 sm:py-10 space-y-12">
-         {/* Driver Header */}
-         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-            <div>
-               <h1 className="heading-responsive !text-3xl sm:!text-5xl uppercase italic tracking-tighter">Navigator: <span className="text-primary">{user?.name?.split(' ')[0]}</span></h1>
-               <p className="text-responsive mt-3 max-w-2xl font-medium">Grid synchronized. Awaiting mission protocols.</p>
-            </div>
-            <div className="bg-white/5 px-6 py-3 rounded-2xl border border-white/5 flex items-center space-x-4 shadow-xl whitespace-nowrap">
-               <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-               <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Duty Status: Active</span>
-            </div>
-         </div>
-
-         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-            {/* Active Mission Display */}
-            <div className="lg:col-span-8 flex flex-col space-y-10">
-               {activeOrder ? (
-                  <motion.div
-                     initial={{ opacity: 0, y: 20 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     className="card-responsive !bg-[#111111] !p-6 sm:!p-12 relative overflow-hidden group shadow-2xl border-white/5"
-                  >
-                     <div className="absolute top-0 right-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1000')] bg-cover opacity-5 mix-blend-overlay grayscale pointer-events-none" />
-
-                     <div className="relative z-10 space-y-12">
-                        <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6 border-b border-white/5 pb-10">
-                           <div className="text-center sm:text-left">
-                              <span className="bg-primary/20 text-primary px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.3em] inline-block mb-4">In-Flight Protocol</span>
-                              <h2 className="text-3xl sm:text-5xl font-black tracking-tighter uppercase leading-none">Order #{activeOrder.id.slice(0, 8).toUpperCase()}</h2>
-                           </div>
-                           <div className="flex bg-white/5 px-6 py-4 rounded-2xl border border-white/5 items-center gap-4">
-                              <div className="flex flex-col items-end">
-                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Estimated Payout</span>
-                                 <span className="text-2xl font-black text-white">$12.50</span>
-                              </div>
-                              <Wallet className="text-primary" size={24} />
-                           </div>
-                        </div>
-
-                        {/* Navigation Timeline */}
-                        <div className="relative pl-16 sm:pl-20 space-y-16">
-                           <div className="absolute left-6 sm:left-8 top-8 bottom-8 w-1 bg-white/5 rounded-full overflow-hidden">
-                              <motion.div
-                                 initial={{ height: "0%" }}
-                                 animate={{ height: activeOrder.status === 'delivering' ? "50%" : "20%" }}
-                                 className="w-full bg-primary shadow-[0_0_10px_rgba(217,119,87,0.5)]"
-                              />
-                           </div>
-
-                           <div className="relative group/step">
-                              <div className="absolute -left-14 sm:-left-16 w-12 h-12 sm:w-16 sm:h-16 bg-primary/20 border border-primary/20 rounded-2xl sm:rounded-3xl flex items-center justify-center text-primary shadow-2xl transition-transform hover:scale-110">
-                                 <StoreIcon size={24} />
-                              </div>
-                              <div>
-                                 <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight">{activeOrder.stores?.name || 'Restaurant Hub'}</h4>
-                                 <p className="text-gray-500 font-medium text-sm sm:text-base italic">Pick up required at terminal location</p>
-                              </div>
-                           </div>
-
-                           <div className="relative group/step">
-                              <div className="absolute -left-14 sm:-left-16 w-12 h-12 sm:w-16 sm:h-16 bg-white/5 border border-white/5 rounded-2xl sm:rounded-3xl flex items-center justify-center text-gray-600 transition-transform hover:scale-110">
-                                 <MapPin size={24} />
-                              </div>
-                              <div>
-                                 <h4 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Vantage Point: Final Hub</h4>
-                                 <p className="text-gray-500 font-medium text-sm sm:text-base italic">Ensure encrypted delivery handoff</p>
-                                 <button className="button-responsive !bg-white/5 !text-white !h-14 !px-8 mt-6">
-                                    <ExternalLink size={18} />
-                                    <span className="ml-3 uppercase tracking-widest text-[10px]">Initialize Maps</span>
-                                 </button>
-                              </div>
-                           </div>
-                        </div>
-
-                        <Button
-                           onClick={completeOrder}
-                           className="w-full h-20 sm:h-24 !bg-primary !text-white !text-xl sm:!text-2xl shadow-2xl shadow-primary/30"
-                        >
-                           <ShieldCheck size={28} className="mr-4" />
-                           <span>Complete Mission</span>
-                        </Button>
-                     </div>
-                  </motion.div>
-               ) : (
-                  <div className="py-24 sm:py-32 flex items-center justify-center text-center bg-white/5 rounded-[3rem] border border-white/5">
-                     <div className="space-y-8 max-w-sm px-6">
-                        <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto text-gray-700 transition-all hover:scale-110 hover:text-primary">
-                           <Truck size={48} />
-                        </div>
-                        <div>
-                           <h3 className="text-2xl sm:text-3xl font-black uppercase tracking-tight">Staging Area <span className="text-primary italic">Empty.</span></h3>
-                           <p className="text-responsive mt-4">Maintaining active connection to the dispatch grid. New missions will materialize instantly.</p>
-                        </div>
-                     </div>
-                  </div>
-               )}
-            </div>
-
-            {/* Sidebar Performance */}
-            <div className="lg:col-span-4 flex flex-col space-y-6 sm:space-y-10">
-               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 ml-4">Fleet Telemetry</span>
-
-               <div className="grid grid-cols-2 lg:grid-cols-1 gap-6">
-                  {[
-                    { label: 'Signal Earnings', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={20} />, color: 'primary' },
-                    { label: 'Total Logistics', value: stats.deliveries, icon: <Truck size={20} />, color: 'text-white' },
-                    { label: 'Operational Time', value: '4h 22m', icon: <Clock size={20} />, color: 'text-white' }
-                  ].map((stat, idx) => (
-                    <div key={idx} className="card-responsive !p-6 sm:!p-8 group hover:-translate-y-1 border-transparent hover:border-white/5 transition-all">
-                       <p className={`text-[9px] font-black uppercase tracking-widest ${idx === 0 ? 'text-primary' : 'text-gray-500'} mb-3`}>{stat.label}</p>
-                       <div className="flex items-center justify-between">
-                          <span className="text-2xl sm:text-4xl font-black text-white tracking-tighter">{stat.value}</span>
-                          <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center ${idx === 0 ? 'text-primary' : 'text-gray-600'}`}>
-                             {stat.icon}
-                          </div>
-                       </div>
-                    </div>
-                  ))}
-               </div>
-            </div>
-         </div>
-
-         {/* Mission Request Overlay */}
-         <AnimatePresence>
-            {availableOrder && (
-               <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-                  <motion.div
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     exit={{ opacity: 0 }}
-                     className="absolute inset-0 bg-black/80 backdrop-blur-3xl"
-                     onClick={() => setAvailableOrder(null)}
-                  />
-                  <motion.div
-                     initial={{ opacity: 0, scale: 0.9, y: 50 }}
-                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                     exit={{ opacity: 0, scale: 0.9, y: 50 }}
-                     className="card-responsive !bg-[#111111] !p-10 sm:!p-16 max-w-xl w-full text-center relative z-10 border-white/10 shadow-[0_50px_150px_-30px_rgba(0,0,0,1)]"
-                  >
-                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
-                     
-                     <div className="relative z-20 space-y-12">
-                        <div className="w-20 h-20 bg-primary/20 rounded-[2rem] flex items-center justify-center mx-auto text-primary animate-bounce shadow-2xl shadow-primary/20">
-                           <Zap size={32} />
-                        </div>
-                        
-                        <div>
-                           <span className="text-[10px] font-black uppercase tracking-[0.5em] text-primary">New Protocol Detected</span>
-                           <h3 className="text-6xl font-black text-white tracking-tighter mt-4">${Number(availableOrder.total_price).toFixed(2)}</h3>
-                           <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mt-2">Guaranteed Operational Payout</p>
-                        </div>
-
-                        <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/5 text-left">
-                           <div className="flex items-center gap-5 mb-4">
-                              <StoreIcon size={20} className="text-primary" />
-                              <span className="text-2xl font-black text-white uppercase tracking-tight">{availableOrder.stores?.name || 'Partner Hub'}</span>
-                           </div>
-                           <div className="flex items-center gap-5 text-gray-500">
-                              <MapPin size={18} />
-                              <span className="text-xs font-black uppercase tracking-widest">1.2km • Sector 5 Dispatch</span>
-                           </div>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row gap-6">
-                           <button
-                              onClick={() => setAvailableOrder(null)}
-                              className="flex-1 h-20 bg-white/5 text-gray-500 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-all border border-white/5"
-                           >
-                              Decline
-                           </button>
-                           <button
-                              onClick={() => acceptOrder(availableOrder.id)}
-                              className="flex-1 h-20 bg-primary text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all"
-                           >
-                              Accept Mission
-                           </button>
-                        </div>
-
-                        <div className="space-y-4">
-                           <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                              <motion.div
-                                 initial={{ width: "100%" }}
-                                 animate={{ width: "0%" }}
-                                 transition={{ duration: 30, ease: "linear" }}
-                                 className="h-full bg-primary"
-                              />
-                           </div>
-                           <p className="text-[8px] font-black uppercase tracking-widest text-gray-600">Signal expiring in {countdown}s</p>
-                        </div>
-                     </div>
-                  </motion.div>
-               </div>
-            )}
-         </AnimatePresence>
+  return (
+    <div className="space-y-10 lg:space-y-12 pb-24">
+      
+      {/* Driver Header */}
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+        <div>
+          <h1 className="text-4xl lg:text-5xl font-black text-[#0A0A0A] tracking-tighter mb-2">Navigator: <span className="text-[#FF5A3C]">{user?.name?.split(' ')[0]}</span></h1>
+          <p className="text-sm font-bold text-gray-400">Your fleet status is active. High-priority orders will appear here instantly.</p>
+        </div>
+        <div className="bg-white px-6 py-4 rounded-2xl border border-gray-100 flex items-center space-x-4 shadow-sm whitespace-nowrap">
+          <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+          <span className="text-[10px] font-black text-[#0A0A0A] uppercase tracking-[0.3em]">Duty Status: Online</span>
+        </div>
       </div>
-   );
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+        {/* Active Mission Display */}
+        <div className="lg:col-span-8 flex flex-col space-y-10">
+          {activeOrder ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-[3rem] p-8 lg:p-12 relative overflow-hidden group shadow-xl shadow-black/5 border border-gray-50"
+            >
+              <div className="relative z-10 space-y-12">
+                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-8 border-b border-gray-50 pb-10">
+                  <div className="text-center sm:text-left">
+                    <span className="bg-[#FF5A3C]/10 text-[#FF5A3C] px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] inline-block mb-4">ACTIVE MISSION</span>
+                    <h2 className="text-3xl lg:text-4xl font-black text-[#0A0A0A] tracking-tighter uppercase leading-none">Order #{activeOrder.id.slice(0, 8).toUpperCase()}</h2>
+                  </div>
+                  <div className="flex bg-gray-50 px-8 py-5 rounded-[2rem] border border-gray-100 items-center gap-4 shadow-inner">
+                    <div className="flex flex-col items-end">
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Guaranteed Payout</span>
+                      <span className="text-3xl font-black text-[#0A0A0A] tracking-tighter">$12.50</span>
+                    </div>
+                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#FF5A3C] shadow-sm">
+                       <Wallet size={24} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Timeline */}
+                <div className="relative pl-20 lg:pl-24 space-y-16 py-4">
+                  <div className="absolute left-10 lg:left-12 top-0 bottom-0 w-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ height: "0%" }}
+                      animate={{ height: activeOrder.status === 'delivering' ? "100%" : "30%" }}
+                      className="w-full bg-[#FF5A3C] shadow-[0_0_20px_rgba(255,90,60,0.5)]"
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute -left-16 lg:-left-[4.5rem] w-14 h-14 bg-white border border-gray-100 rounded-[1.5rem] flex items-center justify-center text-[#0A0A0A] shadow-xl group-hover:scale-110 transition-transform">
+                      <StoreIcon size={24} />
+                    </div>
+                    <div>
+                      <h4 className="text-xl lg:text-2xl font-black text-[#0A0A0A] tracking-tight">{activeOrder.stores?.name || 'Restaurant Terminal'}</h4>
+                      <p className="text-gray-400 font-bold text-sm italic">Pickup Location • Open until 11:00 PM</p>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute -left-16 lg:-left-[4.5rem] w-14 h-14 bg-white border border-gray-100 rounded-[1.5rem] flex items-center justify-center text-gray-300 shadow-xl group-hover:scale-110 transition-transform">
+                      <MapPin size={24} />
+                    </div>
+                    <div>
+                      <h4 className="text-xl lg:text-2xl font-black text-[#0A0A0A] tracking-tight">Customer Destination</h4>
+                      <p className="text-gray-400 font-bold text-sm italic">Sector 4 Transit Point</p>
+                      <button className="h-14 px-10 bg-[#0A0A0A] text-white rounded-2xl font-black uppercase tracking-widest text-[10px] mt-6 flex items-center gap-3 hover:bg-[#333] transition-all shadow-xl shadow-black/20">
+                         <Navigation size={18} />
+                         Load Telemetry
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={completeOrder}
+                  className="w-full h-24 bg-[#FF5A3C] text-white rounded-[2rem] font-black uppercase tracking-[0.2em] text-xl shadow-2xl shadow-[#FF5A3C]/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-4"
+                >
+                  <ShieldCheck size={32} />
+                  Complete Mission & Exit
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="py-24 lg:py-32 flex flex-col items-center justify-center text-center bg-white rounded-[3rem] border border-gray-100 shadow-sm relative overflow-hidden group">
+               <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+               <div className="w-28 h-28 bg-gray-50 rounded-[2.5rem] flex items-center justify-center mb-10 text-gray-200 group-hover:scale-110 group-hover:text-[#FF5A3C]/20 transition-all duration-700">
+                  <Truck size={56} />
+               </div>
+               <h3 className="text-3xl font-black text-[#0A0A0A] tracking-tighter uppercase mb-4">Fleet Staging Area <span className="text-[#FF5A3C] italic">Idle.</span></h3>
+               <p className="text-sm font-bold text-gray-400 max-w-sm mx-auto uppercase tracking-widest">Awaiting command from central dispatch protocol.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Sidebar Performance */}
+        <div className="lg:col-span-4 flex flex-col space-y-10">
+          <div className="bg-[#0A0A0A] rounded-[3rem] p-10 text-white relative overflow-hidden group shadow-2xl">
+             <div className="relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#FF5A3C] mb-8">Performance Telemetry</p>
+                <div className="space-y-10">
+                   {[
+                     { label: 'Signal Earnings', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={20} />, color: '#FF5A3C' },
+                     { label: 'Logistics Handled', value: stats.deliveries, icon: <Truck size={20} />, color: '#FFF' },
+                     { label: 'Time on Grid', value: stats.activeTime, icon: <Clock size={20} />, color: '#FFF' }
+                   ].map((item, idx) => (
+                     <div key={idx} className="flex items-center justify-between group/item">
+                        <div className="flex items-center gap-5">
+                           <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white group-hover/item:text-[#FF5A3C] transition-colors border border-white/5">
+                              {item.icon}
+                           </div>
+                           <div>
+                              <p className="text-[9px] font-black uppercase tracking-widest text-gray-500 mb-1">{item.label}</p>
+                              <p className="text-2xl font-black tracking-tighter leading-none" style={{ color: idx === 0 ? '#FF5A3C' : '#FFF' }}>{item.value}</p>
+                           </div>
+                        </div>
+                        <ChevronRight size={16} className="text-gray-800" />
+                     </div>
+                   ))}
+                </div>
+             </div>
+             <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-[#FF5A3C]/10 rounded-full blur-[80px] pointer-events-none" />
+          </div>
+
+          {/* Quick Support Card */}
+          <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-sm">
+             <div className="w-14 h-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-8 shadow-sm">
+                <AlertCircle size={24} />
+             </div>
+             <h4 className="text-xl font-black text-[#0A0A0A] tracking-tighter mb-2">Fleet Support</h4>
+             <p className="text-xs font-bold text-gray-400 mb-8 uppercase tracking-widest leading-loose">Need technical assistance or reporting an incident?</p>
+             <button className="w-full h-14 bg-gray-50 text-[#0A0A0A] border border-gray-100 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-100 transition-all">
+                Contact Dispatch
+             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* High-Fidelity Mission Request Modal (Exactly as Image 4) */}
+      <AnimatePresence>
+        {availableOrder && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              onClick={() => setAvailableOrder(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 50 }}
+              className="bg-white rounded-[2.5rem] p-10 lg:p-14 max-w-[480px] w-full relative z-10 shadow-[0_50px_100px_rgba(0,0,0,0.4)] border border-gray-100"
+            >
+              <div className="flex flex-col items-center">
+                {/* Icon Box */}
+                <div className="w-24 h-24 bg-[#FF5A3C] rounded-[2rem] flex items-center justify-center text-white mb-8 shadow-[0_15px_40px_rgba(255,90,60,0.3)]">
+                  <Truck size={40} className="fill-current" />
+                </div>
+                
+                {/* Title */}
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#FF5A3C] mb-4">NEW DELIVERY REQUEST</span>
+                
+                {/* Amount */}
+                <div className="flex flex-col items-center mb-10">
+                  <h3 className="text-7xl font-black text-[#0A0A0A] tracking-tighter leading-none">${Number(availableOrder.total_price).toFixed(2)}</h3>
+                  <p className="text-[10px] font-bold text-gray-400 mt-3 italic tracking-tight underline border-gray-200">Estimated payout incl. tip</p>
+                </div>
+
+                {/* Store Info Box */}
+                <div className="w-full bg-[#F8F8F8] p-8 rounded-[2rem] mb-12 border border-gray-100">
+                  <div className="flex flex-col items-center text-center">
+                    <h4 className="text-2xl font-black text-[#0A0A0A] tracking-tight mb-2 uppercase">{availableOrder.stores?.name || 'THE NEON GRILL'}</h4>
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <MapPin size={16} />
+                      <span className="text-sm font-bold tracking-tight">1.2 mi away • Downtown Core</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="grid grid-cols-2 gap-6 w-full mb-10">
+                  <button
+                    onClick={() => setAvailableOrder(null)}
+                    className="h-16 border-2 border-[#FFE4DF] text-[#FF5A3C] rounded-2xl font-black uppercase tracking-widest text-[11px] hover:bg-red-50 transition-all font-geist"
+                  >
+                    Decline
+                  </button>
+                  <button
+                    onClick={() => acceptOrder(availableOrder.id)}
+                    className="h-16 bg-[#FF715B] text-white rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-[#FF5A3C]/20 hover:scale-[1.03] active:scale-[0.97] transition-all"
+                  >
+                    Accept
+                  </button>
+                </div>
+
+                {/* Progress Bar & Countdown */}
+                <div className="w-full space-y-4">
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: "100%" }}
+                      animate={{ width: "0%" }}
+                      transition={{ duration: 24, ease: "linear" }}
+                      className="h-full bg-gradient-to-r from-[#FF5A3C] to-[#FF715B]"
+                    />
+                  </div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 text-center">
+                    REQUEST EXPIRES IN <span className="text-[#FF5A3C]">{countdown} SECONDS</span>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }

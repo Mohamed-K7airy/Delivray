@@ -34,7 +34,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
   }, []);
 
   return (
-    <nav className="h-16 sm:h-24 bg-[#0a0a0a]/80 border-b border-white/5 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
+    <nav className="h-16 sm:h-24 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
       <div className="flex items-center gap-x-6 sm:gap-x-12">
         {/* Only show logo in navbar if sidebar is collapsed */}
         <AnimatePresence mode="wait">
@@ -47,8 +47,8 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
               transition={{ duration: 0.3 }}
               className="flex items-center space-x-4"
             >
-              <Link href="/driver/dashboard" className="w-10 h-10 bg-[#ff8564]/10 rounded-xl flex items-center justify-center border border-[#ff8564]/20 shadow-[0_8px_20px_-5px_rgba(255,133,100,0.3)] active:scale-95 transition-all">
-                <Truck className="text-[#ff8564]" size={20} />
+              <Link href="/driver/dashboard" className="w-10 h-10 bg-[#FF5A3C]/10 rounded-xl flex items-center justify-center border border-[#FF5A3C]/20 shadow-sm active:scale-95 transition-all">
+                <Truck className="text-[#FF5A3C]" size={20} />
               </Link>
             </motion.div>
           )}
@@ -62,7 +62,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
               className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-500 hover:text-white transition-all relative group"
             >
                {link}
-               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#ff8564] transition-all group-hover:w-full" />
+               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#FF5A3C] transition-all group-hover:w-full" />
             </Link>
           ))}
         </div>
@@ -70,17 +70,17 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
 
       <div className="flex items-center space-x-4 sm:space-x-10">
         {/* Search */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all active:scale-95">
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#0A0A0A] hover:bg-gray-100 transition-all active:scale-95 border border-gray-100">
           <Search size={18} />
         </button>
 
         {/* Notifications */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-500 hover:text-white hover:bg-white/10 transition-all relative group active:scale-95">
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#0A0A0A] hover:bg-gray-100 transition-all relative group active:scale-95 border border-gray-100">
           <Bell size={18} />
-          <span className="absolute top-3 right-3 w-2 h-2 bg-[#ff8564] rounded-full shadow-[0_0_8px_#ff8564]" />
+          <span className="absolute top-3 right-3 w-2 h-2 bg-[#FF5A3C] rounded-full shadow-[0_0_8px_#FF5A3C]" />
         </button>
 
-        <div className="h-8 w-px bg-white/10" />
+        <div className="h-8 w-px bg-gray-100" />
 
         {/* Profile */}
         <div className="relative" ref={dropdownRef}>

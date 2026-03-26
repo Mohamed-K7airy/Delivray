@@ -163,15 +163,26 @@ export const updateOrderStatus = async (req, res) => {
     const io = getIo();
     if (io) {
       console.log(`[updateOrderStatus] Emitting socket events for Order ${id}`);
-      io.to(`order_${id}`).emit('order_status_updated', updatedOrder);
-      io.to(`merchant_${order.stores.owner_id}`).emit('order_status_updated', updatedOrder);
       
-      if (status === 'ready_for_pickup') {
-        console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
-        io.to('drivers').emit('order_ready_for_pickup', {
-           ...updatedOrder,
-           stores: order.stores // Include store info for driver overlay
-        });
+      const { data: fullOrder } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          stores(name, owner_id, location_lat, location_lng),
+          order_items(*, products(name)),
+          drivers(id, user_id, current_location_lat, current_location_lng, users(name))
+        `)
+        .eq('id', id)
+        .single();
+
+      if (fullOrder) {
+        io.to(`order_${id}`).emit('order_status_updated', fullOrder);
+        io.to(`merchant_${fullOrder.stores.owner_id}`).emit('order_status_updated', fullOrder);
+        
+        if (status === 'ready_for_pickup') {
+          console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
+          io.to('drivers').emit('order_ready_for_pickup', fullOrder);
+        }
       }
     }
 
