@@ -10,7 +10,6 @@ router.use(protect);
 // Customer routes
 router.post('/', authorizeRoles('customer'), createOrder);
 router.get('/me', authorizeRoles('customer'), getCustomerOrders);
-router.get('/:id', getOrderById);
 
 // Merchant routes
 router.get('/merchant', authorizeRoles('merchant'), getMerchantOrders);
@@ -19,5 +18,8 @@ router.patch('/:id/status', authorizeRoles('merchant'), updateOrderStatus);
 
 // Driver routes
 router.get('/driver', authorizeRoles('driver'), getDriverOrders);
+
+// Parameterized fetch (Must be last to avoid shadowing)
+router.get('/:id', getOrderById);
 
 export default router;
