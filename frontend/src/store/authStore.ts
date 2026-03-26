@@ -8,6 +8,7 @@ interface User {
   role: 'customer' | 'merchant' | 'driver' | 'admin';
   status: 'active' | 'pending' | 'banned';
   email?: string;
+  store_id?: string;
 }
 
 interface AuthState {

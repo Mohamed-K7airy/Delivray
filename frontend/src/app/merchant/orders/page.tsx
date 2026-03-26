@@ -213,21 +213,29 @@ export default function MerchantOrders() {
                              </button>
                              {order.status === 'pending' && (
                                 <button 
-                                   onClick={() => updateStatus(order.id, 'accepted')}
+                                   onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'accepted'); }}
                                    className="h-10 px-6 bg-[#0A0A0A] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#333] transition-all"
                                 >
                                    Accept
                                 </button>
                              )}
+                             {order.status === 'accepted' && (
+                                <button 
+                                   onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'preparing'); }}
+                                   className="h-10 px-6 bg-[#FF5A3C] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#E84A2C] transition-all"
+                                >
+                                   Prepare
+                                </button>
+                             )}
                              {order.status === 'preparing' && (
                                 <button 
-                                   onClick={() => updateStatus(order.id, 'ready_for_pickup')}
-                                   className="h-10 px-6 bg-[#FF5A3C] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-[#E84A2C] transition-all shadow-lg shadow-[#FF5A3C]/20"
+                                   onClick={(e) => { e.stopPropagation(); updateStatus(order.id, 'ready_for_pickup'); }}
+                                   className="h-10 px-6 bg-blue-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20"
                                 >
                                    Ready
                                 </button>
                              )}
-                             {order.status !== 'pending' && order.status !== 'preparing' && (
+                             {order.status !== 'pending' && order.status !== 'preparing' && order.status !== 'accepted' && (
                                 <button className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 rounded-xl text-gray-300">
                                    <MoreVertical size={16} />
                                 </button>
