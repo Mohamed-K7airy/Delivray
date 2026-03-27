@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -37,7 +38,8 @@ export default function RootLayout({
           </LayoutWrapper>
         </SocketProvider>
         <Toaster position="bottom-right" richColors />
-        <script
+        <Script
+          id="register-sw"
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {

@@ -8,7 +8,12 @@ import { toast } from 'sonner';
 import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
 import Button from '@/components/Button';
-import MapView from '@/components/MapView';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Global Pulse...</div>
+});
 import { useSocket } from '@/context/SocketContext';
 import { Truck, Navigation as NavIcon, Map as MapIcon } from 'lucide-react';
 

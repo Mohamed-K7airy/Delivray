@@ -4,12 +4,18 @@ import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronLeft, Sparkles, Zap, Lock, MapPin, Ticket, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronLeft, Sparkles, Zap, Lock, MapPin, Ticket, ShieldCheck, ChevronRight, Navigation } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import Button from '@/components/Button';
 import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] font-bold uppercase text-gray-400">Loading Map...</div>
+});
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -33,6 +39,55 @@ export default function CartPage() {
   const [realUpsellItems, setRealUpsellItems] = useState<any[]>([]);
   const [address, setAddress] = useState('');
   const [savedAddress, setSavedAddress] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+
+  // Reverse geocoding function using Nominatim
+  const reverseGeocode = async (lat: number, lng: number) => {
+    setIsGeocoding(true);
+    try {
+      const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+      const data = await resp.json();
+      if (data && data.display_name) {
+        setAddress(data.display_name);
+        toast.success('Address identified! 📍');
+      }
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      toast.error('Could not fetch address, please enter manually.');
+    } finally {
+      setIsGeocoding(false);
+    }
+  };
+
+  const handleMapClick = (lat: number, lng: number) => {
+    setSelectedLocation([lat, lng]);
+    reverseGeocode(lat, lng);
+  };
+
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      setIsGeocoding(true);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setSelectedLocation([latitude, longitude]);
+          reverseGeocode(latitude, longitude);
+        },
+        () => {
+          toast.error('Geolocation denied or failed');
+          setIsGeocoding(false);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (showMap && !selectedLocation) {
+      handleUseMyLocation();
+    }
+  }, [showMap]);
 
   useEffect(() => {
     if (!_hasHydrated) return; // Wait for hydration before checking auth
@@ -153,11 +208,17 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     try {
+      if (!selectedLocation) {
+        toast.error('Please select your delivery location on the map');
+        setShowMap(true);
+        return;
+      }
+
       const data = await apiClient('/orders', {
         method: 'POST',
         data: { 
-          delivery_lat: 34.0522, 
-          delivery_lng: -118.2437,
+          delivery_lat: selectedLocation[0], 
+          delivery_lng: selectedLocation[1],
           delivery_address: address || savedAddress || 'Customer Address',
           promo_code: isPromoApplied ? promoCode.toUpperCase() : null
         }
@@ -279,38 +340,85 @@ export default function CartPage() {
           {/* Summary Sidebar */}
           <aside className="lg:col-span-4 lg:sticky lg:top-24 space-y-5">
 
-            {/* Address */}
+            {/* Address & Map Picker */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm"
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-3">Deliver To</p>
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
-                  <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d97757]" />
-                  <input
-                    value={address}
-                    onChange={e => setAddress(e.target.value)}
-                    placeholder="Enter delivery address..."
-                    className="w-full h-10 bg-[#f9f9f9] pl-8 pr-3 rounded-xl border border-transparent focus:border-[#d97757] outline-none text-xs font-bold text-[#111111] placeholder:text-gray-300 transition-all"
-                  />
+              <div className="p-6 border-b border-gray-50">
+                <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-3">Delivery Destination</p>
+                
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1 relative">
+                    <MapPin size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d97757]" />
+                    <input
+                      value={address}
+                      onChange={e => setAddress(e.target.value)}
+                      placeholder="Street, Building, Apartment..."
+                      className="w-full h-10 bg-[#f9f9f9] pl-8 pr-3 rounded-xl border border-transparent focus:border-[#d97757] outline-none text-xs font-bold text-[#111111] placeholder:text-gray-300 transition-all"
+                    />
+                  </div>
                 </div>
-                <button
-                  onClick={() => {
-                    localStorage.setItem(`user_address_${user?.id}`, address);
-                    setSavedAddress(address);
-                    toast.success('Address saved!');
-                  }}
-                  className="h-10 px-4 bg-[#d97757] text-white rounded-xl text-[9px] font-black uppercase tracking-wider hover:bg-[#c2654a] transition-all"
-                >
-                  Save
-                </button>
+
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                   <div className="flex items-center justify-between mb-3">
+                      <p className="text-[10px] font-black uppercase tracking-tight text-[#111111]">Pinpoint Accuracy</p>
+                      <button 
+                        onClick={() => setShowMap(!showMap)}
+                        className="text-[10px] font-black text-[#d97757] uppercase tracking-widest hover:underline"
+                      >
+                        {showMap ? 'Hide Map' : 'Change Location'}
+                      </button>
+                   </div>
+                   
+                   {!selectedLocation && !showMap && (
+                      <div className="py-4 text-center">
+                         <p className="text-[10px] font-bold text-gray-400 mb-3 italic">No location pinned yet</p>
+                         <Button 
+                            variant="primary" 
+                            size="sm" 
+                            className="h-8 text-[9px]"
+                            onClick={() => setShowMap(true)}
+                         >
+                            Set Location on Map
+                         </Button>
+                      </div>
+                   )}
+                </div>
               </div>
-              {savedAddress && (
-                <p className="text-[9px] font-bold text-green-600 mt-2 flex items-center gap-1">
-                  <Lock size={10} /> Delivering to: {savedAddress}
-                </p>
+
+              {showMap && (
+                <div className="h-64 relative">
+                  <MapView 
+                    center={selectedLocation || [30.0444, 31.2357]} // Default to Cairo center if no location
+                    zoom={15}
+                    markers={selectedLocation ? [{ position: selectedLocation, type: 'selected', label: 'Deliver Here' }] : []}
+                    onMapClick={handleMapClick}
+                    autoCenter={!selectedLocation}
+                  />
+                  <div className="absolute top-4 right-4 z-[500]">
+                     <button
+                       onClick={handleUseMyLocation}
+                       className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center text-[#d97757] hover:bg-gray-50 transition-all border border-gray-100 pointer-events-auto"
+                       title="Use My Current Location"
+                     >
+                       <Navigation size={18} />
+                     </button>
+                  </div>
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[500] pointer-events-none">
+                     <p className="bg-black/80 text-white px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest backdrop-blur-md">
+                        {isGeocoding ? 'Finding Address...' : 'Click to drop pin'}
+                     </p>
+                  </div>
+                </div>
+              )}
+              
+              {selectedLocation && (
+                <div className="bg-green-50 px-6 py-3 flex items-center gap-2">
+                   <ShieldCheck size={14} className="text-green-600" />
+                   <p className="text-[9px] font-black text-green-700 uppercase tracking-widest">Precise Location Set</p>
+                </div>
               )}
             </motion.div>
 

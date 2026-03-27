@@ -5,7 +5,12 @@ import { useSocket } from '@/context/SocketContext';
 import { motion } from 'framer-motion';
 import { MapPin, Navigation, Truck, Store as StoreIcon, Clock, CheckCircle2, Package, AlertCircle } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
-import MapView from '@/components/MapView';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Fleet Map...</div>
+});
 import { toast } from 'sonner';
 
 export default function DriverMapPage() {

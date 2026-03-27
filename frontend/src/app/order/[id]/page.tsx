@@ -8,7 +8,12 @@ import { toast } from 'sonner';
 import { useSocket } from '@/context/SocketContext';
 import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
-import MapView from '@/components/MapView';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-[450px] w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Map Tracking...</div>
+});
 
 interface Order {
   id: string;
@@ -36,6 +41,7 @@ export default function OrderTracking() {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [driverPos, setDriverPos] = useState<[number, number] | null>(null);
+  const [routeInfo, setRouteInfo] = useState<{ distance: number; duration: number; steps: any[] } | null>(null);
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -136,19 +142,67 @@ export default function OrderTracking() {
             
             {(order.status === 'delivering' || order.status === 'picked_up' || order.status === 'delivered' || order.status === 'completed') && (
                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden relative h-[450px] mb-8">
-                  <MapView 
-                    center={driverPos || [order.delivery_lat || 0, order.delivery_lng || 0]}
-                    zoom={15}
-                    markers={[
-                      ...(driverPos ? [{ position: driverPos, type: 'driver', label: 'Courier' }] : []),
-                      { position: [order.stores?.location_lat || 0, order.stores?.location_lng || 0], type: 'store', label: order.stores?.name },
-                      { position: [order.delivery_lat || 0, order.delivery_lng || 0], type: 'customer', label: 'Home' }
-                    ] as any}
-                    polyline={driverPos ? [driverPos, [order.delivery_lat, order.delivery_lng]] : undefined}
-                  />
-                  <div className="absolute top-8 left-8 z-[400] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/50 shadow-2xl flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                    <span className="text-[11px] font-black text-[#111111] uppercase tracking-widest">Live Courier Signal</span>
+                  <div className="h-full relative">
+                    <MapView 
+                      center={driverPos || [order.delivery_lat, order.delivery_lng]}
+                      zoom={15}
+                      markers={[
+                        ...(driverPos ? [{ 
+                          position: driverPos as [number, number], 
+                          type: 'driver' as const, 
+                          label: socket?.connected ? 'Live Courier' : 'Last Known Location' 
+                        }] : []),
+                        { 
+                          position: [order.stores?.location_lat, order.stores?.location_lng] as [number, number], 
+                          type: 'store' as const, 
+                          label: order.stores?.name 
+                        },
+                        { 
+                          position: [order.delivery_lat, order.delivery_lng] as [number, number], 
+                          type: 'customer' as const, 
+                          label: 'Your Doorstep' 
+                        }
+                      ]}
+                      routingPoints={driverPos ? [
+                        driverPos,
+                        [order.stores?.location_lat ?? 0, order.stores?.location_lng ?? 0],
+                        [order.delivery_lat, order.delivery_lng]
+                      ] : undefined}
+                      onRouteUpdate={setRouteInfo}
+                    />
+                    
+                    {/* Map Overlay Info (Bottom) */}
+                    <div className="absolute bottom-6 left-6 right-6 z-[400] pointer-events-none">
+                       <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-white/50 flex items-center justify-between pointer-events-auto">
+                          <div className="flex items-center gap-3">
+                             <div className="w-10 h-10 bg-[#d97757] rounded-xl flex items-center justify-center text-white shadow-lg">
+                                <Navigation size={18} className="animate-pulse" />
+                             </div>
+                             <div>
+                                <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest leading-none mb-1">Live Courier Tracking</p>
+                                <p className="text-sm font-black text-[#111111] tracking-tight">
+                                   {routeInfo && routeInfo.steps && routeInfo.steps.length > 0 
+                                     ? `En route: ${routeInfo.steps[0].name || 'Heading your way'}`
+                                     : driverPos ? 'Calculating fastest route...' : 'Waiting for courier signal...'}
+                                </p>
+                             </div>
+                          </div>
+                          <div className="text-right">
+                             <p className="text-sm font-black text-[#d97757] tracking-tight">
+                                {routeInfo ? (routeInfo.distance / 1000).toFixed(1) : '0.0'} km
+                             </p>
+                             <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">
+                                ~{routeInfo ? Math.round(routeInfo.duration / 60) : eta} mins
+                             </p>
+                          </div>
+                       </div>
+                    </div>
+
+                    {/* Signal Status (Top) */}
+                    <div className="absolute top-8 left-8 z-[400] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/50 shadow-2xl flex items-center gap-3">
+                       <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                       <span className="text-[11px] font-black text-[#111111] uppercase tracking-widest">Live Courier Signal</span>
+                    </div>
                   </div>
                </div>
             )}

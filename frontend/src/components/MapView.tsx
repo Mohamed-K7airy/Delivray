@@ -1,8 +1,8 @@
 'use client';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Fix for default marker icons in Leaflet for Next.js
@@ -32,11 +32,42 @@ interface MapViewProps {
     id?: string;
     position: [number, number];
     label?: string;
-    type?: 'driver' | 'store' | 'customer' | 'default';
+    type?: 'driver' | 'store' | 'customer' | 'selected' | 'default';
   }>;
   polyline?: [number, number][];
+  routingPoints?: [number, number][]; // [lat, lng][]
   autoCenter?: boolean;
   className?: string;
+  onMapClick?: (lat: number, lng: number) => void;
+  showZoomControls?: boolean;
+  onRouteUpdate?: (data: { distance: number; duration: number; steps?: any[] }) => void;
+}
+
+// Internal component to handle map events
+function MapEvents({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click: (e) => {
+      if (onMapClick) onMapClick(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+// Internal component to handle zoom
+function ZoomControls() {
+  const map = useMap();
+  return (
+    <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
+      <button 
+        onClick={() => map.zoomIn()}
+        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+      >+</button>
+      <button 
+        onClick={() => map.zoomOut()}
+        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+      >-</button>
+    </div>
+  );
 }
 
 // Internal component to handle view changes
@@ -55,10 +86,41 @@ export default function MapView({
   zoom = 13, 
   markers = [], 
   polyline, 
+  routingPoints,
   autoCenter = true,
-  className = 'h-full w-full' 
+  className = 'h-full w-full',
+  onMapClick,
+  showZoomControls = true
 }: MapViewProps) {
-  
+  const [routingPath, setRoutingPath] = useState<[number, number][] | null>(null);
+
+  // Fetch OSRM route when routingPoints change
+  useEffect(() => {
+    if (routingPoints && routingPoints.length >= 2) {
+      const coords = routingPoints.map(p => `${p[1]},${p[0]}`).join(';');
+      fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.routes && data.routes[0]) {
+            const firstRoute = data.routes[0];
+            const path = firstRoute.geometry.coordinates.map((c: any) => [c[1], c[0]]);
+            setRoutingPath(path);
+            
+            if (onRouteUpdate) {
+               onRouteUpdate({
+                  distance: firstRoute.distance,
+                  duration: firstRoute.duration,
+                  steps: firstRoute.legs[0].steps
+               });
+            }
+          }
+        })
+        .catch(err => console.error('OSRM Error:', err));
+    } else {
+      setRoutingPath(null);
+    }
+  }, [routingPoints]);
+
   const getIcon = (type?: string) => {
     switch(type) {
       case 'driver': return driverIcon;
@@ -88,46 +150,52 @@ export default function MapView({
             attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           />
+          <MapEvents onMapClick={onMapClick} />
+          {showZoomControls && <ZoomControls />}
           <ChangeView center={center} zoom={zoom} autoCenter={autoCenter} />
           
           <AnimatePresence>
-            {markers.map((marker, idx) => (
-              <Marker 
-                key={marker.id || idx} 
-                position={marker.position} 
-                icon={getIcon(marker.type)}
-              >
-                {marker.label && (
-                   <Popup className="premium-popup">
-                     <div className="p-1 font-black uppercase tracking-widest text-[8px]">{marker.label}</div>
-                   </Popup>
-                )}
-              </Marker>
-            ))}
+            {markers.map((marker, idx) => {
+              if (!marker.position || marker.position[0] === null || marker.position[1] === null || isNaN(marker.position[0])) return null;
+              return (
+                <Marker 
+                  key={marker.id || idx} 
+                  position={marker.position} 
+                  icon={getIcon(marker.type)}
+                >
+                  {marker.label && (
+                     <Popup className="premium-popup">
+                       <div className="p-1 font-black uppercase tracking-widest text-[8px]">{marker.label}</div>
+                     </Popup>
+                  )}
+                </Marker>
+              );
+            })}
           </AnimatePresence>
 
-          {polyline && (
+          {/* OSRM Road Path (Primary) */}
+          {routingPath && (
             <Polyline 
-              positions={polyline} 
+              positions={routingPath} 
               color="#d97757" 
-              weight={4} 
-              opacity={0.6} 
-              dashArray="8, 12"
+              weight={5} 
+              opacity={0.8} 
               className="line-animation"
             />
           )}
 
-          {/* Simple custom zoom controls */}
-          <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
-            <button 
-              onClick={() => {}} // Controlled by leaflet naturally if we use default zoom, but custom is nicer
-              className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-            >+</button>
-            <button 
-              onClick={() => {}}
-              className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-            >-</button>
-          </div>
+          {/* Fallback Polyline (Secondary/Straight) */}
+          {polyline && !routingPath && (
+            <Polyline 
+              positions={polyline} 
+              color="#d97757" 
+              weight={4} 
+              opacity={0.4} 
+              dashArray="8, 12"
+            />
+          )}
+
+          {/* Zoom controls handled by ZoomControls component */}
         </MapContainer>
       )}
 

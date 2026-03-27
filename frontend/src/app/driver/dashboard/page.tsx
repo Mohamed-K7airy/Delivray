@@ -11,6 +11,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/apiClient';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Map Data...</div>
+});
 
 export default function DriverDashboard() {
   const { token, user } = useAuthStore();
@@ -22,6 +28,10 @@ export default function DriverDashboard() {
   const [countdown, setCountdown] = useState(24);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 3.00 });
+  const [currentPos, setCurrentPos] = useState<[number, number] | null>(null);
+  const lastUpdateRef = useRef<number>(0);
+  const [isCentering, setIsCentering] = useState(true);
+  const [routeInfo, setRouteInfo] = useState<{ distance: number; duration: number; steps: any[] } | null>(null);
 
   useEffect(() => {
     if (!token || user?.role !== 'driver') return router.push('/login');
@@ -53,6 +63,37 @@ export default function DriverDashboard() {
     });
     return () => { socket.off('order_ready_for_pickup'); if (timerRef.current) clearInterval(timerRef.current); };
   }, [socket, isConnected]);
+  
+  // Real-time geolocation watcher for active delivery
+  useEffect(() => {
+    if (!activeOrder || !isConnected) return;
+    
+    console.log(`[Driver GPS] Tracking enabled for Order: ${activeOrder.id}`);
+    
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setCurrentPos([latitude, longitude]);
+
+        // Throttle GPS updates to 5 seconds
+        const now = Date.now();
+        if (now - lastUpdateRef.current > 5000) {
+          if (socket && isConnected) {
+            socket.emit('update_location', {
+              lat: latitude,
+              lng: longitude,
+              orderId: activeOrder.id
+            });
+            lastUpdateRef.current = now;
+          }
+        }
+      },
+      (err) => console.error('GPS Error:', err),
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [activeOrder, socket, isConnected]);
 
   const acceptOrder = async (orderId: string) => {
     try {
@@ -149,32 +190,116 @@ export default function DriverDashboard() {
                   </div>
                 </div>
 
-                {/* Route */}
-                <div className="rounded-xl border border-gray-100 overflow-hidden">
-                  {/* Pickup row */}
-                  <div className="flex items-center gap-4 px-5 py-4 bg-[#fafafa] border-b border-gray-100">
-                    <div className="w-9 h-9 rounded-xl bg-[#fef3f2] border border-[#fee2e2] flex items-center justify-center shrink-0">
-                      <StoreIcon size={16} className="text-[#d97757]" />
+
+                {/* Map Delivery Card UI */}
+                <div className="relative group/map rounded-2xl overflow-hidden border border-gray-100 shadow-sm h-64 bg-gray-50 mb-8">
+                   <MapView 
+                      center={currentPos || [activeOrder.stores?.location_lat || 0, activeOrder.stores?.location_lng || 0]}
+                      zoom={15}
+                      autoCenter={isCentering}
+                      markers={[
+                        ...(currentPos ? [{ position: currentPos as [number, number], type: 'driver' as const, label: 'You' }] : []),
+                        ...(activeOrder.stores ? [{ position: [activeOrder.stores.location_lat, activeOrder.stores.location_lng] as [number, number], type: 'store' as const, label: activeOrder.stores.name }] : []),
+                        ...(activeOrder.delivery_lat ? [{ position: [activeOrder.delivery_lat, activeOrder.delivery_lng] as [number, number], type: 'customer' as const, label: 'Customer' }] : [])
+                      ]}
+                      routingPoints={currentPos && activeOrder.stores ? [
+                        currentPos,
+                        [activeOrder.stores.location_lat, activeOrder.stores.location_lng],
+                        [activeOrder.delivery_lat, activeOrder.delivery_lng]
+                      ] : undefined}
+                      onRouteUpdate={setRouteInfo}
+                   />
+                   
+                   {/* Google Maps Style Directions Overlay */}
+                   {routeInfo && routeInfo.steps && routeInfo.steps.length > 0 && (
+                      <div className="absolute top-4 left-4 right-4 z-[450] pointer-events-none">
+                         <motion.div 
+                           initial={{ opacity: 0, scale: 0.95 }}
+                           animate={{ opacity: 1, scale: 1 }}
+                           className="bg-[#111111]/90 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-4 pointer-events-auto"
+                         >
+                            <div className="w-12 h-12 bg-[#d97757] rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg">
+                               <Navigation size={24} className={routeInfo.steps[0]?.maneuver?.modifier?.includes('left') ? '-rotate-90' : routeInfo.steps[0]?.maneuver?.modifier?.includes('right') ? 'rotate-90' : ''} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                               <p className="text-[10px] font-black text-[#d97757] uppercase tracking-[0.2em] mb-1">Next Step</p>
+                               <p className="text-sm font-black text-white truncate">
+                                  {routeInfo.steps[0]?.name || 'Continue straight'} 
+                                  <span className="text-white/40 ml-2 font-bold uppercase tracking-widest text-[8px]">
+                                     in {(routeInfo.steps[0]?.distance / 1000).toFixed(1)} km
+                                  </span>
+                               </p>
+                            </div>
+                         </motion.div>
+                      </div>
+                   )}
+
+                   {/* Map Controls Overlay */}
+                   <div className="absolute top-4 right-4 z-[400] flex flex-col gap-2 opacity-0 group-hover/map:opacity-100 transition-opacity">
+                      <button 
+                         onClick={() => setIsCentering(!isCentering)}
+                         className={`w-10 h-10 rounded-xl shadow-lg border flex items-center justify-center transition-all ${
+                            isCentering ? 'bg-[#d97757] border-[#d97757] text-white' : 'bg-white border-gray-100 text-gray-500 hover:bg-gray-50'
+                         }`}
+                         title={isCentering ? "Auto-centering On" : "Auto-centering Off"}
+                      >
+                         <Navigation size={18} className={isCentering ? "animate-pulse" : ""} />
+                      </button>
+                   </div>
+
+                    {/* Routing Indicator Banner (Bottom) */}
+                    <div className="absolute bottom-4 left-4 right-4 z-[400] pointer-events-none">
+                       <div className="bg-white/95 backdrop-blur-md px-5 py-3 rounded-2xl shadow-2xl border border-white/50 flex items-center justify-between pointer-events-auto">
+                          <div className="flex items-center gap-3">
+                              <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.4)]" />
+                              <div>
+                                 <p className="text-[10px] font-black uppercase tracking-widest text-[#111111]">OSRM Smart Path</p>
+                                 <p className="text-[9px] font-bold text-[#888888]">{routeInfo ? 'Road-optimized route active' : 'Calculating path...'}</p>
+                              </div>
+                          </div>
+                          <div className="text-right">
+                             <p className="text-sm font-black text-[#d97757] tracking-tight">
+                                {routeInfo ? (routeInfo.distance / 1000).toFixed(1) : '0.0'} km
+                             </p>
+                             <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest">
+                                ~{routeInfo ? Math.round(routeInfo.duration / 60) : '0'} mins
+                             </p>
+                          </div>
+                       </div>
+                    </div>
+                </div>
+
+                {/* Status UI Detail */}
+                <div className="rounded-2xl border border-gray-100 overflow-hidden bg-gray-50/50">
+                   {/* Pickup row */}
+                   <div className="flex items-center gap-4 px-6 py-5 border-b border-gray-100 bg-white shadow-[0_4px_12px_-5px_rgba(0,0,0,0.05)] relative z-10">
+                    <div className="w-10 h-10 rounded-xl bg-[#fef3f2] border border-[#fee2e2] flex items-center justify-center shrink-0">
+                      <StoreIcon size={18} className="text-[#d97757]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Pickup</p>
+                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-0.5">Pickup Restaurant</p>
                       <p className="text-sm font-black text-[#111111] truncate">{activeOrder.stores?.name || 'Restaurant'}</p>
                     </div>
-                    <span className="px-2 py-1 bg-green-50 text-green-600 border border-green-200 rounded-full text-[8px] font-black uppercase tracking-wider shrink-0">
-                      ✓ Done
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                       <span className="px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-full text-[8px] font-black uppercase tracking-wider">
+                         Arrived at store
+                       </span>
+                    </div>
                   </div>
                   {/* Delivery row */}
-                  <div className="flex items-center gap-4 px-5 py-4 bg-white">
-                    <div className="w-9 h-9 rounded-xl bg-[#eff6ff] border border-blue-200 flex items-center justify-center shrink-0">
-                      <MapPin size={16} className="text-blue-500" />
+                  <div className="flex items-center gap-4 px-6 py-5">
+                    <div className="w-10 h-10 rounded-xl bg-[#eff6ff] border border-blue-100 flex items-center justify-center shrink-0">
+                      <MapPin size={18} className="text-blue-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Deliver to</p>
+                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-0.5">Deliver to Customer</p>
                       <p className="text-sm font-black text-[#111111] truncate">{activeOrder.delivery_address || 'Customer Address'}</p>
                     </div>
-                    <button className="h-8 px-3 bg-[#111111] text-white rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#333] transition-all shrink-0">
-                      <Navigation size={11} /> Navigate
+                    <button 
+                       onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${activeOrder.delivery_lat},${activeOrder.delivery_lng}`, '_blank')}
+                      className="h-9 px-4 bg-[#111111] text-white rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-black transition-transform active:scale-95"
+                    >
+                      <Navigation size={12} /> External GPS
                     </button>
                   </div>
                 </div>
