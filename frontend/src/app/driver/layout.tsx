@@ -18,8 +18,9 @@ export default function DriverLayout({
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem('driver-sidebar-collapsed');
-    if (stored === 'true') setIsCollapsed(true);
+    // Reset collapse state — open by default
+    localStorage.removeItem('driver-sidebar-collapsed');
+    setIsCollapsed(false);
   }, []);
 
   const toggleCollapse = (val: boolean) => {

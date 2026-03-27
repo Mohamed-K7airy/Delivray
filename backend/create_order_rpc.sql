@@ -1,12 +1,14 @@
 -- Migration: Create Atomic Order Function
 -- This function ensures an order, its items, and the cart clearance happen in one transaction.
 
-CREATE OR REPLACE FUNCTION create_order_v1(
+CREATE OR REPLACE FUNCTION create_order_v2(
     p_user_id UUID,
     p_store_id UUID,
-    p_total_price NUMERIC,
+    p_subtotal NUMERIC,
+    p_delivery_fee NUMERIC,
     p_delivery_lat NUMERIC,
     p_delivery_lng NUMERIC,
+    p_delivery_address TEXT,
     p_cart_id UUID,
     p_items JSONB
 ) RETURNS JSONB AS $$
@@ -15,8 +17,32 @@ DECLARE
     v_order_record JSONB;
 BEGIN
     -- 1. Insert Order
-    INSERT INTO orders (user_id, store_id, total_price, delivery_lat, delivery_lng, status, created_at, updated_at)
-    VALUES (p_user_id, p_store_id, p_total_price, p_delivery_lat, p_delivery_lng, 'pending', NOW(), NOW())
+    INSERT INTO orders (
+        user_id, 
+        store_id, 
+        subtotal, 
+        delivery_fee, 
+        total_price, 
+        delivery_lat, 
+        delivery_lng, 
+        delivery_address, 
+        status, 
+        created_at, 
+        updated_at
+    )
+    VALUES (
+        p_user_id, 
+        p_store_id, 
+        p_subtotal, 
+        p_delivery_fee, 
+        p_subtotal + p_delivery_fee, 
+        p_delivery_lat, 
+        p_delivery_lng, 
+        p_delivery_address, 
+        'pending', 
+        NOW(), 
+        NOW()
+    )
     RETURNING id INTO v_order_id;
 
     -- 2. Insert Order Items
@@ -32,7 +58,6 @@ BEGIN
 
     RETURN v_order_record;
 EXCEPTION WHEN OTHERS THEN
-    -- In case of any error, Postgres automatically rolls back the transaction
     RAISE EXCEPTION 'Order creation failed: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;

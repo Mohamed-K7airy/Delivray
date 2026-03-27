@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOrder, getMerchantOrders, updateOrderStatus, getCustomerOrders, getDriverOrders, getOrderById, getMerchantStats } from './orderController.js';
+import { createOrder, getMerchantOrders, updateOrderStatus, getCustomerOrders, getDriverOrders, getOrderById, getMerchantStats, cancelOrder } from './orderController.js';
 import { protect, authorizeRoles } from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.use(protect);
 // Customer routes
 router.post('/', authorizeRoles('customer'), createOrder);
 router.get('/me', authorizeRoles('customer'), getCustomerOrders);
+router.post('/:id/cancel', authorizeRoles('customer'), cancelOrder);
 
 // Merchant routes
 router.get('/merchant', authorizeRoles('merchant'), getMerchantOrders);

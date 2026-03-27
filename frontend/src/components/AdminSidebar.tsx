@@ -124,10 +124,10 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
 
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 text-[#888888] hover:text-[#111111] transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
+          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl hover:bg-red-50 text-[#888888] hover:text-red-500 transition-all group ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
         >
-          <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-          {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest italic leading-none">Logout Hub</span>}
+          <LogOut size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
+          {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest leading-none">Logout Hub</span>}
         </button>
       </div>
     </aside>

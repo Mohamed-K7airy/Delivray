@@ -1,8 +1,23 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
+import { apiClient } from '@/lib/apiClient';
+import StoreToggle from '@/components/StoreToggle';
 import { motion } from 'framer-motion';
 import { Settings, Store, Bell, Shield, Smartphone, Globe, Save, HelpCircle } from 'lucide-react';
 
 export default function MerchantSettings() {
+  const { user, token } = useAuthStore();
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (user?.role === 'merchant') {
+      apiClient('/stores/me').then(data => {
+        if (data && data.length > 0) setStore(data[0]);
+      }).catch(err => console.error('Failed to fetch store:', err));
+    }
+  }, [user]);
+
   return (
     <div className="max-w-7xl mx-auto space-y-12">
        {/* Header */}
@@ -35,6 +50,10 @@ export default function MerchantSettings() {
 
           {/* Settings Form Container */}
           <div className="lg:col-span-8 bg-white p-6 sm:p-12 rounded-2xl border border-gray-100 shadow-xl relative overflow-hidden group">
+             
+             {/* Store Status Toggle */}
+             {store && <StoreToggle storeId={store.id} initialStatus={store.is_open} />}
+
              <h3 className="text-2xl font-black uppercase tracking-tighter mb-12 flex items-center space-x-4 text-[#111111]">
                 <div className="w-10 h-10 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#d97757] border border-gray-100 shadow-inner">
                    <Settings size={20} />
@@ -48,7 +67,7 @@ export default function MerchantSettings() {
                       <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest ml-1">Store Name</label>
                       <input 
                         type="text" 
-                        defaultValue="Premium Merchant Central"
+                        defaultValue={store?.name || "Premium Merchant Central"}
                         className="w-full h-16 px-8 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none focus:border-[#d97757] transition-all" 
                       />
                    </div>
@@ -56,7 +75,7 @@ export default function MerchantSettings() {
                       <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest ml-1">Contact Email</label>
                       <input 
                         type="email" 
-                        defaultValue="merchant@delivray.com"
+                        defaultValue={user?.email || "merchant@delivray.com"}
                         className="w-full h-16 px-8 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none focus:border-[#d97757] transition-all" 
                       />
                    </div>

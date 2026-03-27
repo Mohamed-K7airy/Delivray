@@ -42,7 +42,8 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
   ];
 
   return (
-    <nav className="h-14 sm:h-20 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
+    <>
+    <nav className="h-16 sm:h-24 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
       <div className="flex items-center gap-x-4 sm:gap-x-24">
         {/* Mobile Menu Toggle */}
         <button 
@@ -177,6 +178,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
           </AnimatePresence>
         </div>
       </div>
+    </nav>
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -187,7 +189,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[60] md:hidden"
+              className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] md:hidden"
             />
             <motion.div 
               initial={{ x: '-100%' }}
@@ -229,6 +231,6 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
           </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }

@@ -16,7 +16,7 @@ const checkStoreOwnership = async (store_id, owner_id) => {
 // @access  Private/Merchant
 export const createProduct = async (req, res) => {
   try {
-    const { store_id, name, price, image, description, availability } = req.body;
+    const { store_id, name, price, image, description, availability, category_id } = req.body;
 
     // Check ownership
     const isOwner = await checkStoreOwnership(store_id, req.user.id);
@@ -24,7 +24,7 @@ export const createProduct = async (req, res) => {
 
     const { data: product, error } = await supabase
       .from('products')
-      .insert([{ store_id, name, price, image, description, availability }])
+      .insert([{ store_id, name, price, image, description, availability, category_id }])
       .select()
       .single();
 
@@ -42,7 +42,7 @@ export const getProducts = async (req, res) => {
   try {
     const { store_id, limit = 20, page = 1 } = req.query;
     
-    let query = supabase.from('products').select('*');
+    let query = supabase.from('products').select('*, categories(name)');
     if (store_id) query = query.eq('store_id', store_id);
 
     const from = (page - 1) * limit;

@@ -96,11 +96,11 @@ export default function Navbar() {
                      onClick={() => setIsProfileOpen(!isProfileOpen)}
                      className="flex items-center gap-3 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-xl transition-all border border-gray-100"
                    >
-                     <div className="w-10 h-10 bg-gray-200 rounded-lg overflow-hidden shadow-sm">
-                        <div className="w-full h-full bg-[#111111] flex items-center justify-center text-white text-xs font-bold">
-                           {user.name?.slice(0, 2).toUpperCase()}
-                        </div>
-                     </div>
+                      <div className="w-10 h-10 bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                         <div className="w-full h-full bg-[#fef3f2] flex items-center justify-center text-[#d97757] text-xs font-black">
+                            {user.name?.slice(0, 2).toUpperCase()}
+                         </div>
+                      </div>
                      <div className="hidden sm:block text-left">
                         <p className="text-[11px] font-black text-[#111111] uppercase tracking-tight leading-none mb-1">{user.name?.split(' ')[0]}</p>
                         <p className="text-[9px] font-bold text-[#888888] uppercase tracking-widest">{user.role}</p>
@@ -151,9 +151,9 @@ export default function Navbar() {
             {/* Mobile Toggle */}
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-[#111111]"
+              className="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>

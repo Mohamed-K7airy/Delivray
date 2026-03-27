@@ -1,5 +1,5 @@
 import express from 'express';
-import { createStore, getStores, getStoreById, updateStore, deleteStore, getMyStores, getMerchantStats, getMerchantBalance, getMerchantPayouts, getMerchantMapStats } from './storeController.js';
+import { createStore, getStores, getStoreById, updateStore, deleteStore, getMyStores, getMerchantStats, getMerchantBalance, getMerchantPayouts, getMerchantMapStats, toggleStoreStatus } from './storeController.js';
 import { protect, authorizeRoles } from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -18,5 +18,7 @@ router.route('/:id')
   .get(getStoreById)
   .patch(protect, authorizeRoles('merchant'), updateStore)
   .delete(protect, authorizeRoles('merchant'), deleteStore);
+
+router.patch('/:id/toggle-status', protect, authorizeRoles('merchant'), toggleStoreStatus);
 
 export default router;

@@ -22,6 +22,11 @@ export const createOrder = async (req, res) => {
     if (!cartItems || cartItems.length === 0) return res.status(400).json({ message: 'Cart is empty' });
 
     // 3. Validation
+    const { data: storeInfo } = await supabase.from('stores').select('id, is_open').eq('id', cartItems[0].products.store_id).single();
+    if (!storeInfo?.is_open) {
+      return res.status(400).json({ message: 'Store is currently closed' });
+    }
+
     const storeId = cartItems[0].products.store_id;
     let totalPrice = 0;
     const itemsPayload = [];
@@ -41,13 +46,18 @@ export const createOrder = async (req, res) => {
       });
     }
 
-    // 4. ATOMIC ORDER CREATION (RPC)
-    const { data: order, error: rpcError } = await supabase.rpc('create_order_v1', {
+    // 4. ATOMIC ORDER CREATION (RPC v2)
+    const { delivery_address } = req.body;
+    const DELIVERY_FEE = 3.00; // Consistent with schema default
+    
+    const { data: order, error: rpcError } = await supabase.rpc('create_order_v2', {
       p_user_id: userId,
       p_store_id: storeId,
-      p_total_price: totalPrice,
+      p_subtotal: totalPrice,
+      p_delivery_fee: DELIVERY_FEE,
       p_delivery_lat: delivery_lat,
       p_delivery_lng: delivery_lng,
+      p_delivery_address: delivery_address || 'Customer Address',
       p_cart_id: cart.id,
       p_items: itemsPayload
     });
@@ -112,8 +122,8 @@ export const updateOrderStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     
-    // Allowed transitions for merchant
-    const allowedStatuses = ['accepted', 'preparing', 'ready_for_pickup', 'cancelled'];
+    // Allowed statuses for merchant (both forward and backward)
+    const allowedStatuses = ['pending', 'accepted', 'preparing', 'ready_for_pickup', 'cancelled'];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: 'Invalid status update for merchant' });
     }
@@ -142,10 +152,6 @@ export const updateOrderStatus = async (req, res) => {
        return res.status(403).json({ message: 'Not authorized' });
     }
 
-    // Transition validation
-    if (status === 'accepted' && order.status !== 'pending') {
-       return res.status(400).json({ message: `Invalid transition from ${order.status} to ${status}` });
-    }
 
     const { data: updatedOrder, error: updateError } = await supabase
       .from('orders')
@@ -262,6 +268,59 @@ export const getOrderById = async (req, res) => {
     // (Simplified for now, but usually role-based)
     
     res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Cancel an order
+// @route   POST /orders/:id/cancel
+// @access  Private/Customer
+export const cancelOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // 1. Fetch order
+    const { data: order, error: fetchError } = await supabase
+      .from('orders')
+      .select('id, user_id, status, created_at')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !order) return res.status(404).json({ message: 'Order not found' });
+
+    // 2. Policy Check: Only creator can cancel
+    if (order.user_id !== userId) return res.status(403).json({ message: 'Not authorized' });
+
+    // 3. Status and Time Rules
+    const createdAt = new Date(order.created_at);
+    const now = new Date();
+    const diffSeconds = (now.getTime() - createdAt.getTime()) / 1000;
+
+    const isPending = order.status === 'pending';
+    const isWithin60s = diffSeconds <= 60;
+
+    // RULE: Only allowed if 'pending' OR within 60s
+    // BUT: If merchant has ALREADY accepted (e.g. status='preparing'), 
+    // we strictly block it unless within 60s AND user is fast.
+    // However, the prompt says: "Only if status = 'pending' OR within 60 seconds"
+    // "Prevent cancellation after merchant accepts" (which usually means status moves to 'preparing')
+    
+    if (order.status !== 'pending' && !isWithin60s) {
+      return res.status(400).json({ message: 'Order cannot be cancelled at this stage' });
+    }
+
+    // 4. Update status
+    const { data: updatedOrder, error } = await supabase
+      .from('orders')
+      .update({ status: 'cancelled', updated_at: now.toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
   }

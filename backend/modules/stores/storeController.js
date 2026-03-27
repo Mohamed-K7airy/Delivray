@@ -1,5 +1,7 @@
 import { supabase } from '../../config/supabase.js';
 
+const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '3.00');
+
 // @desc    Create store (linked to merchant user)
 // @route   POST /stores
 // @access  Private/Merchant
@@ -37,11 +39,8 @@ export const getStores = async (req, res) => {
     
     let query = supabase
       .from('stores')
-      .select('id, name, type, location_lat, location_lng');
-
-    if (type) {
-      query = query.eq('type', type);
-    }
+      .select('id, name, type, location_lat, location_lng, is_open')
+      .eq('is_open', true); // Only returned open stores by default
 
     const from = (page - 1) * limit;
     const to = from + parseInt(limit) - 1;
@@ -75,7 +74,7 @@ export const getStoreById = async (req, res) => {
     // Fetch products for this store
     const { data: products, error: prodError } = await supabase
       .from('products')
-      .select('*')
+      .select('*, categories(name)')
       .eq('store_id', id)
       .eq('availability', true);
 
@@ -184,8 +183,12 @@ export const getMerchantStats = async (req, res) => {
     
     if (ordersError) throw ordersError;
 
-    const revenue = orders.reduce((sum, o) => sum + Number(o.total_price), 0);
     const orderCount = orders.length;
+    // Use the subtotal column if it exists, otherwise fallback to total_price - fee
+    const merchantRevenue = orders.reduce((sum, o) => {
+      const price = o.subtotal !== undefined && o.subtotal !== null ? Number(o.subtotal) : (Number(o.total_price) - DELIVERY_FEE);
+      return sum + price;
+    }, 0);
 
     // 3. Unique Customers
     const uniqueCustomers = new Set(orders.map(o => o.user_id)).size;
@@ -199,7 +202,7 @@ export const getMerchantStats = async (req, res) => {
     if (prodError) throw prodError;
 
     res.json({
-      revenue,
+      revenue: merchantRevenue,
       orders: orderCount,
       customers: uniqueCustomers,
       products: productCount || 0
@@ -223,11 +226,14 @@ export const getMerchantBalance = async (req, res) => {
     const storeIds = stores.map(s => s.id);
     const { data: orders } = await supabase
       .from('orders')
-      .select('total_price')
+      .select('total_price, subtotal, delivery_fee')
       .in('store_id', storeIds)
       .eq('status', 'completed');
 
-    const totalRevenue = orders ? orders.reduce((sum, o) => sum + Number(o.total_price), 0) : 0;
+    const merchantRevenue = orders ? orders.reduce((sum, o) => {
+      const price = o.subtotal !== undefined && o.subtotal !== null ? Number(o.subtotal) : (Number(o.total_price) - (o.delivery_fee || DELIVERY_FEE));
+      return sum + price;
+    }, 0) : 0;
 
     // 2. Get total paid out
     let totalWithdrawn = 0;
@@ -253,7 +259,7 @@ export const getMerchantBalance = async (req, res) => {
     }
 
     res.json({
-      available_balance: totalRevenue - totalWithdrawn - pendingPayouts,
+      available_balance: merchantRevenue - totalWithdrawn - pendingPayouts,
       pending_payouts: pendingPayouts,
       total_withdrawn: totalWithdrawn
     });
@@ -318,6 +324,37 @@ export const getMerchantMapStats = async (req, res) => {
       pendingPickups: pendingPickups || 0,
       dispatchCenter: stores.length
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Toggle store open/closed status
+// @route   PATCH /stores/:id/toggle-status
+// @access  Private/Merchant
+export const toggleStoreStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_open } = req.body;
+
+    const { data: store, error: fetchError } = await supabase
+      .from('stores')
+      .select('owner_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchError || !store) return res.status(404).json({ message: 'Store not found' });
+    if (store.owner_id !== req.user.id) return res.status(403).json({ message: 'Not authorized' });
+
+    const { data: updatedStore, error } = await supabase
+      .from('stores')
+      .update({ is_open, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw error;
+    res.json(updatedStore);
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
   }

@@ -3,27 +3,12 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import {
-  Navigation,
-  MapPin,
-  Store as StoreIcon,
-  Activity,
-  Truck,
-  Timer,
-  Wallet,
-  Check,
-  X,
-  Clock,
-  ExternalLink,
-  ShieldCheck,
-  ChevronRight,
-  Zap,
-  TrendingUp,
-  AlertCircle
+  Navigation, MapPin, Store as StoreIcon, Truck, Wallet,
+  Clock, ShieldCheck, ChevronRight, Zap, AlertCircle,
+  Package, TrendingUp, CheckCircle2, DollarSign
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { API_URL } from '@/config/api';
-import Button from '@/components/Button';
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/apiClient';
 
@@ -36,76 +21,44 @@ export default function DriverDashboard() {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(24);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, activeTime: '4h 22m' });
+  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 3.00 });
 
   useEffect(() => {
     if (!token || user?.role !== 'driver') return router.push('/login');
 
-    const fetchStats = async () => {
-      try {
-        const data = await apiClient('/delivery/stats');
-        if (data) {
-          setStats({ earnings: data.earnings, deliveries: data.deliveries, activeTime: 'Active Now' });
-        }
-      } catch (err) {
-        console.error('Error fetching driver stats:', err);
-      }
-    };
-    fetchStats();
+    apiClient('/delivery/stats').then(data => {
+      if (data) setStats({ earnings: data.earnings, deliveries: data.deliveries, delivery_fee: data.delivery_fee || 3.00 });
+    }).catch(() => {});
 
-    const fetchActiveOrder = async () => {
-      try {
-        const data = await apiClient('/orders/driver');
-        if (data && Array.isArray(data)) {
-          const current = data.find((o: any) => o.status === 'delivering' || o.status === 'picked_up' || o.status === 'accepted');
-          if (current) setActiveOrder(current);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+    apiClient('/orders/driver').then(data => {
+      if (data && Array.isArray(data)) {
+        const current = data.find((o: any) => o.status === 'delivering' || o.status === 'picked_up');
+        if (current) setActiveOrder(current);
       }
-    };
-    fetchActiveOrder();
+    }).catch(() => {}).finally(() => setLoading(false));
   }, [token, user, router]);
 
   useEffect(() => {
     if (!socket || !isConnected) return;
-
-    socket.on('order_ready_for_pickup', (order) => {
+    socket.on('order_ready_for_pickup', (order: any) => {
       setAvailableOrder(order);
       setCountdown(24);
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current!);
-            setAvailableOrder(null);
-            return 0;
-          }
+          if (prev <= 1) { clearInterval(timerRef.current!); setAvailableOrder(null); return 0; }
           return prev - 1;
         });
       }, 1000);
     });
-
-    return () => {
-      socket.off('order_ready_for_pickup');
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
+    return () => { socket.off('order_ready_for_pickup'); if (timerRef.current) clearInterval(timerRef.current); };
   }, [socket, isConnected]);
 
   const acceptOrder = async (orderId: string) => {
     try {
       const data = await apiClient(`/delivery/accept-order/${orderId}`, { method: 'POST' });
-      if (data) {
-        setActiveOrder(data);
-        setAvailableOrder(null);
-        toast.success("Mission Accepted! Route initialized.");
-      }
-    } catch (err: any) {
-      console.error(err);
-    }
+      if (data) { setActiveOrder(data); setAvailableOrder(null); toast.success('Order accepted! En route to pickup.'); }
+    } catch (err: any) { toast.error('Failed to accept order.'); }
   };
 
   const completeOrder = async () => {
@@ -113,226 +66,248 @@ export default function DriverDashboard() {
     try {
       const data = await apiClient(`/delivery/complete-order/${activeOrder.id}`, { method: 'PATCH' });
       if (data) {
-        toast.success('Nice work! Mission completed.');
+        toast.success(`+$${stats.delivery_fee.toFixed(2)} added to your earnings!`);
         setActiveOrder(null);
+        setStats(prev => ({ ...prev, earnings: prev.earnings + prev.delivery_fee, deliveries: prev.deliveries + 1 }));
       }
-    } catch (err: any) {
-       console.error(err);
-    }
+    } catch (err: any) { toast.error('Failed to complete delivery.'); }
   };
 
   return (
-    <div className="space-y-10 lg:space-y-12 pb-24">
-      
-      {/* Driver Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative z-10">
-        <div className="flex flex-col space-y-2">
-          <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter leading-tight">Navigator: <span className="text-[#d97757]">{user?.name?.split(' ')[0]}</span></h1>
-          <p className="text-sm font-bold text-[#888888] max-w-xl">Your fleet status is active. High-priority orders will appear here instantly.</p>
+    <div className="space-y-6 pb-24">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-[#111111] tracking-tighter">
+            Hey, <span className="text-[#d97757]">{user?.name?.split(' ')[0]}</span> 👋
+          </h1>
+          <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-0.5">
+            {isConnected ? '● Online · Ready for deliveries' : '○ Connecting to dispatch...'}
+          </p>
         </div>
-        <div className="bg-white px-6 py-4 rounded-xl border border-gray-100 flex items-center space-x-4 shadow-sm whitespace-nowrap">
-          <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]"></div>
-          <span className="text-[10px] font-black text-[#111111] uppercase tracking-[0.3em]">Duty Status: Online</span>
+        <div className={`px-4 py-2 rounded-xl border flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${
+          isConnected ? 'bg-green-50 border-green-200 text-green-600' : 'bg-gray-50 border-gray-200 text-gray-400'
+        }`}>
+          <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
+          {isConnected ? 'On Duty' : 'Offline'}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-        {/* Active Mission Display */}
-        <div className="lg:col-span-8 flex flex-col space-y-10">
-          {activeOrder ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-8 lg:p-12 relative overflow-hidden group shadow-md border border-gray-50"
+      {/* Stats Row */}
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: "Today's Earnings", value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={18} />, accent: '#d97757', bg: '#fef3f2' },
+          { label: 'Deliveries Done', value: stats.deliveries, icon: <Package size={18} />, accent: '#2563eb', bg: '#eff6ff' },
+          { label: 'Fee per Delivery', value: `$${stats.delivery_fee.toFixed(2)}`, icon: <DollarSign size={18} />, accent: '#16a34a', bg: '#f0fdf4' },
+        ].map((s, i) => (
+          <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
+            className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all"
+          >
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: s.bg, color: s.accent }}>
+              {s.icon}
+            </div>
+            <div>
+              <p className="text-xl font-black text-[#111111] tracking-tighter leading-none">{s.value}</p>
+              <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mt-1">{s.label}</p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Main Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        {/* Active Delivery or Idle */}
+        <div className="lg:col-span-8">
+          {loading ? (
+            <div className="bg-white rounded-2xl p-12 border border-gray-100 animate-pulse flex items-center justify-center h-64">
+              <div className="w-10 h-10 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : activeOrder ? (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
             >
-              <div className="relative z-10 space-y-12">
-                <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-8 border-b border-gray-50 pb-10">
-                  <div className="text-center sm:text-left">
-                    <span className="bg-[#d97757]/10 text-[#d97757] px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] inline-block mb-4">ACTIVE MISSION</span>
-                    <h2 className="text-3xl lg:text-4xl font-black text-[#111111] tracking-tighter uppercase leading-none">Order #{activeOrder.id.slice(0, 8).toUpperCase()}</h2>
+              {/* Active order banner */}
+              <div className="bg-[#d97757] px-6 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white">Active Delivery</span>
+                </div>
+                <span className="text-[10px] font-black text-white/70 uppercase tracking-wider">#{activeOrder.id.slice(0, 8).toUpperCase()}</span>
+              </div>
+
+              <div className="p-8 space-y-8">
+                {/* Payout */}
+                <div className="flex items-center justify-between p-4 bg-[#f0fdf4] rounded-xl border border-green-100">
+                  <div>
+                    <p className="text-[9px] font-black text-green-600 uppercase tracking-widest mb-1">Your Delivery Payout</p>
+                    <p className="text-3xl font-black text-green-700 tracking-tighter">${stats.delivery_fee.toFixed(2)}</p>
                   </div>
-                  <div className="flex bg-[#f9f9f9] px-8 py-5 rounded-xl border border-gray-100 items-center gap-4 shadow-sm">
-                    <div className="flex flex-col items-end">
-                      <span className="text-[9px] font-black text-[#888888] uppercase tracking-widest leading-none mb-1">Guaranteed Payout</span>
-                      <span className="text-3xl font-black text-[#111111] tracking-tighter">${Number(activeOrder.total_price).toFixed(2)}</span>
-                    </div>
-                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#d97757] shadow-sm">
-                       <Wallet size={24} />
-                    </div>
+                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-green-600">
+                    <Wallet size={24} />
                   </div>
                 </div>
 
-                {/* Navigation Timeline */}
-                  <div className="relative pl-20 lg:pl-24 space-y-16 py-4">
-                    <div className="absolute left-10 lg:left-12 top-0 bottom-0 w-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ height: "0%" }}
-                        animate={{ height: activeOrder.status === 'delivering' ? "100%" : "30%" }}
-                        className="w-full bg-[#d97757] shadow-[0_0_15px_rgba(217,119,87,0.3)]"
-                      />
+                {/* Route */}
+                <div className="rounded-xl border border-gray-100 overflow-hidden">
+                  {/* Pickup row */}
+                  <div className="flex items-center gap-4 px-5 py-4 bg-[#fafafa] border-b border-gray-100">
+                    <div className="w-9 h-9 rounded-xl bg-[#fef3f2] border border-[#fee2e2] flex items-center justify-center shrink-0">
+                      <StoreIcon size={16} className="text-[#d97757]" />
                     </div>
-
-                    <div className="relative">
-                      <div className="absolute -left-16 lg:-left-[4.5rem] w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-[#111111] shadow-md group-hover:scale-110 transition-transform">
-                        <StoreIcon size={24} />
-                      </div>
-                      <div>
-                        <h4 className="text-xl lg:text-2xl font-black text-[#111111] tracking-tight">{activeOrder.stores?.name || 'Restaurant Terminal'}</h4>
-                        <p className="text-[#888888] font-bold text-sm italic">Pickup Location • Order #{activeOrder.id.slice(0, 8).toUpperCase()}</p>
-                      </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Pickup</p>
+                      <p className="text-sm font-black text-[#111111] truncate">{activeOrder.stores?.name || 'Restaurant'}</p>
                     </div>
-
-                    <div className="relative">
-                      <div className="absolute -left-16 lg:-left-[4.5rem] w-14 h-14 bg-white border border-gray-100 rounded-xl flex items-center justify-center text-gray-300 shadow-md group-hover:scale-110 transition-transform">
-                        <MapPin size={24} />
-                      </div>
-                      <div>
-                        <h4 className="text-xl lg:text-2xl font-black text-[#111111] tracking-tight">Customer Destination</h4>
-                        <p className="text-[#888888] font-bold text-sm italic">Sector 4 Transit Point</p>
-                        <button className="h-14 px-10 bg-[#111111] text-white rounded-xl font-black uppercase tracking-widest text-[10px] mt-6 flex items-center gap-3 hover:bg-[#333] transition-all shadow-md">
-                           <Navigation size={18} />
-                           Load Telemetry
-                        </button>
-                      </div>
-                    </div>
+                    <span className="px-2 py-1 bg-green-50 text-green-600 border border-green-200 rounded-full text-[8px] font-black uppercase tracking-wider shrink-0">
+                      ✓ Done
+                    </span>
                   </div>
+                  {/* Delivery row */}
+                  <div className="flex items-center gap-4 px-5 py-4 bg-white">
+                    <div className="w-9 h-9 rounded-xl bg-[#eff6ff] border border-blue-200 flex items-center justify-center shrink-0">
+                      <MapPin size={16} className="text-blue-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Deliver to</p>
+                      <p className="text-sm font-black text-[#111111] truncate">{activeOrder.delivery_address || 'Customer Address'}</p>
+                    </div>
+                    <button className="h-8 px-3 bg-[#111111] text-white rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#333] transition-all shrink-0">
+                      <Navigation size={11} /> Navigate
+                    </button>
+                  </div>
+                </div>
 
-                   <button
-                    onClick={completeOrder}
-                    className="w-full h-20 bg-[#d97757] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-lg shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4"
-                  >
-                    <ShieldCheck size={24} />
-                    Complete Mission & Exit
-                  </button>
+                {/* Complete button */}
+                <button onClick={completeOrder}
+                  className="w-full h-14 bg-[#d97757] text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-md hover:bg-[#c2654a] active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                >
+                  <ShieldCheck size={20} /> Mark as Delivered
+                </button>
               </div>
             </motion.div>
           ) : (
-            <div className="py-24 lg:py-32 flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
-               <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-               <div className="w-28 h-28 bg-gray-50 rounded-xl flex items-center justify-center mb-10 text-gray-200 group-hover:scale-110 group-hover:text-[#d97757]/20 transition-all duration-700">
-                  <Truck size={56} />
-               </div>
-               <h3 className="text-3xl font-black text-[#111111] tracking-tighter uppercase mb-4">Fleet Staging Area <span className="text-[#d97757]">Idle.</span></h3>
-               <p className="text-sm font-bold text-[#888888] max-w-sm mx-auto uppercase tracking-widest">Awaiting command from central dispatch protocol.</p>
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-200 mb-6">
+                <Truck size={44} />
+              </div>
+              <h3 className="text-xl font-black text-[#111111] tracking-tighter mb-2">Waiting for Orders</h3>
+              <p className="text-xs font-bold text-[#888888] max-w-xs leading-relaxed">
+                You'll be notified the moment a nearby order is ready for pickup.
+              </p>
+              <div className="mt-6 flex items-center gap-2 text-[10px] font-black text-green-600 uppercase tracking-wider">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                Dispatch system active
+              </div>
             </div>
           )}
         </div>
 
-        {/* Sidebar Performance */}
-        <div className="lg:col-span-4 flex flex-col space-y-10">
-          <div className="bg-[#111111] rounded-2xl p-10 text-white relative overflow-hidden group shadow-lg">
-             <div className="relative z-10">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#d97757] mb-8">Performance Telemetry</p>
-                <div className="space-y-10">
-                   {[
-                     { label: 'Signal Earnings', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={20} />, color: '#d97757' },
-                     { label: 'Logistics Handled', value: stats.deliveries, icon: <Truck size={20} />, color: '#FFF' },
-                     { label: 'Time on Grid', value: stats.activeTime, icon: <Clock size={20} />, color: '#FFF' }
-                   ].map((item, idx) => (
-                     <div key={idx} className="flex items-center justify-between group/item">
-                        <div className="flex items-center gap-5">
-                           <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white group-hover/item:text-[#d97757] transition-colors border border-white/5">
-                              {item.icon}
-                           </div>
-                           <div>
-                              <p className="text-[9px] font-black uppercase tracking-widest text-[#888888] mb-1">{item.label}</p>
-                              <p className="text-2xl font-black tracking-tighter leading-none" style={{ color: idx === 0 ? '#d97757' : '#FFF' }}>{item.value}</p>
-                           </div>
-                        </div>
-                        <ChevronRight size={16} className="text-gray-800" />
-                     </div>
-                   ))}
-                </div>
-             </div>
-             <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-[#d97757]/10 rounded-full blur-[80px] pointer-events-none" />
+        {/* Right: Summary Panel */}
+        <div className="lg:col-span-4 space-y-4">
+          {/* Earnings breakdown */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
+            <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Earnings Breakdown</p>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-[#555555]">Delivery fees ×{stats.deliveries}</span>
+                <span className="text-sm font-black text-[#d97757]">${stats.earnings.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-[#555555]">Fee per trip</span>
+                <span className="text-sm font-black text-[#111111]">${stats.delivery_fee.toFixed(2)}</span>
+              </div>
+              <div className="h-px bg-gray-100" />
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-black text-[#111111]">Total Earned</span>
+                <span className="text-base font-black text-green-600">${stats.earnings.toFixed(2)}</span>
+              </div>
+            </div>
+            <button onClick={() => router.push('/driver/history')}
+              className="w-full h-10 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-wider text-[#888888] hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+            >
+              View Full History <ChevronRight size={14} />
+            </button>
           </div>
 
-
-          {/* Quick Support Card */}
-          <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-md">
-             <div className="w-14 h-14 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-8 shadow-sm">
-                <AlertCircle size={24} />
-             </div>
-             <h4 className="text-xl font-black text-[#111111] tracking-tighter mb-2">Fleet Support</h4>
-             <p className="text-xs font-bold text-[#888888] mb-8 uppercase tracking-widest leading-loose">Need technical assistance or reporting an incident?</p>
-             <button className="w-full h-14 bg-gray-50 text-[#111111] border border-gray-100 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-gray-100 transition-all">
-                Contact Dispatch
-             </button>
+          {/* Support */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+                <AlertCircle size={18} />
+              </div>
+              <div>
+                <p className="text-xs font-black text-[#111111]">Need Help?</p>
+                <p className="text-[10px] text-[#888888] font-medium">24/7 Driver Support</p>
+              </div>
+            </div>
+            <button onClick={() => router.push('/driver/support')}
+              className="w-full h-9 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-wider text-[#888888] hover:bg-gray-100 transition-all"
+            >
+              Contact Dispatch
+            </button>
           </div>
         </div>
       </div>
 
-      {/* High-Fidelity Mission Request Modal (Exactly as Image 4) */}
+      {/* New Delivery Modal */}
       <AnimatePresence>
         {availableOrder && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setAvailableOrder(null)}
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 50 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 50 }}
-              className="bg-white rounded-2xl p-8 lg:p-12 max-w-[480px] w-full relative z-10 shadow-2xl border border-gray-100"
+            <motion.div initial={{ opacity: 0, scale: 0.92, y: 40 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.92, y: 40 }}
+              className="bg-white rounded-2xl p-8 max-w-[400px] w-full relative z-10 shadow-2xl border border-gray-100"
             >
-              <div className="flex flex-col items-center">
-                {/* Icon Box */}
-                <div className="w-16 h-16 bg-[#d97757] rounded-2xl flex items-center justify-center text-white mb-6 shadow-md">
-                  <Truck size={28} className="fill-current" />
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 bg-[#d97757] rounded-2xl flex items-center justify-center text-white mb-4 shadow-md">
+                  <Truck size={26} />
                 </div>
-                
-                {/* Title */}
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#d97757] mb-4">NEW DELIVERY REQUEST</span>
-                
-                {/* Amount */}
-                <div className="flex flex-col items-center mb-8">
-                  <h3 className="text-5xl font-black text-[#111111] tracking-tighter leading-none">${Number(availableOrder.total_price).toFixed(2)}</h3>
-                  <p className="text-[10px] font-bold text-[#888888] mt-3 italic tracking-tight underline border-gray-200">Estimated payout incl. tip</p>
+                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#d97757] mb-3">New Delivery Request</span>
+
+                <div className="mb-5">
+                  <p className="text-[10px] font-bold text-[#888888] mb-1 uppercase tracking-wide">Your Payout</p>
+                  <h3 className="text-5xl font-black text-[#111111] tracking-tighter">${stats.delivery_fee.toFixed(2)}</h3>
+                  <p className="text-[9px] text-[#888888] mt-1">Delivery fee · Order total goes to merchant</p>
                 </div>
 
-                {/* Store Info Box */}
-                <div className="w-full bg-[#f9f9f9] p-8 rounded-2xl mb-12 border border-gray-100">
-                  <div className="flex flex-col items-center text-center">
-                    <h4 className="text-2xl font-black text-[#111111] tracking-tight mb-2 uppercase">{availableOrder.stores?.name || 'THE NEON GRILL'}</h4>
-                    <div className="flex items-center gap-2 text-[#888888]">
-                      <MapPin size={16} />
-                      <span className="text-sm font-bold tracking-tight">1.2 mi away • Downtown Core</span>
+                <div className="w-full bg-[#f9f9f9] rounded-xl p-5 border border-gray-100 mb-6 text-center">
+                  <h4 className="text-base font-black text-[#111111] tracking-tight uppercase mb-1">
+                    {availableOrder.stores?.name || 'Restaurant'}
+                  </h4>
+                  <div className="flex flex-col items-center justify-center gap-1 text-[#888888]">
+                    <div className="flex items-center gap-2">
+                       <MapPin size={14} />
+                       <span className="text-xs font-bold">{availableOrder.delivery_address || 'Deliver to Customer'}</span>
                     </div>
+                    <span className="text-[10px] font-medium opacity-60">~1.2 km away</span>
                   </div>
                 </div>
 
-                {/* Buttons */}
-                <div className="grid grid-cols-2 gap-6 w-full mb-10">
-                  <button
-                    onClick={() => setAvailableOrder(null)}
-                    className="h-16 border-2 border-gray-100 text-[#d97757] rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-red-50 transition-all"
+                <div className="grid grid-cols-2 gap-4 w-full mb-6">
+                  <button onClick={() => setAvailableOrder(null)}
+                    className="h-14 border-2 border-gray-100 text-[#888888] rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all"
                   >
                     Decline
                   </button>
-                  <button
-                    onClick={() => acceptOrder(availableOrder.id)}
-                    className="h-16 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[11px] shadow-md hover:scale-[1.03] active:scale-[0.97] transition-all"
+                  <button onClick={() => acceptOrder(availableOrder.id)}
+                    className="h-14 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-md hover:bg-[#c2654a] active:scale-[0.97] transition-all"
                   >
                     Accept
                   </button>
                 </div>
 
-                {/* Progress Bar & Countdown */}
-                <div className="w-full space-y-4">
+                <div className="w-full space-y-2">
                   <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: "100%" }}
-                      animate={{ width: "0%" }}
-                      transition={{ duration: 24, ease: "linear" }}
-                      className="h-full bg-gradient-to-r from-[#d97757] to-[#c2654a]"
+                    <motion.div initial={{ width: '100%' }} animate={{ width: '0%' }} transition={{ duration: 24, ease: 'linear' }}
+                      className="h-full bg-[#d97757] rounded-full"
                     />
                   </div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#888888] text-center">
-                    REQUEST EXPIRES IN <span className="text-[#d97757]">{countdown} SECONDS</span>
+                  <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest">
+                    Expires in <span className="text-[#d97757]">{countdown}s</span>
                   </p>
                 </div>
               </div>

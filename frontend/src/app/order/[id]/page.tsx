@@ -2,39 +2,40 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { MapPin, Package, Navigation, CheckCircle, Car, Clock, MessageSquare, Snowflake, ShieldCheck, ChevronLeft, Zap, Star, Phone, MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Package, Navigation, CheckCircle, Car, Clock, ShieldCheck, ChevronLeft, Star, Phone, MessageCircle, MapPin, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { useSocket } from '@/context/SocketContext';
-import Button from '@/components/Button';
 import { API_URL } from '@/config/api';
-import Logo from '@/components/Logo';
+import { apiClient } from '@/lib/apiClient';
+import MapView from '@/components/MapView';
 
 interface Order {
   id: string;
   status: string;
   total_price: number;
+  created_at: string;
   order_items?: {
     id: string;
     quantity: number;
-    products: { name: string, price: number };
+    products: { name: string; price: number };
   }[];
   drivers?: {
     user_id: string;
     users: { name: string };
   };
-  stores?: {
-    name: string;
-  };
+  stores?: { name: string; location_lat: number; location_lng: number };
+  delivery_lat: number;
+  delivery_lng: number;
 }
 
 export default function OrderTracking() {
   const { id } = useParams();
-  const { token, user, _hasHydrated } = useAuthStore();
-  const { socket, isConnected } = useSocket();
+  const { token, _hasHydrated } = useAuthStore();
+  const { socket } = useSocket();
   const router = useRouter();
-  
   const [order, setOrder] = useState<Order | null>(null);
-  const [driverLocation, setDriverLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [driverPos, setDriverPos] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -42,41 +43,60 @@ export default function OrderTracking() {
 
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`${API_URL}/orders/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setOrder(data);
-        }
+        const data = await apiClient(`/orders/${id}`);
+        if (data) setOrder(data);
       } catch (err) {
-        console.error('Error fetching order:', err);
+        console.error(err);
       }
     };
     fetchOrder();
 
     if (socket) {
-       socket.emit('join_order', id);
-       
-       const handleUpdate = (updatedOrder: Order) => {
-          setOrder(updatedOrder);
-       };
+      socket.emit('join_order', id);
+      
+      const handleUpdate = (updated: Order) => setOrder(updated);
+      const handleLocation = (data: { lat: number; lng: number }) => {
+        setDriverPos([data.lat, data.lng]);
+      };
 
-       socket.on('order_status_updated', handleUpdate);
-       
-       return () => {
-          socket.off('order_status_updated', handleUpdate);
-       };
+      socket.on('order_status_updated', handleUpdate);
+      socket.on('driver_location', handleLocation);
+
+      return () => { 
+        socket.off('order_status_updated', handleUpdate); 
+        socket.off('driver_location', handleLocation);
+      };
     }
   }, [id, token, router, _hasHydrated, socket]);
 
+  const handleCancelOrder = async () => {
+    if (!token) return;
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+
+    try {
+      const data = await apiClient(`/orders/${id}/cancel`, {
+        method: 'POST',
+      });
+
+      if (data) {
+        setOrder(data);
+        toast.success('Order cancelled successfully');
+      }
+    } catch (err: any) {
+      // apiClient handles toasts
+    }
+  };
+
   const stages = [
-    { label: 'PICKUP', status: ['pending', 'accepted', 'preparing', 'ready_for_pickup'] },
-    { label: 'IN TRANSIT', status: ['delivering', 'picked_up'] },
-    { label: 'DELIVERY', status: ['completed', 'delivered'] }
+    { label: 'Order Placed',  icon: <Package size={20} />,      statuses: ['pending', 'accepted'] },
+    { label: 'Preparing',     icon: <Clock size={20} />,         statuses: ['preparing', 'ready_for_pickup'] },
+    { label: 'On the Way',    icon: <Car size={20} />,           statuses: ['delivering', 'picked_up'] },
+    { label: 'Delivered',     icon: <CheckCircle size={20} />,   statuses: ['completed', 'delivered'] },
   ];
 
-  const currentStageIndex = stages.findIndex(s => s.status.includes(order?.status || ''));
+  const currentStageIndex = stages.findIndex(s => s.statuses.includes(order?.status || ''));
+  const isCancelled = order?.status === 'cancelled';
+  const eta = isCancelled ? 'CANCELLED' : (order?.created_at ? new Date(new Date(order.created_at).getTime() + 35 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—');
 
   if (!order) {
     return (
@@ -88,197 +108,209 @@ export default function OrderTracking() {
 
   return (
     <div className="min-h-screen bg-[#f9f9f9] pb-24">
-      <div className="container-responsive py-10 lg:py-16">
-        
-        {/* Back Link & Order ID */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-           <div className="space-y-4">
-              <button 
-                onClick={() => router.push('/profile')}
-                className="flex items-center gap-2 text-[10px] font-black text-[#888888] uppercase tracking-widest hover:text-[#111111] transition-colors"
-              >
-                 <ChevronLeft size={16} />
-                 BACK TO MY ORDERS
-              </button>
-              <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter">Order #DV-{String(id).substring(0, 4).toUpperCase()}</h1>
-           </div>
-           <div className="text-right">
-              <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-1">ESTIMATED ARRIVAL</p>
-              <p className="text-4xl lg:text-5xl font-black text-[#d97757] tracking-tighter italic">12:45 PM</p>
-           </div>
+      <div className="container-responsive py-10 lg:py-16 space-y-8">
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <button
+              onClick={() => router.push('/profile')}
+              className="flex items-center gap-2 text-[10px] font-black text-[#888888] uppercase tracking-widest hover:text-[#111111] transition-colors mb-3"
+            >
+              <ChevronLeft size={14} /> Back to Orders
+            </button>
+            <h1 className="text-3xl lg:text-4xl font-black text-[#111111] tracking-tighter">
+              Order <span className="text-[#d97757]">#{String(id).substring(0, 8).toUpperCase()}</span>
+            </h1>
+            <p className="text-xs font-bold text-[#888888] mt-1">{order.stores?.name || 'Restaurant'} · Placed {new Date(order.created_at).toLocaleDateString()}</p>
+          </div>
+          <div className="bg-[#fef3f2] border border-[#fee2e2] rounded-2xl px-6 py-4 text-right">
+            <p className="text-[9px] font-black text-[#d97757] uppercase tracking-widest mb-1">Est. Arrival</p>
+            <p className="text-2xl font-black text-[#111111] tracking-tighter">{eta}</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-           
-           {/* Left Column: Map & Status Overlay */}
-           <div className="lg:col-span-8 space-y-10">
-              <div className="relative aspect-[16/10] bg-[#E5E7EB] rounded-2xl overflow-hidden group border border-gray-100 shadow-md">
-                 {/* Mock Map Background */}
-                 <div className="absolute inset-0 bg-[#D1D5DB] flex items-center justify-center">
-                    <div className="relative">
-                       <div className="w-32 h-32 bg-[#d97757]/20 rounded-full animate-ping absolute -inset-0" />
-                       <div className="w-24 h-24 bg-[#d97757] rounded-full flex items-center justify-center shadow-2xl shadow-[#d97757]/30 relative z-10">
-                          <MapPin size={48} className="text-white fill-white" />
-                       </div>
-                    </div>
-                 </div>
-
-                 {/* Location Badges Overlay */}
-                 <div className="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-md rounded-xl p-6 lg:p-8 flex items-center justify-between border border-white/20 shadow-lg">
-                    <div className="flex items-center gap-6">
-                       <div className="w-14 h-14 bg-[#d97757]/10 rounded-xl flex items-center justify-center text-[#d97757]">
-                          {order.drivers ? <Car size={24} /> : <Package size={24} />}
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-1">
-                             {order.drivers ? 'CURRENT LOCATION' : 'STATUS'}
-                          </p>
-                          <p className="text-sm font-black text-[#111111]">
-                             {order.drivers ? 'Mission District, 18th St' : `Preparing at ${order.stores?.name || 'Restaurant'}`}
-                          </p>
-                       </div>
-                    </div>
-                    {order.drivers && (
-                       <>
-                         <div className="h-full w-px bg-gray-100 hidden md:block" />
-                         <div className="hidden md:block text-right">
-                            <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-1">DISTANCE</p>
-                            <p className="text-sm font-black text-[#111111]">1.2 miles away</p>
-                         </div>
-                       </>
-                    )}
-                 </div>
-              </div>
-
-               {/* Delivery Status Timeline */}
-               <div className="bg-white rounded-2xl p-10 lg:p-14 border border-gray-100 shadow-md">
-                  <div className="flex items-center justify-between mb-16">
-                     <h2 className="text-2xl font-black text-[#111111] tracking-tighter">Delivery Status</h2>
-                     <span className="bg-[#fef3f2] text-[#d97757] px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-[#fee2e2]">
-                        {order.status.replace('_', ' ')}
-                     </span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left: Status Timeline + Order Items */}
+          <div className="lg:col-span-8 space-y-6">
+            
+            {(order.status === 'delivering' || order.status === 'picked_up' || order.status === 'delivered' || order.status === 'completed') && (
+               <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden relative h-[450px] mb-8">
+                  <MapView 
+                    center={driverPos || [order.delivery_lat || 0, order.delivery_lng || 0]}
+                    zoom={15}
+                    markers={[
+                      ...(driverPos ? [{ position: driverPos, type: 'driver', label: 'Courier' }] : []),
+                      { position: [order.stores?.location_lat || 0, order.stores?.location_lng || 0], type: 'store', label: order.stores?.name },
+                      { position: [order.delivery_lat || 0, order.delivery_lng || 0], type: 'customer', label: 'Home' }
+                    ] as any}
+                    polyline={driverPos ? [driverPos, [order.delivery_lat, order.delivery_lng]] : undefined}
+                  />
+                  <div className="absolute top-8 left-8 z-[400] bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-white/50 shadow-2xl flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                    <span className="text-[11px] font-black text-[#111111] uppercase tracking-widest">Live Courier Signal</span>
                   </div>
+               </div>
+            )}
 
-                 <div className="relative flex items-center justify-between px-4 lg:px-10">
-                    <div className="absolute left-[5%] right-[5%] h-1 bg-gray-100 top-1/2 -translate-y-1/2 -z-0" />
-                     <div 
-                       className="absolute left-[5%] h-1 bg-[#d97757] top-1/2 -translate-y-1/2 -z-0 transition-all duration-1000" 
-                       style={{ width: `${currentStageIndex === 0 ? '0%' : currentStageIndex === 1 ? '45%' : '90%'}` }}
-                     />
-
-                     {stages.map((stage, idx) => (
-                        <div key={stage.label} className="relative z-10 flex flex-col items-center gap-4">
-                           <div className={`w-14 h-14 lg:w-20 lg:h-20 rounded-full flex items-center justify-center border-4 border-white shadow-lg transition-all duration-500 ${
-                             idx <= currentStageIndex ? 'bg-[#d97757] text-white' : 'bg-gray-100 text-[#888888]'
-                           }`}>
-                              {idx === 0 ? <Package size={idx <= currentStageIndex ? 32 : 28} /> : 
-                               idx === 1 ? <Car size={idx <= currentStageIndex ? 32 : 28} /> : 
-                               <CheckCircle size={idx <= currentStageIndex ? 32 : 28} />}
-                           </div>
-                           <span className={`text-[9px] font-black uppercase tracking-widest ${idx <= currentStageIndex ? 'text-[#d97757]' : 'text-gray-300'}`}>
-                              {stage.label}
-                           </span>
-                        </div>
-                     ))}
-                 </div>
+            {/* Progress Steps */}
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-black text-[#111111] tracking-tighter">Delivery Status</h2>
+                <span className="bg-[#fef3f2] text-[#d97757] px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-[#fee2e2]">
+                  {order.status.replace(/_/g, ' ')}
+                </span>
               </div>
-           </div>
+              <p className="text-xs font-bold text-[#888888] mb-8">
+                {currentStageIndex >= 0 ? stages[currentStageIndex]?.label : 'Processing'} — updates in real time
+              </p>
 
-           {/* Right Column: Driver & Details */}
-           <div className="lg:col-span-4 space-y-10">
-               {/* Driver Card */}
-               <div className="bg-white rounded-2xl p-10 border border-gray-100 shadow-md text-center">
-                  {!order.drivers ? (
-                    <div className="py-6 space-y-6">
-                       <div className="relative inline-block">
-                          <div className="w-28 h-28 rounded-full bg-gray-50 flex items-center justify-center border-4 border-dashed border-gray-100 group">
-                             <Car size={40} className="text-gray-200 animate-bounce" />
-                          </div>
-                          <div className="absolute -top-1 -right-1 w-8 h-8 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#d97757] shadow-sm">
-                             <Clock size={16} className="animate-pulse" />
-                          </div>
-                       </div>
-                       <div>
-                          <h3 className="text-2xl font-black text-[#111111] tracking-tighter mb-2 italic">Finding courier...</h3>
-                          <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest leading-relaxed px-4">
-                             We're matching your order with the <span className="text-[#d97757]">best driver</span> nearby.
-                          </p>
-                       </div>
-                       <div className="pt-4">
-                          <div className="w-full h-1.5 bg-gray-50 rounded-full overflow-hidden">
-                             <motion.div 
-                                initial={{ x: '-100%' }}
-                                animate={{ x: '100%' }}
-                                transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
-                                className="w-1/2 h-full bg-[#d97757] rounded-full" 
-                             />
-                          </div>
-                       </div>
+              {/* Steps */}
+              <div className="relative">
+                {/* Track line */}
+                <div className="absolute left-5 top-5 bottom-5 w-0.5 bg-gray-100" />
+                <div
+                  className="absolute left-5 top-5 w-0.5 bg-[#d97757] transition-all duration-1000"
+                  style={{ height: `${Math.max(0, (currentStageIndex / (stages.length - 1)) * 100)}%` }}
+                />
+
+                <div className="space-y-6">
+                  {stages.map((stage, idx) => {
+                    const done = idx <= currentStageIndex;
+                    const active = idx === currentStageIndex;
+                    return (
+                      <div key={stage.label} className="flex items-center gap-5 relative">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 shrink-0 z-10 ${
+                          done ? 'bg-[#d97757] border-[#d97757] text-white' : 'bg-white border-gray-200 text-gray-300'
+                        } ${active ? 'ring-4 ring-[#d97757]/20' : ''}`}>
+                          {stage.icon}
+                        </div>
+                        <div>
+                          <p className={`text-sm font-black tracking-tight ${done ? 'text-[#111111]' : 'text-gray-300'}`}>{stage.label}</p>
+                          {active && <p className="text-[10px] font-bold text-[#d97757] uppercase tracking-widest mt-0.5 animate-pulse">In Progress</p>}
+                        </div>
+                        {done && !active && (
+                          <CheckCircle size={16} className="text-[#d97757] ml-auto" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery address info */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center gap-5">
+              <div className="w-11 h-11 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] shrink-0">
+                <MapPin size={20} />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-1">Delivering To</p>
+                <p className="text-sm font-black text-[#111111]">Your saved address</p>
+                <p className="text-xs font-bold text-[#888888]">~1.2 miles from the restaurant</p>
+              </div>
+              <button onClick={() => router.push('/profile')} className="ml-auto text-[9px] font-black text-[#d97757] uppercase tracking-wider hover:underline flex items-center gap-1">
+                <RotateCcw size={12} /> Re-order
+              </button>
+            </div>
+
+            {/* Order Items */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-6 py-5 border-b border-gray-50">
+                <h3 className="text-base font-black text-[#111111] tracking-tighter">Order Items</h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {(order.order_items || []).map(item => (
+                  <div key={item.id} className="flex items-center justify-between px-6 py-4">
+                    <div className="flex items-center gap-4">
+                      <span className="w-6 h-6 bg-[#fef3f2] text-[#d97757] rounded-lg flex items-center justify-center text-[11px] font-black">{item.quantity}</span>
+                      <span className="text-sm font-bold text-[#111111]">{item.products.name}</span>
                     </div>
-                 ) : (
-                   <>
-                     <div className="relative inline-block mb-6">
-                        <img 
-                          src={`https://i.pravatar.cc/150?u=${order.drivers.user_id}`} 
-                          alt="Driver"
-                          className="w-28 h-28 rounded-full border-4 border-gray-50 shadow-lg object-cover"
-                        />
-                        <div className="absolute top-1 right-1 w-8 h-8 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#d97757] shadow-md">
-                           <ShieldCheck size={16} fill="currentColor" />
-                        </div>
-                     </div>
-                     
-                     <h3 className="text-2xl font-black text-[#111111] tracking-tighter mb-2">{order.drivers.users.name}</h3>
-                     <div className="flex items-center justify-center gap-1 mb-10">
-                        {[1,2,3,4,5].map(s => <Star key={s} size={14} className="text-[#d97757]" fill="currentColor" />)}
-                        <span className="text-[10px] font-black text-[#888888] uppercase tracking-widest ml-2">5.0 Rating</span>
-                     </div>
-    
-                     <div className="space-y-4">
-                        <button className="w-full h-16 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-[#c2654a] transition-all shadow-md">
-                           <MessageCircle size={18} fill="currentColor" />
-                           Message {order.drivers.users.name.split(' ')[0]}
-                        </button>
-                        <button className="w-full h-16 bg-[#f9f9f9] text-[#111111] rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-gray-100 transition-all border border-gray-100">
-                           <Phone size={18} fill="currentColor" />
-                           Call Driver
-                        </button>
-                     </div>
-                   </>
-                 )}
-              </div>
-
-               {/* Order Details Bill */}
-               <div className="bg-[#f9f9f9] rounded-2xl p-10 border border-gray-100 shadow-sm">
-                  <h3 className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-10">ORDER DETAILS</h3>
-                  
-                  <div className="space-y-8 mb-12">
-                     {order.order_items?.map(item => (
-                        <div key={item.id} className="flex justify-between items-start">
-                           <div className="flex gap-4">
-                              <span className="text-[#d97757] font-black text-lg">{item.quantity}x</span>
-                              <span className="text-[#111111] font-bold text-sm leading-tight max-w-[140px]">{item.products.name}</span>
-                           </div>
-                           <span className="text-[#111111] font-black text-sm">${(item.quantity * item.products.price).toFixed(2)}</span>
-                        </div>
-                     )) || (
-                       <div className="flex justify-between items-start">
-                         <div className="flex gap-4">
-                            <span className="text-[#d97757] font-black text-lg">1x</span>
-                            <span className="text-[#111111] font-bold text-sm leading-tight max-w-[140px]">Organic Quinoa Bowl</span>
-                         </div>
-                         <span className="text-[#111111] font-black text-sm">$18.50</span>
-                       </div>
-                     )}
+                    <span className="text-sm font-black text-[#111111]">${(item.quantity * item.products.price).toFixed(2)}</span>
                   </div>
-
-                  <div className="pt-8 border-t border-gray-200 flex justify-between items-baseline">
-                     <span className="text-xl font-black text-[#111111] tracking-tighter uppercase">Total</span>
-                     <span className="text-3xl font-black text-[#111111] tracking-tighter">${order.total_price.toFixed(2)}</span>
-                  </div>
+                ))}
+                <div className="flex items-center justify-between px-6 py-5 bg-gray-50">
+                  <span className="text-sm font-black text-[#111111] uppercase tracking-wider">Total</span>
+                  <span className="text-lg font-black text-[#d97757]">${order.total_price.toFixed(2)}</span>
+                </div>
               </div>
-           </div>
+            </div>
+          </div>
 
+          {/* Right: Driver Card */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+              {!order.drivers ? (
+                <div className="py-4 space-y-5">
+                  <div className="relative inline-block">
+                    <div className="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200">
+                      <Car size={32} className="text-gray-200 animate-bounce" />
+                    </div>
+                    <div className="absolute -top-1 -right-1 w-7 h-7 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#d97757] shadow-sm">
+                      <Clock size={14} className="animate-pulse" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-[#111111] tracking-tighter mb-2">Finding Courier...</h3>
+                    <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest leading-relaxed">
+                      Matching with the <span className="text-[#d97757]">best driver</span> nearby
+                    </p>
+                  </div>
+                  <div className="w-full h-1 bg-gray-50 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ x: '-100%' }}
+                      animate={{ x: '100%' }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+                      className="w-1/2 h-full bg-[#d97757] rounded-full"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="relative inline-block mb-5">
+                    <div className="w-20 h-20 rounded-full bg-[#fef3f2] border-4 border-white shadow-lg flex items-center justify-center">
+                      <span className="text-2xl font-black text-[#d97757]">{order.drivers.users.name.slice(0,2).toUpperCase()}</span>
+                    </div>
+                    <div className="absolute top-0 right-0 w-7 h-7 bg-white rounded-full border border-gray-100 flex items-center justify-center text-[#d97757] shadow-md">
+                      <ShieldCheck size={14} fill="currentColor" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-black text-[#111111] tracking-tighter mb-1">{order.drivers.users.name}</h3>
+                  <div className="flex items-center justify-center gap-0.5 mb-6">
+                    {[1,2,3,4,5].map(s => <Star key={s} size={12} className="text-[#d97757]" fill="currentColor" />)}
+                    <span className="text-[10px] font-black text-[#888888] ml-2">5.0 Rating</span>
+                  </div>
+                  <div className="space-y-3">
+                    <button className="w-full h-12 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-[#c2654a] transition-all shadow-sm">
+                      <MessageCircle size={16} fill="currentColor" /> Message Driver
+                    </button>
+                    <button className="w-full h-12 bg-gray-50 text-[#111111] rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-gray-100 transition-all border border-gray-100">
+                      <Phone size={16} fill="currentColor" /> Call Driver
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Support */}
+            <div className="bg-[#111111] rounded-2xl p-6 text-white">
+              <p className="text-[9px] font-black text-[#d97757] uppercase tracking-widest mb-2">Need Help?</p>
+              <p className="text-sm font-black tracking-tight mb-4">Issue with your order?</p>
+              <div className="space-y-3">
+                <button className="w-full h-10 bg-white/10 hover:bg-white/20 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                  Contact Support
+                </button>
+                {(order.status === 'pending') && (
+                  <button
+                    onClick={handleCancelOrder}
+                    className="w-full h-10 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-red-500/20"
+                  >
+                    Cancel Order
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

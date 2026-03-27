@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { CreditCard, DollarSign, TrendingUp, ArrowDownRight, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { API_URL } from '@/config/api';
+import { apiClient } from '@/lib/apiClient';
 
 export default function MerchantPayouts() {
   const { token } = useAuthStore();
@@ -14,17 +15,13 @@ export default function MerchantPayouts() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [balRes, payRes] = await Promise.all([
-          fetch(`${API_URL}/stores/balance`, {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          fetch(`${API_URL}/stores/payouts`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+        const [balData, payData] = await Promise.all([
+          apiClient('/stores/balance'),
+          apiClient('/stores/payouts')
         ]);
 
-        if (balRes.ok) setBalance(await balRes.json());
-        if (payRes.ok) setTransactions(await payRes.json());
+        if (balData) setBalance(balData);
+        if (payData) setTransactions(payData);
       } catch (err) {
         console.error('Error fetching payout data:', err);
       } finally {

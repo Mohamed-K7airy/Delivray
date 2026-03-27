@@ -37,6 +37,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
   }, []);
 
   return (
+    <>
     <nav className="h-16 sm:h-24 bg-white/80 border-b border-gray-100 flex items-center justify-between px-4 sm:px-8 lg:px-12 sticky top-0 z-50 backdrop-blur-3xl transition-all duration-500">
       <div className="flex items-center gap-x-4 sm:gap-x-12">
         {/* Mobile Menu Toggle */}
@@ -147,6 +148,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
            </AnimatePresence>
         </div>
       </div>
+    </nav>
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -196,6 +198,6 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
           </>
         )}
       </AnimatePresence>
-    </nav>
+    </>
   );
 }

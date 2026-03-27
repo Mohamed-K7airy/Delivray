@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
 import { API_URL } from '@/config/api';
+import { apiClient } from '@/lib/apiClient';
 import { Eye, EyeOff, LogIn, ShieldCheck, Zap, ArrowRight, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -22,17 +23,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const data = await apiClient('/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: phone.trim(), password }),
+        data: { phone: phone.trim(), password },
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Authentication failed');
-      }
+      if (!data) return;
 
       setToken(data.token);
       setUser({

@@ -1,6 +1,9 @@
 import { supabase } from '../../config/supabase.js';
 import { getIo } from '../../config/socket.js';
 
+// Fixed delivery fee paid to the driver per completed delivery
+const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '3.00');
+
 // @desc    Get available orders for driver
 // @route   GET /delivery/available-orders
 // @access  Private/Driver
@@ -94,6 +97,7 @@ export const completeOrder = async (req, res) => {
     if (order.driver_id !== driver.id) return res.status(403).json({ message: 'Not authorized for this order' });
     if (order.status !== 'delivering') return res.status(400).json({ message: 'Cannot complete an order that is not delivering' });
 
+    // Mark order as completed
     const { data: completedOrder, error } = await supabase
       .from('orders')
       .update({ status: 'completed' })
@@ -184,21 +188,61 @@ export const getDriverStats = async (req, res) => {
       });
     }
 
-    // 2. Aggregate Earnings and Deliveries
+    // 2. Aggregate Earnings: driver earns DELIVERY_FEE per delivery (not total_price)
     const { data: orders, error } = await supabase
       .from('orders')
-      .select('total_price')
+      .select('id')
       .eq('driver_id', driver.id)
       .eq('status', 'completed');
 
     if (error) throw error;
 
-    const totalEarnings = orders.reduce((sum, o) => sum + Number(o.total_price), 0);
     const deliveriesCount = orders.length;
+    // Earnings = fixed delivery fee × number of completed trips
+    const totalEarnings = deliveriesCount * DELIVERY_FEE;
 
     res.json({
       earnings: totalEarnings,
-      deliveries: deliveriesCount
+      deliveries: deliveriesCount,
+      delivery_fee: DELIVERY_FEE
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Get driver delivery history with pagination
+// @route   GET /delivery/history
+// @access  Private/Driver
+export const getDriverHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+
+    // 1. Get driver profile
+    const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId).single();
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+
+    // 2. Fetch completed orders with range
+    const { data: orders, error, count } = await supabase
+      .from('orders')
+      .select('*, stores(name, location_lat, location_lng)', { count: 'exact' })
+      .eq('driver_id', driver.id)
+      .eq('status', 'completed')
+      .order('updated_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) throw error;
+
+    res.json({
+      orders,
+      pagination: {
+        total: count,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(count / limit)
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });

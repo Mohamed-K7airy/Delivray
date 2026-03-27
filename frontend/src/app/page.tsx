@@ -6,6 +6,7 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/config/api';
+import { apiClient } from '@/lib/apiClient';
 
 interface Store {
   id: string;
@@ -49,9 +50,8 @@ export default function Home() {
       setLoading(true);
       try {
         const typeParam = filterType === 'All Offers' ? '' : `?type=${filterType}`;
-        const res = await fetch(`${API_URL}/stores${typeParam}`);
-        const data = await res.json();
-        setStores(data);
+        const data = await apiClient(`/stores${typeParam}`);
+        if (data) setStores(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -208,20 +208,18 @@ export default function Home() {
         </div>
 
         {/* Categories */}
-        <div className="flex overflow-x-auto no-scrollbar gap-4 pb-4">
+        <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2">
           {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => setFilterType(cat.name)}
-              className={`flex items-center gap-3 px-6 py-4 rounded-xl font-bold text-sm whitespace-nowrap transition-all border shrink-0 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-wider whitespace-nowrap transition-all border shrink-0 ${
                 filterType === cat.name 
-                  ? 'bg-[#d97757] text-white border-[#d97757] shadow-md' 
-                  : 'bg-white text-[#555555] border-gray-100 hover:border-gray-200 shadow-sm'
+                  ? 'bg-[#d97757] text-white border-[#d97757] shadow-sm' 
+                  : 'bg-white text-[#888888] border-gray-200 hover:border-gray-300'
               }`}
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${filterType === cat.name ? 'bg-white/20' : 'bg-gray-50'}`}>
-                 {cat.icon}
-              </div>
+              <span className={filterType === cat.name ? 'text-white' : 'text-[#d97757]'}>{cat.icon}</span>
               {cat.name}
             </button>
           ))}
@@ -251,48 +249,49 @@ export default function Home() {
             >
               {stores.map((store) => (
                 <motion.div key={store.id} variants={itemVariants}>
-                  <Link href={`/store/${store.id}`} className="group block h-full">
-                    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md group-hover:shadow-lg transition-all duration-500 relative h-full flex flex-col">
-                      <div className="relative h-56 overflow-hidden">
+                  <Link href={`/store/${store.id}`} className="group block">
+                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-300">
+                      {/* Image */}
+                      <div className="relative h-40 overflow-hidden">
                         <img 
                           src={
-                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop' :
-                            store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop' :
-                            store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&auto=format&fit=crop' :
-                            store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=800&auto=format&fit=crop' :
-                            store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop' :
-                            store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop' :
-                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`
+                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop' :
+                            store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop' :
+                            store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop' :
+                            store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=600&auto=format&fit=crop' :
+                            store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop' :
+                            store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop' :
+                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=600&auto=format&fit=crop`
                           }
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                           alt={store.name} 
                         />
-                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/50 flex items-center gap-1 shadow-sm">
-                           <Star size={12} className="text-[#d97757] fill-[#d97757]" />
-                           <span className="text-xs font-bold text-[#111111]">4.8</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                        {/* Rating */}
+                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
+                          <Star size={11} className="text-[#d97757] fill-[#d97757]" />
+                          <span className="text-[11px] font-black text-[#111111]">4.8</span>
+                        </div>
+                        {/* Type badge */}
+                        <div className="absolute bottom-3 left-3">
+                          <span className="bg-white/90 backdrop-blur-md text-[#d97757] px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">{store.type}</span>
                         </div>
                       </div>
 
-                      <div className="p-6 space-y-4 flex-1 flex flex-col">
-                        <div>
-                           <h3 className="text-xl font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{store.name}</h3>
-                           <div className="flex items-center gap-4 mt-2">
-                              <div className="flex items-center gap-1.5 text-[#555555] font-bold text-[10px] uppercase tracking-wider">
-                                 <Clock size={12} className="text-[#d97757]" />
-                                 <span>20-30 min</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 text-[#555555] font-bold text-[10px] uppercase tracking-wider">
-                                 <ShoppingCart size={12} className="text-[#d97757]" />
-                                 <span>$2.99 Fee</span>
-                              </div>
-                           </div>
+                      {/* Info Row */}
+                      <div className="px-4 py-3 flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="text-sm font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{store.name}</h3>
+                          <div className="flex items-center gap-3 mt-0.5">
+                            <span className="flex items-center gap-1 text-[#888888] font-bold text-[10px]">
+                              <Clock size={10} className="text-[#d97757]" /> 20-30 min
+                            </span>
+                            <span className="text-gray-200">·</span>
+                            <span className="text-[10px] font-bold text-[#888888]">$2.99 delivery</span>
+                          </div>
                         </div>
-
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
-                           <span className="text-[10px] font-black text-[#d97757] uppercase tracking-wider">{store.type}</span>
-                           <div className="w-10 h-10 bg-gray-50 group-hover:bg-[#d97757] rounded-full flex items-center justify-center transition-all">
-                              <ChevronRight size={18} className="text-gray-400 group-hover:text-white transition-colors" />
-                           </div>
+                        <div className="w-8 h-8 bg-gray-50 group-hover:bg-[#d97757] rounded-full flex items-center justify-center transition-all shrink-0 ml-3">
+                          <ChevronRight size={14} className="text-gray-400 group-hover:text-white transition-colors" />
                         </div>
                       </div>
                     </div>

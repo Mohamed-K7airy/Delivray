@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Button from '@/components/Button';
 import Logo from '@/components/Logo';
 import { API_URL } from '@/config/api';
+import { apiClient } from '@/lib/apiClient';
 
 interface Product {
   id: string;
@@ -19,6 +20,8 @@ interface Product {
   description: string;
   store_id: string;
   availability: boolean;
+  category_id?: string;
+  categories?: { name: string };
 }
 
 interface Store {
@@ -48,27 +51,32 @@ export default function StorePage() {
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All Items');
+  const [storeCategories, setStoreCategories] = useState<any[]>([]);
 
-  const categories = ['All Items', 'Meals', 'Sides', 'Drinks', 'Desserts', 'Additions'];
+  const categories = ['All Items', ...storeCategories.map(c => c.name)];
 
   const { items, addItem, removeItem, updateItemQuantity } = useCartStore();
   const { token, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchStore = async () => {
+    const fetchStoreData = async () => {
       try {
-        const res = await fetch(`${API_URL}/stores/${id}`);
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Error fetching store');
-        setStore(data);
+        const [storeData, categoriesData] = await Promise.all([
+          apiClient(`/stores/${id}`),
+          apiClient(`/categories/store/${id}`)
+        ]);
+        
+        if (storeData) setStore(storeData);
+        if (categoriesData) setStoreCategories(categoriesData);
+
       } catch (err: any) {
         toast.error(err.message || 'Store not found');
       } finally {
         setLoading(false);
       }
     };
-    if (id) fetchStore();
+    if (id) fetchStoreData();
   }, [id]);
 
   const handleAddToCart = async (product: Product) => {
@@ -79,28 +87,12 @@ export default function StorePage() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/cart/add`, {
+      const data = await apiClient('/cart/add', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ product_id: product.id, quantity: 1 })
+        data: { product_id: product.id, quantity: 1 }
       });
-      const data = await res.json();
 
-      if (!res.ok) {
-        if (data.clear_cart_required) {
-          toast.error(data.message, {
-            action: {
-              label: 'Go to Cart',
-              onClick: () => router.push('/cart')
-            }
-          });
-          return;
-        }
-        throw new Error(data.message);
-      }
+      if (!data) return;
 
       addItem({
         id: data.id,
@@ -111,7 +103,7 @@ export default function StorePage() {
 
       toast.success(`${product.name} added to cart!`);
     } catch (err: any) {
-      toast.error(err.message);
+      // apiClient already toasts errors, we just catch to prevent crash
     }
   };
 
@@ -246,15 +238,15 @@ export default function StorePage() {
         {/* Menu Navigation */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-gray-100 pb-8">
           <h2 className="text-4xl font-black text-[#111111] tracking-tight">Explore the <span className="text-[#d97757]">menu</span></h2>
-          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar pb-2 md:pb-0">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-6 py-4 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all whitespace-nowrap shrink-0 border
+                className={`px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-wider transition-all whitespace-nowrap shrink-0 border
                     ${selectedCategory === cat
-                    ? 'bg-[#d97757] text-white border-[#d97757] shadow-md'
-                    : 'bg-white text-[#888888] border-gray-100 hover:border-gray-200 hover:text-[#111111]'}`}
+                    ? 'bg-[#d97757] text-white border-[#d97757] shadow-sm'
+                    : 'bg-white text-[#888888] border-gray-200 hover:border-gray-300 hover:text-[#111111]'}`}
               >
                 {cat}
               </button>
@@ -262,95 +254,188 @@ export default function StorePage() {
           </div>
         </div>
 
-        {/* Product Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={selectedCategory}
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12"
-          >
-            {store.products.filter(p => {
-              if (selectedCategory === 'All Items') return true;
-              if (selectedCategory === 'Additions') return p.description?.includes('[Addition]');
-              // Fallback: if no explicit category, everything else is 'Meals' for now
-              return selectedCategory === 'Meals';
-            }).length === 0 ? (
-              <div className="col-span-full py-20 bg-white rounded-[3rem] border border-gray-100 flex flex-col items-center justify-center text-center">
-                <ShoppingBag size={48} className="text-gray-100 mb-6" />
-                <p className="text-gray-400 text-lg font-bold">No products available in this selection.</p>
-              </div>
-            ) : (
-              store.products.filter(p => {
-                if (selectedCategory === 'All Items') return true;
-                if (selectedCategory === 'Additions') return p.description?.includes('[Addition]');
-                return selectedCategory === 'Meals'; // Simplified for now
-              }).map((product) => {
-                const qty = getProductQuantity(product.id);
-                const cartItemId = getCartItemId(product.id);
-                return (
-                  <motion.div
-                    variants={itemVariants}
-                    key={product.id}
-                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md hover:shadow-lg transition-all duration-500 flex flex-col group h-full"
-                  >
-                    <div className="h-56 relative overflow-hidden bg-gray-50 flex items-center justify-center p-8">
-                      <img
-                        src={product.image || `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=400&auto=format&fit=crop`}
-                        className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-700"
-                        alt={product.name}
-                      />
-                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white font-black text-[13px] text-[#111111] shadow-sm">
-                        ${Number(product.price).toFixed(2)}
-                      </div>
-                    </div>
+        {/* Product Grid Grouped by Category */}
+        <div className="space-y-24">
+          {categories.filter(c => c !== 'All Items' && (selectedCategory === 'All Items' || selectedCategory === c)).map((catName) => {
+            const categoryProducts = store.products.filter(p => 
+              (p.categories?.name === catName) || 
+              (catName === 'Uncategorized' && !p.category_id)
+            );
 
-                    <div className="p-6 flex-1 flex flex-col space-y-4">
-                      <div>
-                        <h3 className="text-xl font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{product.name}</h3>
-                        <p className="text-[#555555] text-sm font-medium mt-2 line-clamp-2 leading-relaxed">
-                          {product.description || 'Premium ingredients sourced locally for the best taste experience.'}
-                        </p>
-                      </div>
+            if (categoryProducts.length === 0 && selectedCategory !== 'All Items') return null;
+            if (categoryProducts.length === 0) return null;
 
-                      <div className="pt-6 border-t border-gray-50 mt-auto flex items-center justify-between">
-                        <span className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Available Now</span>
+            return (
+              <div key={catName} className="space-y-12">
+                <div className="flex items-center gap-6">
+                  <h3 className="text-3xl font-black text-[#111111] uppercase tracking-tighter">{catName}</h3>
+                  <div className="h-px bg-gray-100 flex-1"></div>
+                </div>
 
-                        <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-1.5 border border-gray-100">
-                          {qty > 0 ? (
-                            <>
-                              <button
-                                onClick={() => handleRemoveFromCart(product.id, cartItemId)}
-                                className="w-10 h-10 bg-white text-[#111111] rounded-lg flex items-center justify-center hover:bg-gray-100 transition-all border border-gray-100"
-                              >
-                                <Minus size={18} />
-                              </button>
-                              <span className="w-8 text-center font-black text-sm text-[#d97757]">{qty}</span>
+                <motion.div
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12"
+                >
+                  {categoryProducts.map((product) => {
+                    const qty = getProductQuantity(product.id);
+                    const cartItemId = getCartItemId(product.id);
+                    const foodImages = [
+                      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&auto=format&fit=crop',
+                    ];
+                    const fallbackImg = foodImages[store.products.indexOf(product) % foodImages.length];
+                    return (
+                      <motion.div
+                        variants={itemVariants}
+                        key={product.id}
+                        className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300"
+                      >
+                        <div className="relative h-52 overflow-hidden bg-gray-100">
+                          <img
+                            src={product.image || fallbackImg}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            alt={product.name}
+                            onError={e => { (e.target as HTMLImageElement).src = fallbackImg; }}
+                          />
+                          {!product.availability && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                              <span className="bg-white text-[#111111] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Unavailable</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="p-4">
+                          <h3 className="text-sm font-black text-[#111111] tracking-tight line-clamp-1 mb-1">{product.name}</h3>
+                          <p className="text-[11px] text-[#888888] font-medium line-clamp-1 mb-3">
+                            {product.description || 'Fresh & delicious'}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-base font-black text-[#111111] tracking-tighter">
+                              ${Number(product.price).toFixed(2)}
+                            </span>
+
+                            {qty > 0 ? (
+                              <div className="flex items-center gap-1 bg-[#fef3f2] rounded-xl p-1">
+                                <button
+                                  onClick={() => handleRemoveFromCart(product.id, cartItemId)}
+                                  className="w-8 h-8 bg-white text-[#d97757] rounded-lg flex items-center justify-center hover:bg-gray-50 transition-all border border-[#fee2e2]"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className="w-6 text-center font-black text-sm text-[#d97757]">{qty}</span>
+                                <button
+                                  onClick={() => handleAddToCart(product)}
+                                  className="w-8 h-8 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            ) : (
                               <button
                                 onClick={() => handleAddToCart(product)}
-                                className="w-10 h-10 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all shadow-md"
+                                disabled={!product.availability}
+                                className="w-10 h-10 bg-[#d97757] text-white rounded-xl flex items-center justify-center hover:bg-[#c2654a] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
                               >
                                 <Plus size={18} />
                               </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => handleAddToCart(product)}
-                              className="w-12 h-12 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all shadow-md"
-                            >
-                              <Plus size={20} />
-                            </button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
+            );
+          })}
+
+          {/* Fallback for products without categories if All Items is selected */}
+          {selectedCategory === 'All Items' && store.products.some(p => !p.category_id) && (
+            <div className="space-y-12">
+                <div className="flex items-center gap-6">
+                  <h3 className="text-3xl font-black text-[#111111] uppercase tracking-tighter">General Items</h3>
+                  <div className="h-px bg-gray-100 flex-1"></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
+                  {store.products.filter(p => !p.category_id).map((product) => {
+                    const qty = getProductQuantity(product.id);
+                    const cartItemId = getCartItemId(product.id);
+                    const foodImages = [
+                      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&auto=format&fit=crop',
+                      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&auto=format&fit=crop',
+                    ];
+                    const fallbackImg = foodImages[store.products.indexOf(product) % foodImages.length];
+                    
+                    return (
+                      <motion.div
+                        variants={itemVariants}
+                        key={product.id}
+                        className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300"
+                      >
+                        <div className="relative h-52 overflow-hidden bg-gray-100">
+                          <img
+                            src={product.image || fallbackImg}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            alt={product.name}
+                            onError={e => { (e.target as HTMLImageElement).src = fallbackImg; }}
+                          />
+                          {!product.availability && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                              <span className="bg-white text-[#111111] px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">Unavailable</span>
+                            </div>
                           )}
                         </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })
-            )}
-          </motion.div>
-        </AnimatePresence>
+
+                        <div className="p-4">
+                          <h3 className="text-sm font-black text-[#111111] tracking-tight line-clamp-1 mb-1">{product.name}</h3>
+                          <p className="text-[11px] text-[#888888] font-medium line-clamp-1 mb-3">
+                            {product.description || 'Fresh & delicious'}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-base font-black text-[#111111] tracking-tighter">
+                              ${Number(product.price).toFixed(2)}
+                            </span>
+
+                            {qty > 0 ? (
+                              <div className="flex items-center gap-1 bg-[#fef3f2] rounded-xl p-1">
+                                <button
+                                  onClick={() => handleRemoveFromCart(product.id, cartItemId)}
+                                  className="w-8 h-8 bg-white text-[#d97757] rounded-lg flex items-center justify-center hover:bg-gray-50 transition-all border border-[#fee2e2]"
+                                >
+                                  <Minus size={14} />
+                                </button>
+                                <span className="w-6 text-center font-black text-sm text-[#d97757]">{qty}</span>
+                                <button
+                                  onClick={() => handleAddToCart(product)}
+                                  className="w-8 h-8 bg-[#d97757] text-white rounded-lg flex items-center justify-center hover:bg-[#c2654a] transition-all"
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleAddToCart(product)}
+                                disabled={!product.availability}
+                                className="w-10 h-10 bg-[#d97757] text-white rounded-xl flex items-center justify-center hover:bg-[#c2654a] transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                              >
+                                <Plus size={18} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Floating Cart Indicator */}
