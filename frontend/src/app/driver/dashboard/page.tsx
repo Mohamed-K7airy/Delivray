@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { useSocket } from '@/context/SocketContext';
 import { apiClient } from '@/lib/apiClient';
 import dynamic from 'next/dynamic';
+import { RouteUpdateData } from '@/components/MapView';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
@@ -31,7 +32,7 @@ export default function DriverDashboard() {
   const [currentPos, setCurrentPos] = useState<[number, number] | null>(null);
   const lastUpdateRef = useRef<number>(0);
   const [isCentering, setIsCentering] = useState(true);
-  const [routeInfo, setRouteInfo] = useState<{ distance: number; duration: number; steps: any[] } | null>(null);
+  const [routeInfo, setRouteInfo] = useState<RouteUpdateData | null>(null);
 
   useEffect(() => {
     if (!token || user?.role !== 'driver') return router.push('/login');

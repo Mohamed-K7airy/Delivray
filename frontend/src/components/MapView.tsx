@@ -25,6 +25,12 @@ const driverIcon = createCustomIcon('#d97757');
 const storeIcon = createCustomIcon('#111111');
 const customerIcon = createCustomIcon('#2563eb');
 
+export interface RouteUpdateData {
+  distance: number;
+  duration: number;
+  steps: any[];
+}
+
 interface MapViewProps {
   center: [number, number];
   zoom?: number;
@@ -40,7 +46,7 @@ interface MapViewProps {
   className?: string;
   onMapClick?: (lat: number, lng: number) => void;
   showZoomControls?: boolean;
-  onRouteUpdate?: (data: { distance: number; duration: number; steps?: any[] }) => void;
+  onRouteUpdate?: (data: RouteUpdateData) => void;
 }
 
 // Internal component to handle map events
@@ -90,7 +96,8 @@ export default function MapView({
   autoCenter = true,
   className = 'h-full w-full',
   onMapClick,
-  showZoomControls = true
+  showZoomControls = true,
+  onRouteUpdate
 }: MapViewProps) {
   const [routingPath, setRoutingPath] = useState<[number, number][] | null>(null);
 
@@ -110,7 +117,7 @@ export default function MapView({
                onRouteUpdate({
                   distance: firstRoute.distance,
                   duration: firstRoute.duration,
-                  steps: firstRoute.legs[0].steps
+                  steps: firstRoute.legs[0].steps || []
                });
             }
           }

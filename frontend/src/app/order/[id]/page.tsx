@@ -9,6 +9,7 @@ import { useSocket } from '@/context/SocketContext';
 import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
 import dynamic from 'next/dynamic';
+import { RouteUpdateData } from '@/components/MapView';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
@@ -41,7 +42,7 @@ export default function OrderTracking() {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [driverPos, setDriverPos] = useState<[number, number] | null>(null);
-  const [routeInfo, setRouteInfo] = useState<{ distance: number; duration: number; steps: any[] } | null>(null);
+  const [routeInfo, setRouteInfo] = useState<RouteUpdateData | null>(null);
 
   useEffect(() => {
     if (!_hasHydrated) return;
