@@ -52,18 +52,25 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    
+    // Normalize both for comparison (remove trailing slashes)
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    const cleanedAllowed = allowedOrigins.map(o => o.replace(/\/$/, ""));
+
+    if (cleanedAllowed.includes(normalizedOrigin) || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
+      console.warn(`[CORS Blocked] Origin: ${origin} not in [${allowedOrigins.join(', ')}]`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true
 }));
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 mins
   max: 1000, // Limit each IP to 1000 requests per 15 mins
