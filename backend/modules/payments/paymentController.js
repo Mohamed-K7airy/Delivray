@@ -6,7 +6,18 @@ import { createNotification } from '../notifications/notificationController.js';
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Lazy initialization to prevent crash if key is missing
+let stripe;
+const getStripe = () => {
+  if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.warn('STRIPE_SECRET_KEY is missing. Payment features will be disabled.');
+      return null;
+    }
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripe;
+};
 
 // @desc    Initiate Payment (Create PaymentIntent)
 // @route   POST /payments/create-intent
@@ -26,9 +37,12 @@ export const createPaymentIntent = async (req, res) => {
     if (order.user_id !== req.user.id) return res.status(403).json({ message: 'Not authorized' });
     if (order.payment_status === 'paid') return res.status(400).json({ message: 'Order already paid' });
 
+    const s = getStripe();
+    if (!s) return res.status(503).json({ message: 'Stripe service not configured' });
+
     // 2. Create Stripe PaymentIntent
     const amount = Math.round(Number(order.total_price) * 100); // Stripe expects cents
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await s.paymentIntents.create({
       amount,
       currency: 'usd',
       metadata: { order_id, user_id: req.user.id }
@@ -44,11 +58,14 @@ export const createPaymentIntent = async (req, res) => {
 // @route   POST /payments/webhook
 // @access  Public
 export const paymentWebhook = async (req, res) => {
+  const s = getStripe();
+  if (!s) return res.status(503).json({ message: 'Stripe service not configured' });
+
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = s.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
