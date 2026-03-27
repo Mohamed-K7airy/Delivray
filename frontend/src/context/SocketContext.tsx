@@ -21,13 +21,21 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { token, user } = useAuthStore();
+  const socketRef = React.useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!token || !user) {
-      if (socket) {
-        socket.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
         setSocket(null);
+        setIsConnected(false);
       }
+      return;
+    }
+
+    // Prevent multiple connections for the same session
+    if (socketRef.current?.connected) {
       return;
     }
 
@@ -36,11 +44,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       auth: { token },
       withCredentials: true,
       reconnectionAttempts: 5,
+      transports: ['websocket', 'polling'], // Ensure compatibility
     });
+
+    socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
       console.log('[Socket] Connected');
       setIsConnected(true);
+      setSocket(newSocket);
       // Automatically join personal room if needed
       newSocket.emit('join', { role: user.role, id: user.id });
     });
@@ -62,10 +74,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    setSocket(newSocket);
-
     return () => {
-      newSocket.disconnect();
+      if (newSocket) {
+        newSocket.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [token, user?.id]); // Only reconnect if user ID or token changes
 

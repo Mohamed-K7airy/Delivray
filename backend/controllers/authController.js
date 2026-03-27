@@ -3,7 +3,10 @@ import jwt from 'jsonwebtoken';
 import { supabase } from '../config/supabase.js';
 
 const generateToken = (res, userId, role) => {
-  const token = jwt.sign({ id: userId, role }, process.env.JWT_SECRET || 'secret', {
+  if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET is missing in production environment');
+  }
+  const token = jwt.sign({ id: userId, role }, process.env.JWT_SECRET || 'dev_secret_only', {
     expiresIn: '30d',
   });
 
@@ -125,12 +128,19 @@ export const loginUser = async (req, res) => {
 
     const token = generateToken(res, user.id, user.role);
 
+    let store_id = null;
+    if (user.role === 'merchant') {
+      const { data: store } = await supabase.from('stores').select('id').eq('owner_id', user.id).maybeSingle();
+      store_id = store?.id;
+    }
+
     res.json({
       id: user.id,
       name: user.name,
       phone: user.phone,
       role: user.role,
       status: user.status,
+      store_id,
       token
     });
   } catch (error) {

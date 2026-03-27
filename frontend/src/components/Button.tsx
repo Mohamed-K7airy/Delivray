@@ -5,11 +5,20 @@ import { ReactNode } from 'react';
 interface ButtonProps extends HTMLMotionProps<"button"> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
   children: ReactNode;
 }
 
-export default function Button({ variant = 'primary', size = 'md', className = '', children, ...props }: ButtonProps) {
-  const baseStyle = "inline-flex items-center justify-center font-bold tracking-tight transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed rounded-xl";
+export default function Button({ 
+  variant = 'primary', 
+  size = 'md', 
+  className = '', 
+  children, 
+  loading = false,
+  disabled,
+  ...props 
+}: ButtonProps) {
+  const baseStyle = "inline-flex items-center justify-center font-bold tracking-tight transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed rounded-xl relative";
   
   const variants = {
     primary: "bg-[#d97757] text-white hover:bg-[#c2654a] shadow-md",
@@ -29,9 +38,17 @@ export default function Button({ variant = 'primary', size = 'md', className = '
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${className}`}
+      disabled={disabled || loading}
       {...props}
     >
-      {children}
+      <span className={loading ? 'opacity-0' : 'opacity-100 flex items-center gap-2'}>
+        {children}
+      </span>
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
     </motion.button>
   );
 }

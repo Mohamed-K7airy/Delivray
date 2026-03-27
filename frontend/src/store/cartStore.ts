@@ -37,11 +37,12 @@ export const useCartStore = create<CartState>((set) => ({
   setCart: (cartId, items, total) => set({ cartId, items, total }),
   
   addItem: (newItem) => set((state) => {
-    const existing = state.items.find((i) => i.id === newItem.id);
+    const existing = state.items.find((i) => i.product_id === newItem.product_id);
     if (existing) {
+      const updatedQty = existing.quantity + newItem.quantity;
       return {
-        items: state.items.map((i) => i.id === newItem.id ? { ...i, quantity: newItem.quantity } : i),
-        total: state.total + (newItem.quantity - existing.quantity) * newItem.products.price
+        items: state.items.map((i) => i.product_id === newItem.product_id ? { ...i, quantity: updatedQty } : i),
+        total: state.total + (newItem.quantity * existing.products.price)
       };
     }
     return {

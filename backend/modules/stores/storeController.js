@@ -42,6 +42,10 @@ export const getStores = async (req, res) => {
       .select('id, name, type, location_lat, location_lng, is_open')
       .eq('is_open', true); // Only returned open stores by default
 
+    if (type) {
+      query = query.eq('type', type);
+    }
+
     const from = (page - 1) * limit;
     const to = from + parseInt(limit) - 1;
     query = query.range(from, to);

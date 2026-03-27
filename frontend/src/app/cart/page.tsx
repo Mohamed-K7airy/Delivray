@@ -11,6 +11,7 @@ import Button from '@/components/Button';
 import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
 import dynamic from 'next/dynamic';
+import StripeCheckoutModal from '@/components/StripeCheckoutModal';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
@@ -42,6 +43,10 @@ export default function CartPage() {
   const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [showMap, setShowMap] = useState(false);
+  
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
+  const [currentOrderId, setCurrentOrderId] = useState('');
 
   // Reverse geocoding function using Nominatim
   const reverseGeocode = async (lat: number, lng: number) => {
@@ -102,18 +107,20 @@ export default function CartPage() {
     setSavedAddress(addr);
     setAddress(addr);
 
+    let isMounted = true; 
+
     const fetchCart = async () => {
       setLoading(true);
       try {
         const data = await apiClient('/cart');
-        if (data) {
+        if (data && isMounted) {
           setCart(data.cart_id, data.items, data.total);
 
           // Fetch real additions if we have items
           if (data.items.length > 0) {
             const storeId = data.items[0].products.store_id;
             const storeData = await apiClient(`/stores/${storeId}`);
-            if (storeData) {
+            if (storeData && isMounted) {
               const additions = storeData.products.filter((p: any) =>
                 p.description?.includes('[Addition]')
               );
@@ -124,11 +131,15 @@ export default function CartPage() {
       } catch (err: any) {
         console.error(err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchCart();
+
+    return () => {
+      isMounted = false;
+    };
   }, [token, user, router, setCart, setLoading]);
 
   const handleUpdateQuantity = async (itemId: string, currentQty: number, change: number) => {
@@ -214,7 +225,10 @@ export default function CartPage() {
         return;
       }
 
-      const data = await apiClient('/orders', {
+      setLoading(true);
+
+      // 1. Create the order first (in pending/unpaid state)
+      const orderData = await apiClient('/orders', {
         method: 'POST',
         data: { 
           delivery_lat: selectedLocation[0], 
@@ -224,14 +238,31 @@ export default function CartPage() {
         }
       });
 
-      if (data) {
-        setCart(data.id, [], 0);
-        toast.success('Order placed successfully! 🚀');
-        router.push(`/order/${data.id}`);
+      if (orderData) {
+        setCurrentOrderId(orderData.id);
+        
+        // 2. Create Payment Intent
+        const paymentData = await apiClient('/payments/create-intent', {
+            method: 'POST',
+            data: { order_id: orderData.id }
+        });
+
+        if (paymentData && paymentData.clientSecret) {
+            setClientSecret(paymentData.clientSecret);
+            setShowStripeModal(true);
+        }
       }
     } catch (err: any) {
       // apiClient handles toasts
+    } finally {
+        setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowStripeModal(false);
+    setCart(currentOrderId, [], 0);
+    router.push(`/order/${currentOrderId}`);
   };
 
   if (loading) {
@@ -496,6 +527,13 @@ export default function CartPage() {
           </aside>
         </div>
       </div>
+
+      <StripeCheckoutModal 
+        isOpen={showStripeModal} 
+        onClose={() => setShowStripeModal(false)}
+        clientSecret={clientSecret}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 }

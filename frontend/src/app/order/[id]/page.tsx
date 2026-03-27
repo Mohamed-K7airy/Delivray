@@ -16,11 +16,16 @@ const MapView = dynamic(() => import('@/components/MapView'), {
   loading: () => <div className="h-[450px] w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Map Tracking...</div>
 });
 
+import RatingModal from '@/components/RatingModal';
+import { AnimatePresence } from 'framer-motion';
+
 interface Order {
   id: string;
   status: string;
   total_price: number;
   created_at: string;
+  driver_id?: string;
+  store_id?: string;
   order_items?: {
     id: string;
     quantity: number;
@@ -30,7 +35,12 @@ interface Order {
     user_id: string;
     users: { name: string };
   };
-  stores?: { name: string; location_lat: number; location_lng: number };
+  stores?: { 
+    id: string;
+    name: string; 
+    location_lat: number; 
+    location_lng: number;
+  };
   delivery_lat: number;
   delivery_lng: number;
 }
@@ -43,6 +53,9 @@ export default function OrderTracking() {
   const [order, setOrder] = useState<Order | null>(null);
   const [driverPos, setDriverPos] = useState<[number, number] | null>(null);
   const [routeInfo, setRouteInfo] = useState<RouteUpdateData | null>(null);
+  const [showRating, setShowRating] = useState(false);
+  const [hasRated, setHasRated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -51,7 +64,12 @@ export default function OrderTracking() {
     const fetchOrder = async () => {
       try {
         const data = await apiClient(`/orders/${id}`);
-        if (data) setOrder(data);
+        if (data) {
+          setOrder(data);
+          if (data.status === 'delivered' && !hasRated) {
+            setShowRating(true);
+          }
+        }
       } catch (err) {
         console.error(err);
       }
@@ -368,6 +386,18 @@ export default function OrderTracking() {
           </div>
         </div>
       </div>
+      <RatingModal 
+        isOpen={showRating} 
+        onClose={() => {
+          setShowRating(false);
+          setHasRated(true);
+        }}
+        orderId={id as string}
+        driverId={order?.driver_id}
+        storeId={order?.store_id}
+        driverName={order?.drivers?.users?.name}
+        storeName={order?.stores?.name}
+      />
     </div>
   );
 }

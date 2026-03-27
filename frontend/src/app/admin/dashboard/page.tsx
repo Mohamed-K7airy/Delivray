@@ -16,6 +16,7 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 });
 import { useSocket } from '@/context/SocketContext';
 import { Truck, Navigation as NavIcon, Map as MapIcon } from 'lucide-react';
+import AnalyticsChart from '@/components/AnalyticsChart';
 
 interface Stats {
   totalOrders: number;
@@ -32,7 +33,7 @@ export default function AdminDashboard() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [allStores, setAllStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores' | 'economics' | 'promos' | 'pulse'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores' | 'economics' | 'promos' | 'pulse' | 'fleet'>('overview');
   const { socket } = useSocket();
   const [activeDrivers, setActiveDrivers] = useState<Record<string, any>>({});
   const [financials, setFinancials] = useState<any>(null);
@@ -40,6 +41,8 @@ export default function AdminDashboard() {
   const [newPromo, setNewPromo] = useState({ code: '', discount_amount: '', min_subtotal: '', expires_at: '' });
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('');
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [schedulingData, setSchedulingData] = useState<any[]>([]);
 
   useEffect(() => {
     if (!token || user?.role !== 'admin') {
@@ -56,7 +59,9 @@ export default function AdminDashboard() {
           apiClient(`/admin/users?search=${userSearch}&role=${userRoleFilter}`),
           apiClient('/admin/stores'),
           apiClient('/admin/financials'),
-          apiClient('/admin/promos')
+          apiClient('/admin/promos'),
+          apiClient('/admin/analytics'),
+          apiClient('/scheduling/admin/all')
         ]);
         
         if (statsData) setStats(statsData);
@@ -65,6 +70,8 @@ export default function AdminDashboard() {
         if (storesData) setAllStores(storesData);
         if (finData) setFinancials(finData);
         if (promoData) setPromos(promoData);
+        if (analyticsData) setAnalyticsData(analyticsData);
+        if (schedulingData) setSchedulingData(schedulingData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -178,6 +185,7 @@ export default function AdminDashboard() {
           { id: 'stores', label: 'Partner Sockets', icon: Store },
           { id: 'economics', label: 'Economics', icon: DollarSign },
           { id: 'promos', label: 'Promos', icon: Zap },
+          { id: 'fleet', label: 'Fleet Schedule', icon: Truck },
           { id: 'pulse', label: 'Global Pulse', icon: MapIcon }
         ].map(tab => (
           <button
@@ -220,6 +228,12 @@ export default function AdminDashboard() {
                    <p className="text-3xl font-black text-[#111111] tracking-tighter">{item.value}</p>
                 </div>
               ))}
+            </div>
+            
+            {/* Analytics Trends */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              <AnalyticsChart data={analyticsData} type="orders" />
+              <AnalyticsChart data={analyticsData} type="revenue" />
             </div>
 
             {/* Authorization Queue */}
@@ -473,6 +487,41 @@ export default function AdminDashboard() {
                  </div>
                ))}
             </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'fleet' && (
+          <motion.div key="fleet" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                <table className="w-full text-left">
+                   <thead className="bg-[#f9f9f9] border-b border-gray-100">
+                      <tr>
+                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Driver</th>
+                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Date</th>
+                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Shift</th>
+                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Status</th>
+                      </tr>
+                   </thead>
+                   <tbody className="divide-y divide-gray-50">
+                      {schedulingData.map(s => (
+                        <tr key={s.id} className="hover:bg-gray-50 transition-colors">
+                           <td className="px-8 py-6">
+                              <div className="flex items-center gap-3">
+                                 <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center font-black text-[10px]">{s.drivers?.users?.name?.[0]}</div>
+                                 <p className="text-xs font-black text-[#111111]">{s.drivers?.users?.name}</p>
+                              </div>
+                           </td>
+                           <td className="px-8 py-6 text-xs font-bold text-[#888888]">{new Date(s.date).toLocaleDateString()}</td>
+                           <td className="px-8 py-6 text-[10px] font-black text-[#111111] uppercase tracking-tighter">{s.start_time.slice(0,5)} - {s.end_time.slice(0,5)}</td>
+                           <td className="px-8 py-6">
+                              <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-100">{s.status}</span>
+                           </td>
+                        </tr>
+                      ))}
+                   </tbody>
+                </table>
+                {schedulingData.length === 0 && <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-[#888888] opacity-40">No Fleet Movements Scheduled</div>}
+             </div>
           </motion.div>
         )}
 

@@ -6,6 +6,7 @@ import Logo from './Logo';
 import { useAuthStore } from '@/store/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import NotificationBell from './NotificationBell';
 
 interface MerchantNavbarProps {
   isCollapsed?: boolean;
@@ -105,13 +106,7 @@ export default function MerchantNavbar({ isCollapsed = false }: MerchantNavbarPr
             <Search size={18} />
           </button>
           
-          <button 
-            onClick={() => toast('🔔 Notifications', { description: 'All systems operational. No critical alerts.' })}
-            className="text-[#888888] hover:text-[#111111] transition-all relative hover:scale-110 active:scale-95"
-          >
-            <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d97757] rounded-full animate-pulse shadow-[0_0_8px_rgba(217,119,87,0.8)]"></span>
-          </button>
+          <NotificationBell />
           
           <button 
             onClick={() => router.push('/merchant/settings')}

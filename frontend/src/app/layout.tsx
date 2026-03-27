@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { Toaster } from 'sonner';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import PageTransition from '@/components/PageTransition';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -30,13 +31,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} bg-background text-foreground tracking-tight selection:bg-primary/20 flex flex-col min-h-screen`}>
-        <SocketProvider>
-          <LayoutWrapper>
-            <PageTransition>
-              {children}
-            </PageTransition>
-          </LayoutWrapper>
-        </SocketProvider>
+        <ErrorBoundary>
+          <SocketProvider>
+            <LayoutWrapper>
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </LayoutWrapper>
+          </SocketProvider>
+        </ErrorBoundary>
         <Toaster position="bottom-right" richColors />
         <Script
           id="register-sw"

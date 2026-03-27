@@ -15,6 +15,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import NotificationBell from './NotificationBell';
 
 interface DriverNavbarProps {
   isCollapsed?: boolean;
@@ -86,10 +87,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         </button>
 
         {/* Notifications */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-white transition-all relative group active:scale-95 border border-gray-100">
-          <Bell size={18} />
-          <span className="absolute top-3 right-3 w-2 h-2 bg-[#d97757] rounded-full shadow-[0_0_8px_rgba(217,119,87,0.8)]" />
-        </button>
+        <NotificationBell />
 
         <div className="h-8 w-px bg-gray-100" />
 

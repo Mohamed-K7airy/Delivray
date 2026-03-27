@@ -11,7 +11,9 @@ interface RequestOptions extends RequestInit {
  * Handles unified error states, 401 redirects, and network failures.
  */
 export const apiClient = async (endpoint: string, options: RequestOptions = {}) => {
-  const { token, logout } = useAuthStore.getState();
+  const state = useAuthStore.getState();
+  const token = state.token;
+  const logout = state.logout;
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -32,7 +34,9 @@ export const apiClient = async (endpoint: string, options: RequestOptions = {}) 
     if (response.status === 401) {
       toast.error('Session expired. Please login again.');
       logout();
-      window.location.href = '/login';
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
       return null;
     }
 

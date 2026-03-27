@@ -39,7 +39,10 @@ export default function DriverHistory() {
   };
 
   useEffect(() => {
-    if (!token || user?.role !== 'driver') return router.push('/login');
+    if (!token || user?.role !== 'driver') {
+      router.push('/login');
+      return;
+    }
     fetchHistory();
   }, [token, user, router]);
 

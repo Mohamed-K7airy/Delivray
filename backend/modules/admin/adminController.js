@@ -8,7 +8,11 @@ export const getUsers = async (req, res) => {
     let query = supabase.from('users').select('*').order('created_at', { ascending: false });
 
     if (role) query = query.eq('role', role);
-    if (search) query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
+    if (search) {
+      // Basic sanitization to prevent regex/pattern injection
+      const safeSearch = search.replace(/[%_]/g, ''); 
+      query = query.or(`name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`);
+    }
 
     const { data: users, error } = await query;
     if (error) throw error;
@@ -237,5 +241,47 @@ export const deletePromoCode = async (req, res) => {
     res.json({ message: 'Promo code deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+export const getAdvancedStats = async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('created_at, total_price, status')
+      .gte('created_at', thirtyDaysAgo.toISOString())
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    // Aggregate by day
+    const dailyData = {};
+    for (let i = 0; i < 30; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        dailyData[dateStr] = { orders: 0, revenue: 0 };
+    }
+
+    orders.forEach(order => {
+      const date = order.created_at.split('T')[0];
+      if (dailyData[date]) {
+        dailyData[date].orders += 1;
+        if (order.status !== 'cancelled') {
+            dailyData[date].revenue += Number(order.total_price);
+        }
+      }
+    });
+
+    const result = Object.entries(dailyData)
+        .map(([date, stats]) => ({ date, ...stats }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

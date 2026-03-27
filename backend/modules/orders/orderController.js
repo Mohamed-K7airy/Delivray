@@ -1,4 +1,5 @@
 import { supabase } from '../../config/supabase.js';
+import { createNotification } from '../notifications/notificationController.js';
 import { getIo } from '../../config/socket.js';
 
 // @desc    Create new order from Cart
@@ -189,6 +190,15 @@ export const updateOrderStatus = async (req, res) => {
           console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
           io.to('drivers').emit('order_ready_for_pickup', fullOrder);
         }
+
+        // Create persistence notifications
+        if (status === 'preparing') {
+            createNotification(fullOrder.user_id, 'Order Preparing', `Your order from ${fullOrder.stores.name} is now being prepared!`, 'order_update');
+        } else if (status === 'ready_for_pickup') {
+            createNotification(fullOrder.user_id, 'Ready for Delivery', `Your order is ready and a courier is being assigned.`, 'order_update');
+        } else if (status === 'cancelled') {
+            createNotification(fullOrder.user_id, 'Order Cancelled', `Your order from ${fullOrder.stores.name} was cancelled.`, 'order_update');
+        }
       }
     }
 
@@ -265,7 +275,14 @@ export const getOrderById = async (req, res) => {
     if (error || !order) return res.status(404).json({ message: 'Order not found' });
     
     // Auth check: Customer who owns it, OR Merchant who owns the store, OR Assigned Driver
-    // (Simplified for now, but usually role-based)
+    const isCustomer = order.user_id === req.user.id;
+    const isMerchant = order.stores?.owner_id === req.user.id;
+    const isDriver = order.drivers?.user_id === req.user.id;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isCustomer && !isMerchant && !isDriver && !isAdmin) {
+      return res.status(403).json({ message: 'Not authorized to view this order' });
+    }
     
     res.json(order);
   } catch (error) {

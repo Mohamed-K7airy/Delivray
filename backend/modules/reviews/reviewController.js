@@ -1,58 +1,55 @@
 import { supabase } from '../../config/supabase.js';
 
-// @desc    Create a review for store and driver
-// @route   POST /reviews
-// @access  Private/Customer
 export const createReview = async (req, res) => {
   try {
-    const { order_id, rating, comment } = req.body;
-    const userId = req.user.id;
+    const { order_id, driver_id, store_id, rating, comment } = req.body;
+    const user_id = req.user.id;
 
-    // Validate order belongs to user and is completed
-    const { data: order } = await supabase.from('orders').select('id, store_id, driver_id, status').eq('id', order_id).single();
-    if (!order) return res.status(404).json({ message: 'Order not found' });
-    if (order.status !== 'completed') return res.status(400).json({ message: 'You can only review completed orders' });
+    // Verify order is delivered and belongs to user
+    const { data: order, error: orderError } = await supabase
+      .from('orders')
+      .select('status, user_id')
+      .eq('id', order_id)
+      .single();
 
-    // Check if review already exists
-    const { data: existing } = await supabase.from('reviews').select('id').eq('order_id', order_id).maybeSingle();
-    if (existing) return res.status(400).json({ message: 'Review already submitted for this order' });
+    if (orderError || !order) return res.status(404).json({ message: 'Order not found' });
+    if (order.status !== 'delivered') return res.status(400).json({ message: 'Can only rate delivered orders' });
+    if (order.user_id !== user_id) return res.status(403).json({ message: 'Not authorized' });
 
-    // Insert review
     const { data: review, error } = await supabase
       .from('reviews')
-      .insert([{
-        user_id: userId,
-        order_id,
-        store_id: order.store_id,
-        driver_id: order.driver_id,
-        rating,
-        comment
-      }])
+      .insert([{ user_id, order_id, driver_id, store_id, rating, comment }])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      if (error.code === '23505') return res.status(400).json({ message: 'Review already exists for this order' });
+      throw error;
+    }
+
     res.status(201).json(review);
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get store reviews
-// @route   GET /reviews/store/:id
-// @access  Public
-export const getStoreReviews = async (req, res) => {
+export const getTargetReviews = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { data: reviews, error } = await supabase
-      .from('reviews')
-      .select('rating, comment, created_at, users(name)')
-      .eq('store_id', id)
-      .order('created_at', { ascending: false });
+    const { type, id } = req.params; // type = 'driver' or 'store'
+    
+    let query = supabase.from('reviews').select(`
+      *,
+      users (name, avatar_url)
+    `);
 
+    if (type === 'driver') query = query.eq('driver_id', id);
+    else query = query.eq('store_id', id);
+
+    const { data: reviews, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
+
     res.json(reviews);
   } catch (error) {
-    res.status(500).json({ message: error.message || 'Server Error' });
+    res.status(500).json({ message: error.message });
   }
 };

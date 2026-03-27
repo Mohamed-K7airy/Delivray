@@ -7,6 +7,7 @@ import { ShoppingCart, LogOut, User, Store, LogIn, UserPlus, Menu, X, Search, Be
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Logo from '@/components/Logo';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -68,13 +69,10 @@ export default function Navbar() {
              <div className="hidden md:flex items-center gap-6">
                 <button className="text-gray-400 hover:text-[#111111] transition-colors"><Search size={20} /></button>
                 {user && (
-                  <>
-                    <button className="text-gray-400 hover:text-[#111111] transition-colors relative">
-                       <Bell size={20} />
-                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#d97757] rounded-full border-2 border-white"></span>
-                    </button>
-                    <button onClick={() => router.push('/profile')} className="text-gray-400 hover:text-[#111111] transition-colors"><Settings size={20} /></button>
-                  </>
+                   <>
+                     <NotificationBell />
+                     <button onClick={() => router.push('/profile')} className="text-gray-400 hover:text-[#111111] transition-colors ml-4"><Settings size={20} /></button>
+                   </>
                 )}
              </div>
 

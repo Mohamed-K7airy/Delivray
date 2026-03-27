@@ -19,6 +19,8 @@ export default function MerchantInventory() {
   const [loading, setLoading] = useState(true);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCatName, setNewCatName] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!token || user?.role !== 'merchant') {
@@ -50,13 +52,31 @@ export default function MerchantInventory() {
 
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploading(true);
     try {
+      let imageUrl = newProduct.image;
+
+      // Handle File Upload if exists
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        
+        const uploadRes = await fetch(`${API_URL}/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadData.url) imageUrl = uploadData.url;
+      }
+
       const data = await apiClient('/products', {
         method: 'POST',
         data: {
           ...newProduct,
           price: parseFloat(newProduct.price),
           category_id: newProduct.category || null,
+          image: imageUrl,
           availability: true
         }
       });
@@ -64,12 +84,15 @@ export default function MerchantInventory() {
       if (data) {
         toast.success('Product added to catalog!');
         setNewProduct({ name: '', price: '', description: '', store_id: newProduct.store_id, category: '', image: '' });
+        setImageFile(null);
         
-        const productData = await apiClient(`/products?store_id=${newProduct.store_id}`);
+        const productData = await apiClient(`/products?store_id={newProduct.store_id}`);
         if (productData) setProducts(productData);
       }
     } catch (err: any) {
       // apiClient handles toasts
+    } finally {
+        setUploading(false);
     }
   };
 
@@ -181,12 +204,36 @@ export default function MerchantInventory() {
                              className="w-full px-6 py-5 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] outline-none focus:border-[#d97757] transition-all text-sm min-h-[120px] resize-none"
                           />
                        </div>
+                       <div className="sm:col-span-2 lg:col-span-3">
+                           <label className="block text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 ml-1">Product Image</label>
+                           <div className="relative group cursor-pointer">
+                              <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                                className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                              />
+                              <div className="h-32 bg-[#f9f9f9] border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center group-hover:border-[#d97757]/30 transition-all">
+                                 {imageFile ? (
+                                   <div className="flex flex-col items-center">
+                                      <p className="text-sm font-bold text-[#111111]">{imageFile.name}</p>
+                                      <p className="text-[10px] font-black text-[#d97757] uppercase tracking-widest mt-1">Ready to upload</p>
+                                   </div>
+                                 ) : (
+                                   <>
+                                      <UploadCloud className="text-gray-300 mb-2" size={32} />
+                                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Click or drag image here</p>
+                                   </>
+                                 )}
+                              </div>
+                           </div>
+                        </div>
                     </div>
 
                     <div className="flex justify-end">
-                       <button type="submit" className="h-16 px-12 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all flex items-center gap-3 shadow-md">
-                          <UploadCloud size={20} />
-                          <span>Release To Catalog</span>
+                       <button type="submit" disabled={uploading} className="h-16 px-12 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all flex items-center gap-3 shadow-md disabled:opacity-50">
+                          {uploading ? <Activity size={20} className="animate-spin" /> : <UploadCloud size={20} />}
+                          <span>{uploading ? 'Processing...' : 'Release To Catalog'}</span>
                        </button>
                     </div>
                  </form>
@@ -235,8 +282,12 @@ export default function MerchantInventory() {
                              className="bg-[#f9f9f9] p-6 sm:p-8 rounded-xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-8 hover:bg-white hover:shadow-lg transition-all group relative overflow-hidden"
                           >
                              <div className="flex items-center space-x-6 w-full sm:w-auto z-10">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl flex items-center justify-center text-[#d97757] border border-gray-100 group-hover:scale-105 transition-transform shadow-sm">
-                                   <Package size={28} />
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl flex items-center justify-center text-[#d97757] border border-gray-100 group-hover:scale-105 transition-transform shadow-sm overflow-hidden">
+                                   {product.image ? (
+                                       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                   ) : (
+                                       <Package size={28} />
+                                   )}
                                 </div>
                                 <div>
                                    <div className="flex items-center gap-3 mb-2">
@@ -271,8 +322,8 @@ export default function MerchantInventory() {
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-widest">Protocol v4.2</span>
                  </div>
-             </div>
-          </div>
+              </div>
+           </div>
        </div>
 
        {/* Category Modal */}

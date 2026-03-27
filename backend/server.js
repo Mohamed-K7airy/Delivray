@@ -10,6 +10,7 @@ import helmet from 'helmet';
 // Route Imports
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './modules/admin/adminRoutes.js';
+import reviewRoutes from './modules/reviews/reviewRoutes.js';
 import storeRoutes from './modules/stores/storeRoutes.js';
 import productRoutes from './modules/products/productRoutes.js';
 import categoryRoutes from './modules/products/categoryRoutes.js';
@@ -17,8 +18,10 @@ import cartRoutes from './modules/cart/cartRoutes.js';
 import orderRoutes from './modules/orders/orderRoutes.js';
 import deliveryRoutes from './modules/delivery/deliveryRoutes.js';
 import paymentRoutes from './modules/payments/paymentRoutes.js';
-import reviewRoutes from './modules/reviews/reviewRoutes.js';
 import promoRoutes from './modules/promo/promoRoutes.js';
+import notificationRoutes from './modules/notifications/notificationRoutes.js';
+import uploadRoutes from './modules/upload/uploadRoutes.js';
+import schedulingRoutes from './modules/scheduling/schedulingRoutes.js';
 
 dotenv.config();
 
@@ -73,6 +76,12 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10, // 10 attempts per 15 mins
+  message: { message: 'Too many login/registration attempts, please try again after 15 minutes.' }
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -87,7 +96,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use('/auth', authRoutes);
+app.use('/auth', authLimiter, authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/stores', storeRoutes);
 app.use('/products', productRoutes);
@@ -95,8 +104,11 @@ app.use('/categories', categoryRoutes);
 app.use('/cart', cartRoutes);
 app.use('/orders', orderRoutes);
 app.use('/delivery', deliveryRoutes);
-app.use('/payments', paymentRoutes);
+app.use('/payments', paymentRoutes); // Webhook inside handles raw body
 app.use('/reviews', reviewRoutes);
+app.use('/notifications', notificationRoutes);
+app.use('/upload', uploadRoutes);
+app.use('/scheduling', schedulingRoutes);
 app.use('/promos', promoRoutes);
 
 app.get('/health', (req, res) => {

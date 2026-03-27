@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AdminSidebar from '@/components/AdminSidebar';
-import MerchantNavbar from '@/components/MerchantNavbar'; // We can reuse or create AdminNavbar
+import Navbar from '@/components/Navbar'; // Use a more neutral navbar for admin if AdminNavbar doesn't exist
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminLayout({
@@ -51,7 +51,7 @@ export default function AdminLayout({
           isCollapsed ? 'ml-0 md:ml-24' : 'ml-0 md:ml-80'
         }`}
       >
-        <MerchantNavbar isCollapsed={isCollapsed} />
+        <Navbar />
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 custom-scrollbar relative">
            {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#d97757]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
