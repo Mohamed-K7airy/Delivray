@@ -48,7 +48,7 @@ export const createOrder = async (req, res) => {
     }
 
     // 4. ATOMIC ORDER CREATION (RPC v2)
-    const { delivery_address } = req.body;
+    const { delivery_address, payment_method = 'cash' } = req.body;
     const DELIVERY_FEE = 3.00; // Consistent with schema default
     
     const { data: order, error: rpcError } = await supabase.rpc('create_order_v2', {
@@ -60,7 +60,8 @@ export const createOrder = async (req, res) => {
       p_delivery_lng: delivery_lng,
       p_delivery_address: delivery_address || 'Customer Address',
       p_cart_id: cart.id,
-      p_items: itemsPayload
+      p_items: itemsPayload,
+      p_payment_method: payment_method
     });
 
     if (rpcError) throw rpcError;

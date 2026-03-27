@@ -10,7 +10,8 @@ CREATE OR REPLACE FUNCTION create_order_v2(
     p_delivery_lng NUMERIC,
     p_delivery_address TEXT,
     p_cart_id UUID,
-    p_items JSONB
+    p_items JSONB,
+    p_payment_method TEXT DEFAULT 'cash'
 ) RETURNS JSONB AS $$
 DECLARE
     v_order_id UUID;
@@ -26,6 +27,7 @@ BEGIN
         delivery_lat, 
         delivery_lng, 
         delivery_address, 
+        payment_method,
         status, 
         created_at, 
         updated_at
@@ -39,6 +41,7 @@ BEGIN
         p_delivery_lat, 
         p_delivery_lng, 
         p_delivery_address, 
+        p_payment_method,
         'pending', 
         NOW(), 
         NOW()

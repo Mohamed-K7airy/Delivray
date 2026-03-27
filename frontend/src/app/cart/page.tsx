@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronLeft, Sparkles, Zap, Lock, MapPin, Ticket, ShieldCheck, ChevronRight, Navigation } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronLeft, Sparkles, Zap, Lock, MapPin, Ticket, ShieldCheck, ChevronRight, Navigation, DollarSign } from 'lucide-react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import Button from '@/components/Button';
@@ -47,6 +47,7 @@ export default function CartPage() {
   const [showStripeModal, setShowStripeModal] = useState(false);
   const [clientSecret, setClientSecret] = useState('');
   const [currentOrderId, setCurrentOrderId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'online'>('cash');
 
   // Reverse geocoding function using Nominatim
   const reverseGeocode = async (lat: number, lng: number) => {
@@ -227,29 +228,35 @@ export default function CartPage() {
 
       setLoading(true);
 
-      // 1. Create the order first (in pending/unpaid state)
+      // 1. Create the order first
       const orderData = await apiClient('/orders', {
         method: 'POST',
         data: { 
           delivery_lat: selectedLocation[0], 
           delivery_lng: selectedLocation[1],
           delivery_address: address || savedAddress || 'Customer Address',
-          promo_code: isPromoApplied ? promoCode.toUpperCase() : null
+          promo_code: isPromoApplied ? promoCode.toUpperCase() : null,
+          payment_method: paymentMethod
         }
       });
 
       if (orderData) {
         setCurrentOrderId(orderData.id);
         
-        // 2. Create Payment Intent
-        const paymentData = await apiClient('/payments/create-intent', {
-            method: 'POST',
-            data: { order_id: orderData.id }
-        });
+        if (paymentMethod === 'online') {
+            // 2. Create Payment Intent
+            const paymentData = await apiClient('/payments/create-intent', {
+                method: 'POST',
+                data: { order_id: orderData.id }
+            });
 
-        if (paymentData && paymentData.clientSecret) {
-            setClientSecret(paymentData.clientSecret);
-            setShowStripeModal(true);
+            if (paymentData && paymentData.clientSecret) {
+                setClientSecret(paymentData.clientSecret);
+                setShowStripeModal(true);
+            }
+        } else {
+            // Cash on Delivery - Success immediately
+            handlePaymentSuccess();
         }
       }
     } catch (err: any) {
@@ -488,6 +495,35 @@ export default function CartPage() {
                   <p className="text-3xl font-black text-[#111111] tracking-tighter">
                     ${Math.max(0, (total + 3.00 + (total * 0.1) - discount)).toFixed(2)}
                   </p>
+                </div>
+              </div>
+
+              {/* Payment Method Selection */}
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 mb-5">
+                <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-4">Payment Method</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setPaymentMethod('cash')}
+                    className={`h-11 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                      paymentMethod === 'cash' 
+                        ? 'bg-[#111111] text-white border-[#111111]' 
+                        : 'bg-white text-[#888888] border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <DollarSign size={14} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Cash</span>
+                  </button>
+                  <button
+                    onClick={() => setPaymentMethod('online')}
+                    className={`h-11 rounded-xl flex items-center justify-center gap-2 border transition-all ${
+                      paymentMethod === 'online' 
+                        ? 'bg-[#111111] text-white border-[#111111]' 
+                        : 'bg-white text-[#888888] border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <Lock size={14} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Stripe</span>
+                  </button>
                 </div>
               </div>
 
