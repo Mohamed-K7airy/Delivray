@@ -188,18 +188,20 @@ export const getDriverStats = async (req, res) => {
       });
     }
 
-    // 2. Aggregate Earnings: driver earns DELIVERY_FEE per delivery (not total_price)
+    // 2. Aggregate Earnings: sum actual delivery_fee from completed orders
     const { data: orders, error } = await supabase
       .from('orders')
-      .select('id')
+      .select('delivery_fee')
       .eq('driver_id', driver.id)
       .eq('status', 'completed');
 
     if (error) throw error;
 
     const deliveriesCount = orders.length;
-    // Earnings = fixed delivery fee × number of completed trips
-    const totalEarnings = deliveriesCount * DELIVERY_FEE;
+    // Sum the actual delivery fees from orders
+    const totalEarnings = orders.reduce((sum, o) => {
+      return sum + (Number(o.delivery_fee) || DELIVERY_FEE);
+    }, 0);
 
     res.json({
       earnings: totalEarnings,

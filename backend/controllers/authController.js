@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { supabase } from '../config/supabase.js';
+import { sendVerificationEmail, sendOTPEmail } from '../services/emailService.js';
 
 const generateToken = (res, userId, role) => {
   if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
@@ -45,14 +47,30 @@ export const registerUser = async (req, res) => {
     // 3. Determine status
     const status = (role === 'customer' || role === 'admin') ? 'active' : 'pending';
 
-    // 4. Create user
+    // 4. Create user with verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
     const { data: user, error: userError } = await supabase
       .from('users')
-      .insert([{ name, phone, email, password: hashedPassword, role, status }])
+      .insert([{ 
+        name, 
+        phone, 
+        email, 
+        password: hashedPassword, 
+        role, 
+        status,
+        email_verified: false,
+        verification_token: verificationToken
+      }])
       .select()
       .single();
 
     if (userError) throw userError;
+
+    // Send verification email if email is provided
+    if (email) {
+      await sendVerificationEmail(email, name, verificationToken);
+    }
 
     // 5. Handle Role Specific data
     if (role === 'merchant') {
@@ -164,6 +182,103 @@ export const getMe = async (req, res) => {
     }
 
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Verify email token
+// @route   POST /auth/verify-email
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ message: 'Missing token' });
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id')
+      .eq('verification_token', token)
+      .maybeSingle();
+
+    if (error || !user) return res.status(400).json({ message: 'Invalid or expired token' });
+
+    await supabase
+      .from('users')
+      .update({ email_verified: true, verification_token: null })
+      .eq('id', user.id);
+
+    res.json({ message: 'Email verified successfully. You can now login.' });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Forgot password - Send OTP
+// @route   POST /auth/forgot-password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: 'Email required' });
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, name')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error || !user) return res.status(404).json({ message: 'User with this email not found' });
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000).toISOString(); // 15 mins
+
+    await supabase
+      .from('users')
+      .update({ otp_code: otp, otp_expires: otpExpires })
+      .eq('id', user.id);
+
+    await sendOTPEmail(email, user.name, otp);
+
+    res.json({ message: 'OTP sent to your email' });
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Reset password (verify OTP and update)
+// @route   POST /auth/reset-password
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) return res.status(400).json({ message: 'Missing fields' });
+
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, otp_code, otp_expires')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (error || !user) return res.status(404).json({ message: 'User not found' });
+
+    if (user.otp_code !== otp || new Date(user.otp_expires) < new Date()) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await supabase
+      .from('users')
+      .update({ 
+        password: hashedPassword, 
+        otp_code: null, 
+        otp_expires: null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id);
+
+    res.json({ message: 'Password reset successfully. You can now login.' });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
   }

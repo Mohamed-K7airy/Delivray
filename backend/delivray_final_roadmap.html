@@ -1,0 +1,451 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{padding:1rem 0;font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary)}
+
+.tabs{display:flex;gap:4px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tb{font-size:12px;padding:5px 13px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);cursor:pointer;color:var(--color-text-secondary);background:var(--color-background-primary);transition:all .15s}
+.tb.on{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;border-color:var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+
+.krow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.4rem}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px}
+.kn{font-size:22px;font-weight:500;line-height:1.1}.kl{font-size:11px;color:var(--color-text-secondary);margin-top:3px}
+.cr{color:#E24B4A}.or{color:#BA7517}.br{color:#185FA5}.gr{color:#3B6D11}
+
+.sect{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-secondary);padding:10px 0 5px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:8px;margin-top:16px}
+.sect:first-child{margin-top:0}
+
+.list{display:flex;flex-direction:column;gap:6px}
+.card{display:grid;grid-template-columns:22px 1fr 68px;gap:10px;align-items:start;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:11px 13px;cursor:pointer;transition:border-color .15s}
+.card:hover{border-color:var(--color-border-secondary)}
+.dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0;margin-top:2px}
+.dr{background:#FCEBEB;color:#A32D2D}
+.do{background:#FAEEDA;color:#854F0B}
+.db{background:#E6F1FB;color:#185FA5}
+.dg{background:#EAF3DE;color:#3B6D11}
+.ct{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.cd{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+.cf{font-size:10px;color:var(--color-text-tertiary);font-family:var(--font-mono);background:var(--color-background-secondary);padding:1px 6px;border-radius:3px;margin-top:5px;display:inline-block}
+.bg{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;white-space:nowrap;align-self:start;margin-top:1px}
+.bbug{background:#FCEBEB;color:#A32D2D}
+.bsec{background:#FAEEDA;color:#854F0B}
+.bperf{background:#E6F1FB;color:#185FA5}
+.bux{background:#EEEDFE;color:#3C3489}
+.barch{background:#FBEAF0;color:#72243E}
+.bfeat{background:#EAF3DE;color:#3B6D11}
+
+.step-list{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:14px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.step:last-child{border-bottom:none}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;margin-top:2px}
+.sn-you{background:var(--color-background-info);color:var(--color-text-info)}
+.sn-ai{background:var(--color-background-success);color:var(--color-text-success)}
+.step-body{}
+.step-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.step-desc{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.step-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-top:6px;font-weight:500}
+.tag-you{background:var(--color-background-info);color:var(--color-text-info)}
+.tag-ai{background:var(--color-background-success);color:var(--color-text-success)}
+.tag-both{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+
+.service-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.svc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:13px 15px;cursor:pointer;transition:border-color .15s}
+.svc:hover{border-color:var(--color-border-secondary)}
+.svc-h{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.svc-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.svc-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.svc-free{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--color-background-success);color:var(--color-text-success);font-weight:500}
+.svc-paid{font-size:10px;padding:1px 6px;border-radius:3px;background:var(--color-background-warning);color:var(--color-text-warning);font-weight:500}
+.svc-d{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+</style>
+
+<div class="root">
+
+<div class="tabs">
+  <button class="tb on" onclick="sw('bugs')">الأخطاء المتبقية (12)</button>
+  <button class="tb" onclick="sw('real')">لجعل كل شيء حقيقي</button>
+  <button class="tb" onclick="sw('you')">ما تفعله أنت</button>
+</div>
+
+<div id="pbugs" class="pane on">
+  <div class="krow">
+    <div class="kpi"><div class="kn cr">4</div><div class="kl">حرجة / منطق خاطئ</div></div>
+    <div class="kpi"><div class="kn or">5</div><div class="kl">متوسطة / UX</div></div>
+    <div class="kpi"><div class="kn br">3</div><div class="kl">منخفضة / بنية</div></div>
+    <div class="kpi"><div class="kn gr">0</div><div class="kl">أمنية متبقية</div></div>
+  </div>
+
+  <div class="sect">أخطاء منطقية حرجة</div>
+  <div class="list">
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح getStores في storeController.js بحيث يُطبق type filter فعلاً على Supabase query مع دعم admin_disabled check')">
+      <div class="dot dr">!</div>
+      <div>
+        <div class="ct">getStores لا يُطبق type filter أبداً</div>
+        <div class="cd">السطر: const { type } = req.query موجود لكن لا يوجد .eq('type', type) في الـ query. الفلتر في صفحة الهوم الرئيسية لا يعمل. يجب أيضاً تصفية المتاجر التي admin_disabled=true.</div>
+        <span class="cf">modules/stores/storeController.js → getStores</span>
+      </div>
+      <span class="bg bbug">منطق</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح getMerchantStats في orderController.js ليستخدم subtotal بدل total_price في حساب الإيراد')">
+      <div class="dot dr">!</div>
+      <div>
+        <div class="ct">إيراد المرتشنت يشمل delivery_fee بالخطأ</div>
+        <div class="cd">getMerchantStats يجمع o.total_price الذي يساوي subtotal + delivery_fee. الـ $3 delivery fee تذهب للسائق لا للمرتشنت. يجب: acc + (Number(o.subtotal) || Number(o.total_price) - 3).</div>
+        <span class="cf">modules/orders/orderController.js → getMerchantStats</span>
+      </div>
+      <span class="bg bbug">حساب</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح getDriverStats في deliveryController.js ليجمع delivery_fee من الـ orders نفسها بدل الضرب بثابت')">
+      <div class="dot dr">!</div>
+      <div>
+        <div class="ct">earnings السائق محسوبة بثابت لا من DB</div>
+        <div class="cd">totalEarnings = deliveriesCount × DELIVERY_FEE(3.00) hardcoded. لو تغيرت الرسوم مستقبلاً، التاريخ كله خاطئ. الحل: SELECT SUM(delivery_fee) FROM orders WHERE driver_id = X AND status = 'completed'.</div>
+        <span class="cf">modules/delivery/deliveryController.js → getDriverStats</span>
+      </div>
+      <span class="bg bbug">حساب</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح race condition في addToCart في cartController.js باستخدام Supabase transaction أو RPC')">
+      <div class="dot dr">!</div>
+      <div>
+        <div class="ct">Race condition في addToCart يتجاوز one-store rule</div>
+        <div class="cd">الـ check ثم insert ليسا atomic. طلبان متزامنان من متجرين مختلفين قد يمران معاً. الحل: Supabase RPC function تفعل check + insert في transaction واحدة، أو إضافة UNIQUE constraint + error handling.</div>
+        <span class="cf">modules/cart/cartController.js → addToCart</span>
+      </div>
+      <span class="bg bbug">race condition</span>
+    </div>
+
+  </div>
+
+  <div class="sect">أخطاء متوسطة</div>
+  <div class="list">
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح AdminDashboard الذي يطلب 6 API calls متوازية بعضها endpoints غير موجودة مثل /admin/users و /admin/stores و /admin/financials')">
+      <div class="dot do">▲</div>
+      <div>
+        <div class="ct">AdminDashboard يطلب endpoints غير موجودة</div>
+        <div class="cd">Promise.all في useEffect يطلب: /admin/users, /admin/stores, /admin/financials — هذه الـ endpoints موجودة في adminController.js لكن قد لا تكون مسجلة في adminRoutes.js القديم في routes/. يجب التأكد من التوحيد.</div>
+        <span class="cf">app/admin/dashboard/page.tsx + modules/admin/adminRoutes.js</span>
+      </div>
+      <span class="bg bbug">routing</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح cancelOrder في order/[id]/page.tsx بحيث يُنظف cartStore بعد الإلغاء الناجح')">
+      <div class="dot do">▲</div>
+      <div>
+        <div class="ct">Cart لا يُنظف بعد إلغاء الطلب</div>
+        <div class="cd">عند إلغاء الطلب بنجاح، cartStore يبقى بنفس العناصر. المستخدم يعود لصفحة cart ويرى عناصر طلب ملغي. يجب استدعاء clearCart() من cartStore بعد نجاح الإلغاء.</div>
+        <span class="cf">app/order/[id]/page.tsx → handleCancelOrder</span>
+      </div>
+      <span class="bg bux">UX</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإصلاح MapView.tsx بإضافة useMemo للـ routingPoints في driver dashboard لمنع re-fetch المفرط من OSRM')">
+      <div class="dot do">▲</div>
+      <div>
+        <div class="ct">OSRM route يُعاد fetch عند كل render</div>
+        <div class="cd">routingPoints array جديدة عند كل render للـ parent. useEffect في MapView يعيد fetch لأن [routingPoints] يتغير reference. يجب: useMemo للـ array في الـ parent أو مقارنة JSON.stringify في useEffect.</div>
+        <span class="cf">components/MapView.tsx + app/driver/dashboard/page.tsx</span>
+      </div>
+      <span class="bg bperf">performance</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة is_available toggle للسائق يُحدّث DB ويُضيفه/يُزيله من socket room drivers')">
+      <div class="dot do">▲</div>
+      <div>
+        <div class="ct">السائق لا يستطيع إيقاف/تشغيل توفره</div>
+        <div class="cd">is_available موجود في drivers table لكن لا يتغير أبداً في الكود. السائق يستقبل طلبات حتى لو offline. يجب toggle في driver dashboard يُحدّث is_available في DB ويُضيف/يُزيل من socket room "drivers".</div>
+        <span class="cf">app/driver/dashboard/page.tsx + modules/delivery/deliveryController.js</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي AdminNavbar component جديد مناسب للأدمن واستبدله في admin/layout.tsx بدل MerchantNavbar')">
+      <div class="dot do">▲</div>
+      <div>
+        <div class="ct">Admin يرى Merchant navbar</div>
+        <div class="cd">admin/layout.tsx يستورد ويستخدم MerchantNavbar مما يُظهر روابط merchant (Analytics, Orders, Inventory) للأدمن. يجب AdminNavbar منفصل أو على الأقل props للتحكم في الـ links.</div>
+        <span class="cf">app/admin/layout.tsx</span>
+      </div>
+      <span class="bg bbug">UI</span>
+    </div>
+
+  </div>
+
+  <div class="sect">أخطاء منخفضة / بنية</div>
+  <div class="list">
+
+    <div class="card" onclick="sendPrompt('اكتب لي كود لتوحيد admin routes في server.js بحيث يستخدم فقط modules/admin/adminRoutes.js ويحذف routes/adminRoutes.js القديم')">
+      <div class="dot db">i</div>
+      <div>
+        <div class="ct">تعارض admin routes — ملفان مختلفان</div>
+        <div class="cd">server.js يستورد من routes/adminRoutes.js القديم (4 endpoints فقط) بينما modules/admin/adminRoutes.js الجديد أكمل (12 endpoint). البراعة في server.js: import adminRoutes from './routes/adminRoutes.js' — يجب تغييره للمسار الصحيح.</div>
+        <span class="cf">server.js + routes/adminRoutes.js</span>
+      </div>
+      <span class="bg barch">بنية</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي كود لنقل ملفات السكريبت من backend root لمجلد scripts/ وتحديث .gitignore')">
+      <div class="dot db">i</div>
+      <div>
+        <div class="ct">15+ ملف سكريبت مؤقت في root الـ backend</div>
+        <div class="cd">test_db.js, test_api.js, test_insert.js, seed_data.js, create_admin.js, check_merchant.js, cleanup_*.js, tmp_*.js — جميعها في الـ root. بعضها قد يحتوي credentials. يجب نقلها لـ scripts/ وإضافتها لـ .gitignore.</div>
+        <span class="cf">backend/*.js (scripts مؤقتة)</span>
+      </div>
+      <span class="bg barch">بنية</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي ErrorBoundary component في Next.js App Router مع error.tsx لصفحات المرتشنت والسائق والأدمن')">
+      <div class="dot db">i</div>
+      <div>
+        <div class="ct">لا يوجد error.tsx في أي route group</div>
+        <div class="cd">Next.js App Router يتطلب error.tsx لكل layout segment للتعامل مع الأخطاء gracefully. لا يوجد أي ملف error.tsx في المشروع. خطأ في MapView أو SocketProvider يُسقط الصفحة كاملاً.</div>
+        <span class="cf">app/merchant/error.tsx + app/driver/error.tsx + app/admin/error.tsx</span>
+      </div>
+      <span class="bg bux">UX</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="preal" class="pane">
+
+  <div class="sect">خدمات خارجية تجعل المشروع حقيقياً 100%</div>
+  <div class="service-grid">
+
+    <div class="svc" onclick="sendPrompt('كيف أربط Paymob بمشروع Delivray للدفع الإلكتروني مع webhook وverification signature؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#FAEEDA">💳</div>
+        <span class="svc-name">Paymob</span>
+        <span class="svc-paid">مدفوع</span>
+      </div>
+      <div class="svc-d">بديل Stripe للمنطقة العربية. يدعم بطاقات Visa/Mastercard، محافظ رقمية، فودافون كاش. تسجيل مجاني والدفع عمولة فقط. أسهل تكامل للسوق المصري والخليجي.</div>
+    </div>
+
+    <div class="svc" onclick="sendPrompt('كيف أُعد Supabase Storage لرفع صور المنتجات مع signed URLs وضغط الصور؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#EAF3DE">🗄️</div>
+        <span class="svc-name">Supabase Storage</span>
+        <span class="svc-free">مجاني</span>
+      </div>
+      <div class="svc-d">موجود في نفس مشروعك Supabase. إنشاء bucket للصور، رفع من الـ frontend مباشرة مع RLS policies، public URLs للصور. لا تحتاج أي خدمة إضافية.</div>
+    </div>
+
+    <div class="svc" onclick="sendPrompt('كيف أُعد Firebase Cloud Messaging أو Web Push API لإرسال push notifications للعميل عند تغيير حالة الطلب؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#FAEEDA">🔔</div>
+        <span class="svc-name">Firebase FCM</span>
+        <span class="svc-free">مجاني</span>
+      </div>
+      <div class="svc-d">إرسال push notifications للموبايل والويب. sw.js موجود في مشروعك جاهز للتطوير. FCM مجاني للكميات العادية ويدعم iOS وAndroid والمتصفحات.</div>
+    </div>
+
+    <div class="svc" onclick="sendPrompt('كيف أُعد Resend أو SendGrid لإرسال إيميلات تأكيد الطلب والحساب في Delivray؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#E6F1FB">📧</div>
+        <span class="svc-name">Resend</span>
+        <span class="svc-free">مجاني</span>
+      </div>
+      <div class="svc-d">إيميلات: تأكيد التسجيل، تفاصيل الطلب، إشعار التسليم، payout confirmation للمرتشنت. Resend يوفر 3,000 إيميل/شهر مجاناً مع React Email templates.</div>
+    </div>
+
+    <div class="svc" onclick="sendPrompt('كيف أُعد Google Maps API أو Mapbox بدل OpenStreetMap/OSRM للخرائط والتوجيه الحقيقي في Delivray؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#FBEAF0">🗺️</div>
+        <span class="svc-name">Google Maps Platform</span>
+        <span class="svc-paid">مدفوع</span>
+      </div>
+      <div class="svc-d">OSRM الحالي قد يكون بطيئاً في الإنتاج. Google Maps يُعطي: مسارات دقيقة مع traffic real-time، geocoding أفضل، Places API للبحث عن العناوين. $200/شهر مجاناً يكفي للمراحل الأولى.</div>
+    </div>
+
+    <div class="svc" onclick="sendPrompt('كيف أُعد Supabase Row Level Security كاملاً لحماية جميع الجداول من الوصول غير المصرح؟')">
+      <div class="svc-h">
+        <div class="svc-icon" style="background:#EAF3DE">🔒</div>
+        <span class="svc-name">Supabase RLS</span>
+        <span class="svc-free">مجاني</span>
+      </div>
+      <div class="svc-d">طبقة حماية في قاعدة البيانات نفسها. حتى لو backend controller أخطأ، RLS يمنع أي وصول غير مصرح. يجب تفعيله على جميع الجداول: orders, cart, reviews, payouts.</div>
+    </div>
+
+  </div>
+
+  <div class="sect">ميزات مفقودة تجعل المشروع ناقصاً</div>
+  <div class="list">
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة image upload في merchant inventory باستخدام Supabase Storage')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">رفع الصور الحقيقية للمنتجات</div>
+        <div class="cd">زر upload في inventory موجود لكن لا يفعل شيئاً. الصور الحالية كلها Unsplash URLs hardcoded. Supabase Storage + presigned upload = رفع حقيقي مع preview.</div>
+        <span class="cf">app/merchant/inventory/page.tsx + Supabase Storage bucket</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة email verification عند التسجيل باستخدام Resend')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">لا يوجد email verification عند التسجيل</div>
+        <div class="cd">المستخدم يسجل بأي email بدون تحقق. يجب: إرسال رابط تفعيل، تعليق الحساب حتى التفعيل (أو على الأقل البريد الإلكتروني الفعلي). مهم للتحقق من هوية المرتشنت والسائق.</div>
+        <span class="cf">controllers/authController.js + Resend API</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة order receipt PDF عند اكتمال الطلب باستخدام backend PDF generation')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">لا يوجد receipt للطلب المكتمل</div>
+        <div class="cd">العميل لا يستطيع تحميل إيصال شراء. إضافة PDF receipt يُرسل بالإيميل أو يُتيح للتحميل من صفحة الطلب. مهم للمتاجر الرسمية والـ B2B.</div>
+        <span class="cf">modules/orders/ + PDF generation endpoint</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة search endpoint في backend يبحث في stores وproducts باستخدام Supabase full-text search')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">شريط البحث لا يعمل</div>
+        <div class="cd">البحث في Navbar و merchant inventory موجود في UI لكن لا يُرسل أي request. يجب: /search?q=... endpoint يبحث في name للمتاجر والمنتجات معاً باستخدام ilike أو full-text search.</div>
+        <span class="cf">backend: GET /search + frontend search components</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لإضافة forgot password flow باستخدام Resend لإرسال OTP أو reset link')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">لا يوجد نسيت كلمة المرور</div>
+        <div class="cd">صفحة login لا تحتوي على رابط "نسيت كلمة المرور". إضافة: POST /auth/forgot-password يُرسل OTP على الإيميل، POST /auth/reset-password يقبل OTP ويُغير كلمة المرور.</div>
+        <span class="cf">controllers/authController.js + /auth/forgot-password route</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+    <div class="card" onclick="sendPrompt('اكتب لي الكود الكامل لتفعيل driver availability toggle في driver dashboard يُحدّث DB ويُعيد تشغيل socket rooms')">
+      <div class="dot dg">+</div>
+      <div>
+        <div class="ct">السائق لا يستطيع إيقاف توفره</div>
+        <div class="cd">is_available في drivers table لكن لا يتغير. الطلبات تُوزع على الكل بغض النظر. Toggle في dashboard + PATCH /delivery/availability + تحديث socket room "drivers".</div>
+        <span class="cf">app/driver/dashboard + modules/delivery/deliveryController.js</span>
+      </div>
+      <span class="bg bfeat">مفقود</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="pyou" class="pane">
+
+  <div class="sect">ما تفعله أنت في Supabase Dashboard</div>
+  <div class="step-list">
+
+    <div class="step">
+      <div class="step-num sn-you">1</div>
+      <div class="step-body">
+        <div class="step-title">تفعيل Row Level Security على جميع الجداول</div>
+        <div class="step-desc">اذهب إلى Supabase Dashboard → Table Editor → كل جدول → Enable RLS. ثم أضف policies: مثلاً orders يقرأها صاحبها فقط. هذا يحميك حتى لو backend أخطأ. بدونه أي شخص يعرف Supabase URL يقرأ كل البيانات.</div>
+        <span class="step-tag tag-you">Supabase Dashboard</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">2</div>
+      <div class="step-body">
+        <div class="step-title">إنشاء Storage bucket لصور المنتجات</div>
+        <div class="step-desc">Supabase Dashboard → Storage → New bucket → اسمه "products" → Public bucket. ثم اضبط policy تسمح للـ merchant برفع صور لمتجره فقط. هذا يُمكّن image upload الحقيقي.</div>
+        <span class="step-tag tag-you">Supabase Dashboard</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">3</div>
+      <div class="step-body">
+        <div class="step-title">تشغيل migration SQL للجداول الناقصة</div>
+        <div class="step-desc">Supabase → SQL Editor → شغّل ملفات migrations الموجودة: phase1_fixes.sql، phase2_migrations.sql، create_order_rpc.sql، promo_schema_fix.sql بهذا الترتيب. تحقق أن driver_earnings_log أو delivery_fee column موجود في orders.</div>
+        <span class="step-tag tag-you">Supabase SQL Editor</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">4</div>
+      <div class="step-body">
+        <div class="step-title">التسجيل في Paymob والحصول على API keys</div>
+        <div class="step-desc">اذهب لـ accept.paymob.com → سجّل حساب merchant → احصل على: API Key، Integration ID للبطاقات، HMAC Secret للـ webhook. ضعها في backend .env: PAYMOB_API_KEY, PAYMOB_INTEGRATION_ID, PAYMOB_HMAC.</div>
+        <span class="step-tag tag-you">paymob.com</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">5</div>
+      <div class="step-body">
+        <div class="step-title">إعداد Resend لإيميلات المشروع</div>
+        <div class="step-desc">سجّل في resend.com → أضف domain أو استخدم البريد الافتراضي للتطوير → احصل على API Key → ضعه في backend .env: RESEND_API_KEY. يُستخدم لـ: تأكيد التسجيل، تفاصيل الطلب، payout notifications.</div>
+        <span class="step-tag tag-you">resend.com</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">6</div>
+      <div class="step-body">
+        <div class="step-title">إعداد Google Maps API key</div>
+        <div class="step-desc">console.cloud.google.com → Enable: Maps JavaScript API, Geocoding API, Directions API, Places API → أنشئ API key مع HTTP referrer restriction لنطاقك. ضعه في frontend .env: NEXT_PUBLIC_GOOGLE_MAPS_KEY. يستبدل OSRM للتوجيه والـ geocoding.</div>
+        <span class="step-tag tag-you">Google Cloud Console</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">7</div>
+      <div class="step-body">
+        <div class="step-title">إعداد Firebase لـ Push Notifications</div>
+        <div class="step-desc">console.firebase.google.com → New project → Enable Cloud Messaging → احصل على: VAPID Key لـ Web Push، Server Key للـ backend. ضع VAPID في NEXT_PUBLIC_FIREBASE_VAPID_KEY وفي frontend وـ SERVER_KEY في backend .env.</div>
+        <span class="step-tag tag-you">Firebase Console</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">8</div>
+      <div class="step-body">
+        <div class="step-title">نشر الـ backend على Railway أو Render</div>
+        <div class="step-desc">nixpacks.toml موجود وجاهز للنشر. railway.app أو render.com → Connect GitHub → اختر backend folder → أضف Environment Variables من .env.example. تأكد من: PORT, JWT_SECRET, SUPABASE_URL, SUPABASE_KEY, FRONTEND_URL.</div>
+        <span class="step-tag tag-you">Railway / Render</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-you">9</div>
+      <div class="step-body">
+        <div class="step-title">نشر الـ frontend على Vercel</div>
+        <div class="step-desc">vercel.com → Import from GitHub → اختر frontend folder → أضف: NEXT_PUBLIC_API_URL (backend URL)، NEXT_PUBLIC_GOOGLE_MAPS_KEY، NEXT_PUBLIC_FIREBASE_VAPID_KEY. nixpacks.toml الخاص بالـ frontend موجود. Domain مجاني على vercel.app.</div>
+        <span class="step-tag tag-you">Vercel</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num sn-ai">AI</div>
+      <div class="step-body">
+        <div class="step-title">ما أكتبه لك أنا (الكود)</div>
+        <div class="step-desc">بعد ما تُعطيني الـ API keys، أكتب لك: تكامل Paymob الكامل مع webhook + signature verification، image upload flow مع Supabase Storage، push notifications مع Firebase، email templates مع Resend، forgot password flow، Search endpoint، AdminNavbar، error.tsx pages، driver availability toggle، وإصلاح جميع الـ bugs المذكورة في التبويب الأول.</div>
+        <span class="step-tag tag-ai">Claude يكتب الكود</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<script>
+function sw(id){
+  document.querySelectorAll('.tb').forEach((b,i)=>{
+    b.classList.toggle('on',['bugs','real','you'][i]===id);
+  });
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p'+id).classList.add('on');
+}
+</script>

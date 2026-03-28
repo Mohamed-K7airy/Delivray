@@ -39,7 +39,7 @@ export const getStores = async (req, res) => {
     
     let query = supabase
       .from('stores')
-      .select('id, name, type, location_lat, location_lng, is_open')
+      .select('id, name, type, image, location_lat, location_lng, is_open')
       .eq('is_open', true); // Only returned open stores by default
 
     if (type) {
@@ -78,7 +78,7 @@ export const getStoreById = async (req, res) => {
     // Fetch products for this store
     const { data: products, error: prodError } = await supabase
       .from('products')
-      .select('*, categories(name)')
+      .select('*')
       .eq('store_id', id)
       .eq('availability', true);
 
@@ -96,7 +96,9 @@ export const getStoreById = async (req, res) => {
 export const updateStore = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const { name, image, type, is_open } = req.body;
+
+    console.log(`[StoreUpdate] Request for ID ${id}:`, { name, image });
 
     // Ownership check done in middleware or here
     const { data: store, error: fetchError } = await supabase
@@ -108,6 +110,14 @@ export const updateStore = async (req, res) => {
     if (fetchError || !store) return res.status(404).json({ message: 'Store not found' });
     if (store.owner_id !== req.user.id) return res.status(403).json({ message: 'Not authorized to update this store' });
 
+    const updates = {
+      ...(name && { name }),
+      ...(image !== undefined && { image }),
+      ...(type && { type }),
+      ...(is_open !== undefined && { is_open }),
+      updated_at: new Date()
+    };
+
     const { data: updatedStore, error } = await supabase
       .from('stores')
       .update(updates)
@@ -115,7 +125,12 @@ export const updateStore = async (req, res) => {
       .select()
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      console.error('[StoreUpdate] Database Error:', error);
+      throw error;
+    }
+    
+    console.log('[StoreUpdate] Successfully updated in DB');
     res.json(updatedStore);
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
@@ -190,8 +205,9 @@ export const getMerchantStats = async (req, res) => {
     const orderCount = orders.length;
     // Use the subtotal column if it exists, otherwise fallback to total_price - fee
     const merchantRevenue = orders.reduce((sum, o) => {
-      const price = o.subtotal !== undefined && o.subtotal !== null ? Number(o.subtotal) : (Number(o.total_price) - DELIVERY_FEE);
-      return sum + price;
+      const fee = o.delivery_fee !== undefined && o.delivery_fee !== null ? Number(o.delivery_fee) : DELIVERY_FEE;
+      const price = (o.subtotal !== undefined && o.subtotal !== null) ? Number(o.subtotal) : (Number(o.total_price) - fee);
+      return sum + Math.max(0, price);
     }, 0);
 
     // 3. Unique Customers
@@ -235,8 +251,9 @@ export const getMerchantBalance = async (req, res) => {
       .eq('status', 'completed');
 
     const merchantRevenue = orders ? orders.reduce((sum, o) => {
-      const price = o.subtotal !== undefined && o.subtotal !== null ? Number(o.subtotal) : (Number(o.total_price) - (o.delivery_fee || DELIVERY_FEE));
-      return sum + price;
+      const fee = o.delivery_fee !== undefined && o.delivery_fee !== null ? Number(o.delivery_fee) : DELIVERY_FEE;
+      const price = (o.subtotal !== undefined && o.subtotal !== null) ? Number(o.subtotal) : (Number(o.total_price) - fee);
+      return sum + Math.max(0, price);
     }, 0) : 0;
 
     // 2. Get total paid out

@@ -74,17 +74,18 @@ export const addToCart = async (req, res) => {
     }
 
     // Check if user has items from a DIFFERENT store in their cart
-    // We fetch current items to enforce this rule
-    const { data: existingItems } = await supabase
+    // We use a join here to be more efficient and get the store_id of existing items
+    const { data: cartStoreCheck } = await supabase
       .from('cart_items')
-      .select('id, products(store_id)')
-      .eq('cart_id', cartId);
+      .select('products(store_id)')
+      .eq('cart_id', cartId)
+      .limit(1);
       
-    if (existingItems && existingItems.length > 0) {
-      const existingStoreId = existingItems[0].products?.store_id;
-      if (existingStoreId && existingStoreId !== product.store_id) {
+    if (cartStoreCheck && cartStoreCheck.length > 0) {
+      const currentStoreId = cartStoreCheck[0].products?.store_id;
+      if (currentStoreId && currentStoreId !== product.store_id) {
          return res.status(400).json({ 
-           message: 'You can only order from one store at a time. Please clear your cart first.',
+           message: 'Your cart contains items from another store. Please clear your cart to add items from this store.',
            clear_cart_required: true 
          });
       }
