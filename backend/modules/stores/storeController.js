@@ -39,8 +39,9 @@ export const getStores = async (req, res) => {
     
     let query = supabase
       .from('stores')
-      .select('id, name, type, image, location_lat, location_lng, is_open')
-      .eq('is_open', true); // Only returned open stores by default
+      .select('id, name, type, image, location_lat, location_lng, is_open, admin_disabled')
+      .eq('is_open', true)
+      .eq('admin_disabled', false); // Only return stores not disabled by admin
 
     if (type) {
       query = query.eq('type', type);

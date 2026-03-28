@@ -28,7 +28,7 @@ interface Store {
   id: string;
   name: string;
   type: string;
-  image?: string;
+  image_url?: string;
   location_lat: number;
   location_lng: number;
   products: Product[];
@@ -272,7 +272,7 @@ export default function StorePage() {
             >
               <img
                 src={
-                  store.image || (
+                  store.image_url || (
                     store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&auto=format&fit=crop' :
                     store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop' :
                     store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&auto=format&fit=crop' :

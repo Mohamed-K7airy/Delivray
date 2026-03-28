@@ -20,10 +20,11 @@ export const useSocket = () => useContext(SocketContext);
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { token, user } = useAuthStore();
+  const { token, user, _hasHydrated } = useAuthStore();
   const socketRef = React.useRef<Socket | null>(null);
 
   useEffect(() => {
+    if (!_hasHydrated) return; // Wait for hydration before initiating
     if (!token || !user) {
       if (socketRef.current) {
         socketRef.current.disconnect();
@@ -74,6 +75,18 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       if (err.message === 'Authentication error: Invalid token') {
          useAuthStore.getState().logout();
       }
+    });
+
+    newSocket.on('order_status_updated', (data) => {
+      console.log('[Socket] Order Update:', data);
+      import('@/lib/audio').then(m => m.playNotificationSound());
+      toast.info(`Order Protocol Updated: ${data.status?.replace(/_/g, ' ') || 'State Change'}`);
+    });
+
+    newSocket.on('new_order', (data) => {
+      console.log('[Socket] New Order Alert:', data);
+      import('@/lib/audio').then(m => m.playNotificationSound());
+      toast.success('New Deployment Assignment Available!');
     });
 
     return () => {

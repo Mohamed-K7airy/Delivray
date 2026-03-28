@@ -1,249 +1,172 @@
 'use client';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState, useCallback } from 'react';
+import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer, Libraries } from '@react-google-maps/api';
 
-// Fix for default marker icons in Leaflet for Next.js
-const DefaultIcon = L.icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
+const libraries: Libraries = ['places', 'geometry', 'drawing'];
 
-// Custom Icons for better UX
-const createCustomIcon = (color: string) => L.divIcon({
-  html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.2);"></div>`,
-  className: 'custom-marker-icon',
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-});
-
-const driverIcon = createCustomIcon('#0f172a');
-const storeIcon = createCustomIcon('#111111');
-const customerIcon = createCustomIcon('#2563eb');
+export interface MapMarker {
+  position: [number, number];
+  type: 'driver' | 'store' | 'customer';
+  label?: string;
+}
 
 export interface RouteUpdateData {
-  distance: number;
-  duration: number;
+  distance: number; // in meters
+  duration: number; // in seconds
   steps: any[];
 }
 
 interface MapViewProps {
-  center: [number, number];
+  center?: [number, number];
   zoom?: number;
-  markers?: Array<{
-    id?: string;
-    position: [number, number];
-    label?: string;
-    type?: 'driver' | 'store' | 'customer' | 'selected' | 'default';
-  }>;
-  polyline?: [number, number][];
-  routingPoints?: [number, number][]; // [lat, lng][]
+  markers?: MapMarker[];
   autoCenter?: boolean;
-  className?: string;
-  onMapClick?: (lat: number, lng: number) => void;
-  showZoomControls?: boolean;
+  routingPoints?: [number, number][]; // [start, store, end]
   onRouteUpdate?: (data: RouteUpdateData) => void;
+  interactive?: boolean;
+  onLocationSelect?: (lat: number, lng: number) => void;
 }
 
-// Internal component to handle map events
-function MapEvents({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
-  useMapEvents({
-    click: (e) => {
-      if (onMapClick) onMapClick(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%'
+};
 
-// Internal component to handle zoom
-function ZoomControls() {
-  const map = useMap();
-  return (
-    <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
-      <button 
-        onClick={() => map.zoomIn()}
-        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-bold text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-      >+</button>
-      <button 
-        onClick={() => map.zoomOut()}
-        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-bold text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-      >-</button>
-    </div>
-  );
-}
+const defaultCenter = { lat: 24.7136, lng: 46.6753 }; // Riyadh
 
-// Internal component to handle view changes
-function ChangeView({ center, zoom, autoCenter }: { center: [number, number]; zoom: number; autoCenter: boolean }) {
-  const map = useMap();
-  useEffect(() => {
-    if (autoCenter) {
-      map.setView(center, zoom, { animate: true, duration: 1 });
-    }
-  }, [center, zoom, map, autoCenter]);
-  return null;
-}
-
-export default function MapView({ 
-  center, 
-  zoom = 13, 
-  markers = [], 
-  polyline, 
-  routingPoints,
+const MapView: React.FC<MapViewProps> = ({
+  center,
+  zoom = 13,
+  markers = [],
   autoCenter = true,
-  className = 'h-full w-full',
-  onMapClick,
-  showZoomControls = true,
-  onRouteUpdate
-}: MapViewProps) {
-  const [routingPath, setRoutingPath] = useState<[number, number][] | null>(null);
+  routingPoints,
+  onRouteUpdate,
+  interactive = false,
+  onLocationSelect
+}) => {
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || '',
+    libraries
+  });
 
-  // Fetch OSRM route when routingPoints change
-  const prevPointsRef = useRef<string>('');
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  
+  const mapCenter = center ? { lat: center[0], lng: center[1] } : defaultCenter;
 
-  const onRouteUpdateRef = useRef(onRouteUpdate);
+  const onLoad = useCallback((m: google.maps.Map) => {
+    setMap(m);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  // Handle Routing Logic
   useEffect(() => {
-    onRouteUpdateRef.current = onRouteUpdate;
-  }, [onRouteUpdate]);
-
-  useEffect(() => {
-    if (!routingPoints || routingPoints.length < 2) {
-      setRoutingPath(null);
-      prevPointsRef.current = '';
+    if (!isLoaded || !routingPoints || routingPoints.length < 2) {
+      setDirections(null);
       return;
     }
 
-    const currentPointsStr = JSON.stringify(routingPoints);
-    if (currentPointsStr === prevPointsRef.current) return;
-
-    prevPointsRef.current = currentPointsStr;
-    const coords = routingPoints.map(p => `${p[1]},${p[0]}`).join(';');
+    const directionsService = new google.maps.DirectionsService();
     
-    fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.routes && data.routes[0]) {
-          const firstRoute = data.routes[0];
-          const path = firstRoute.geometry.coordinates.map((c: any) => [c[1], c[0]]);
-          setRoutingPath(path);
-          
-          if (onRouteUpdateRef.current) {
-             onRouteUpdateRef.current({
-                distance: firstRoute.distance,
-                duration: firstRoute.duration,
-                steps: firstRoute.legs[0].steps || []
-             });
-          }
-        }
-      })
-      .catch(err => console.error('OSRM Error:', err));
-  }, [routingPoints]);
+    // Convert first and last points
+    const origin = { lat: routingPoints[0][0], lng: routingPoints[0][1] };
+    const destination = { lat: routingPoints[routingPoints.length - 1][0], lng: routingPoints[routingPoints.length - 1][1] };
+    
+    // Middle points (waypoints)
+    const waypoints = routingPoints.slice(1, -1).map(p => ({
+      location: new google.maps.LatLng(p[0], p[1]),
+      stopover: true
+    }));
 
-  const getIcon = (type?: string) => {
-    switch(type) {
-      case 'driver': return driverIcon;
-      case 'store': return storeIcon;
-      case 'customer': return customerIcon;
-      default: return DefaultIcon;
+    directionsService.route(
+      {
+        origin,
+        destination,
+        waypoints,
+        travelMode: google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK && result) {
+          setDirections(result);
+          
+          if (onRouteUpdate) {
+            const leg = result.routes[0].legs[0];
+            onRouteUpdate({
+              distance: leg.distance?.value || 0,
+              duration: leg.duration?.value || 0,
+              steps: leg.steps || []
+            });
+          }
+        } else {
+          console.error(`Directions request failed: ${status}`);
+        }
+      }
+    );
+  }, [isLoaded, routingPoints, onRouteUpdate]);
+
+  const handleMapClick = (e: google.maps.MapMouseEvent) => {
+    if (interactive && onLocationSelect && e.latLng) {
+      onLocationSelect(e.latLng.lat(), e.latLng.lng());
     }
   };
 
+  const getMarkerIcon = (type: string) => {
+    if (!isLoaded) return undefined;
+    const icons = {
+      driver: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+      store: 'https://maps.google.com/mapfiles/ms/icons/orange-dot.png',
+      customer: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+    };
+    return icons[type as keyof typeof icons];
+  };
+
+  if (loadError) return <div className="h-full flex items-center justify-center bg-red-50 text-red-500 font-bold p-10 text-center">Protocol Error: Map Network Unreachable.</div>;
+  if (!isLoaded) return <div className="h-full w-full bg-slate-50 animate-pulse flex items-center justify-center text-[10px] font-bold uppercase tracking-widest text-slate-300">Synchronizing Map Data...</div>;
+
   return (
-    <div className={`${className} bg-slate-50 relative overflow-hidden flex items-center justify-center`}>
-      {/* Fallback for invalid coordinates */}
-      {!center[0] || !center[1] ? (
-        <div className="flex flex-col items-center gap-3 opacity-40">
-           <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-400 animate-spin" />
-           <p className="text-[10px] font-bold uppercase tracking-widest">Waiting for GPS Signal</p>
-        </div>
-      ) : (
-        <MapContainer 
-          center={center} 
-          zoom={zoom} 
-          scrollWheelZoom={false} 
-          className="h-full w-full z-10"
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          />
-          <MapEvents onMapClick={onMapClick} />
-          {showZoomControls && <ZoomControls />}
-          <ChangeView center={center} zoom={zoom} autoCenter={autoCenter} />
-          
-          <AnimatePresence>
-            {markers.map((marker, idx) => {
-              if (!marker.position || marker.position[0] === null || marker.position[1] === null || isNaN(marker.position[0])) return null;
-              return (
-                <Marker 
-                  key={marker.id || idx} 
-                  position={marker.position} 
-                  icon={getIcon(marker.type)}
-                >
-                  {marker.label && (
-                     <Popup className="premium-popup">
-                       <div className="p-1 font-bold uppercase tracking-widest text-[8px]">{marker.label}</div>
-                     </Popup>
-                  )}
-                </Marker>
-              );
-            })}
-          </AnimatePresence>
-
-          {/* OSRM Road Path (Primary) */}
-          {routingPath && (
-            <Polyline 
-              positions={routingPath} 
-              color="#0f172a" 
-              weight={5} 
-              opacity={0.8} 
-              className="line-animation"
-            />
-          )}
-
-          {/* Fallback Polyline (Secondary/Straight) */}
-          {polyline && !routingPath && (
-            <Polyline 
-              positions={polyline} 
-              color="#0f172a" 
-              weight={4} 
-              opacity={0.4} 
-              dashArray="8, 12"
-            />
-          )}
-
-          {/* Zoom controls handled by ZoomControls component */}
-        </MapContainer>
-      )}
-
-      {/* CSS for custom line animations & popups */}
-      <style jsx global>{`
-        .line-animation {
-          stroke-dashoffset: 20;
-          animation: dash 10s linear infinite;
-        }
-        @keyframes dash {
-          to {
-            stroke-dashoffset: 0;
+    <GoogleMap
+      mapContainerStyle={mapContainerStyle}
+      center={mapCenter}
+      zoom={zoom}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      onClick={handleMapClick}
+      options={{
+        disableDefaultUI: true,
+        styles: [
+          {
+            "featureType": "all",
+            "elementType": "labels.text.fill",
+            "stylers": [{ "color": "#7c93a3" }, { "lightness": "-10" }]
           }
-        }
-        .premium-popup .leaflet-popup-content-wrapper {
-          border-radius: 12px;
-          border: none;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-          padding: 0;
-        }
-        .premium-popup .leaflet-popup-content {
-          margin: 12px;
-        }
-        .leaflet-container {
-          background: #f8fafc !important;
-        }
-      `}</style>
-    </div>
+        ]
+      }}
+    >
+      {/* Markers */}
+      {markers.map((marker, idx) => (
+        <Marker 
+          key={idx}
+          position={{ lat: marker.position[0], lng: marker.position[1] }}
+          icon={getMarkerIcon(marker.type)}
+          label={marker.label ? { text: marker.label, color: '#0f172a', fontWeight: 'bold', fontSize: '10px' } : undefined}
+        />
+      ))}
+
+      {/* Routing Line */}
+      {directions && (
+        <DirectionsRenderer 
+          directions={directions} 
+          options={{ 
+            suppressMarkers: true,
+            polylineOptions: { strokeColor: '#0f172a', strokeWeight: 5, strokeOpacity: 0.8 }
+          }} 
+        />
+      )}
+    </GoogleMap>
   );
-}
+};
+
+export default MapView;

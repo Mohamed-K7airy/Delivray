@@ -26,7 +26,7 @@ export const protect = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({ message: 'Not authorized, token failed' });
+    return res.status(401).json({ message: 'Session expired or invalid token' });
   }
 };
 
@@ -48,7 +48,7 @@ export const socketAuth = (socket, next) => {
     socket.data.user = decoded;
     next();
   } catch (err) {
-    next(new Error('Authentication error: Invalid token'));
+    next(new Error('Session expired or invalid token'));
   }
 };
 

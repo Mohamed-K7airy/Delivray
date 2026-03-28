@@ -53,10 +53,11 @@ export default function CartPage() {
   const reverseGeocode = async (lat: number, lng: number) => {
     setIsGeocoding(true);
     try {
-      const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY || '';
+      const resp = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`);
       const data = await resp.json();
-      if (data && data.display_name) {
-        setAddress(data.display_name);
+      if (data && data.results && data.results[0]) {
+        setAddress(data.results[0].formatted_address);
         toast.success('Address identified! 📍');
       }
     } catch (err) {
@@ -456,8 +457,9 @@ export default function CartPage() {
                     <MapView 
                       center={selectedLocation || [30.0444, 31.2357]} 
                       zoom={15}
-                      markers={selectedLocation ? [{ position: selectedLocation, type: 'selected', label: 'HUB' }] : []}
-                      onMapClick={handleMapClick}
+                      markers={selectedLocation ? [{ position: selectedLocation, type: 'customer', label: 'HUB' }] : []}
+                      onLocationSelect={handleMapClick}
+                      interactive={true}
                       autoCenter={!selectedLocation}
                     />
                     <button

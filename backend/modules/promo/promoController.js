@@ -42,6 +42,11 @@ export const validatePromo = async (req, res) => {
       discount = Math.min(promo.value, subtotal);
     }
 
+    // 5. Increment usage (as requested by plan, though usually done at order placement)
+    await supabase.from('promo_codes')
+      .update({ current_usage: (promo.current_usage || 0) + 1 })
+      .eq('id', promo.id);
+    
     res.json({
       valid: true,
       code: promo.code,

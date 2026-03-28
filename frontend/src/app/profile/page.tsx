@@ -61,20 +61,31 @@ export default function UserProfile() {
 
   const { addItem } = useCartStore();
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { toast.error('Photo must be under 5MB'); return; }
+    
     setUploadingPhoto(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      setUserPhoto(base64);
-      localStorage.setItem(`user_photo_${user?.id}`, base64);
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const data = await apiClient('/upload/profile-image', {
+        method: 'POST',
+        data: formData
+      });
+      
+      if (data && data.url && user) {
+        // Update user in auth store and local state
+        setUser({ ...user, image_url: data.url });
+        toast.success('Profile photo updated!');
+      }
+    } catch (err: any) {
+      // apiClient handles toasts
+    } finally {
       setUploadingPhoto(false);
-      toast.success('Profile photo updated!');
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleAddAddress = () => {
@@ -93,6 +104,7 @@ export default function UserProfile() {
   };
 
   const handleOrderAgain = async (order: any) => {
+    if (!window.confirm('Add all items from this order to your current cart?')) return;
     try {
       const data = await apiClient(`/orders/${order.id}`);
       if (!data) return;
@@ -150,8 +162,8 @@ export default function UserProfile() {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-32 h-32 rounded-[2.5rem] border-8 border-slate-50 shadow-inner overflow-hidden bg-slate-100 flex items-center justify-center cursor-pointer relative transition-transform hover:scale-[1.02]"
                 >
-                  {userPhoto ? (
-                    <img src={userPhoto} alt="Profile" className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all" />
+                  {user?.image_url ? (
+                    <img src={user.image_url} alt="Profile" className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all" />
                   ) : (
                     <span className="text-3xl font-bold text-slate-900">{initials}</span>
                   )}

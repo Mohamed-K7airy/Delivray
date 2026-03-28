@@ -14,6 +14,7 @@ interface Store {
   type: string;
   location_lat: number;
   location_lng: number;
+  image_url?: string;
 }
 
 const categories = [
@@ -263,13 +264,14 @@ export default function Home() {
                       <div className="relative h-64 lg:h-72 overflow-hidden">
                         <img 
                           src={
-                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop' :
+                            store.image_url || 
+                            (store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop' :
                             store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop' :
                             store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&auto=format&fit=crop' :
                             store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=800&auto=format&fit=crop' :
                             store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop' :
                             store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop' :
-                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`
+                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`)
                           }
                           className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
                           alt={store.name} 

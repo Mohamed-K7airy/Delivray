@@ -9,6 +9,7 @@ interface User {
   status: 'active' | 'pending' | 'banned';
   email?: string;
   store_id?: string;
+  image_url?: string;
 }
 
 interface AuthState {

@@ -16,7 +16,7 @@ export const apiClient = async (endpoint: string, options: RequestOptions = {}) 
   const logout = state.logout;
   
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };

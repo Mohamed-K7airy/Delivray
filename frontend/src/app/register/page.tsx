@@ -9,6 +9,12 @@ import { apiClient } from '@/lib/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import Logo from '@/components/Logo';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="h-48 w-full bg-slate-50 animate-pulse flex items-center justify-center text-[8px] font-bold uppercase tracking-widest text-slate-300">Syncing Map...</div>
+});
 
 export default function RegisterPage() {
   const [role, setRole] = useState<'customer' | 'merchant' | 'driver'>('customer');
@@ -22,6 +28,7 @@ export default function RegisterPage() {
     store_type: '',
     vehicle_type: '',
   });
+  const [selectedLocation, setSelectedLocation] = useState<[number, number] | null>(null);
   const [loading, setLoading] = useState(false);
   const { setUser, setToken } = useAuthStore();
   const router = useRouter();
@@ -39,7 +46,7 @@ export default function RegisterPage() {
         ...formData,
         role,
         ...(role === 'merchant' && {
-          location: { lat: 0, lng: 0 }
+          location: selectedLocation ? { lat: selectedLocation[0], lng: selectedLocation[1] } : { lat: 0, lng: 0 }
         })
       };
 

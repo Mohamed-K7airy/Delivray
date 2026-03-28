@@ -29,6 +29,12 @@ export const updateUserStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body; // 'active', 'banned', 'pending'
 
+    // Status must be one of: 'active', 'pending', 'banned'
+    const validStatuses = ['active', 'pending', 'banned'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
+    }
+
     const { data: user, error } = await supabase
       .from('users')
       .update({ status, updated_at: new Date().toISOString() })
