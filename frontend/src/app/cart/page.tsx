@@ -32,7 +32,7 @@ const itemVariants: Variants = {
 
 export default function CartPage() {
   const { token, user, _hasHydrated } = useAuthStore();
-  const { items, total, loading, setCart, removeItem, updateItemQuantity, setLoading, addItem } = useCartStore();
+  const { cartId, items, total, loading, setCart, removeItem, updateItemQuantity, setLoading, addItem } = useCartStore();
   const router = useRouter();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -272,7 +272,7 @@ export default function CartPage() {
   const handlePaymentSuccess = (orderId?: string) => {
     const finalId = orderId || currentOrderId;
     setShowStripeModal(false);
-    setCart(finalId, [], 0);
+    setCart(cartId!, [], 0);
     router.push(`/order/${finalId}`);
   };
 
@@ -285,94 +285,122 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-32">
-      <div className="container-responsive py-16 lg:py-24">
-        <header className="mb-12 space-y-4">
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 bg-slate-900 rounded-full animate-pulse" />
-             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Session Active</span>
+    <div className="min-h-screen bg-[#FDFDFD] pb-32">
+      <div className="container-responsive py-12 lg:py-20">
+        
+        {/* Modern Minimal Header */}
+        <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2.5">
+               <div className="w-1.5 h-1.5 bg-slate-900 rounded-full" />
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Secure Session</span>
+            </div>
+            <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
+              Your <span className="text-slate-300">Selection.</span>
+            </h1>
           </div>
-          <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">Logistics <br /><span className="text-slate-300">Queue.</span></h1>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{items.length} Asset{items.length !== 1 ? 's' : ''} staged for deployment</p>
+          <div className="flex items-center gap-4 text-slate-400 border-l border-slate-100 pl-6 h-12">
+            <ShoppingBag size={20} />
+            <p className="text-sm font-bold tracking-tight">{items.length} Product{items.length !== 1 ? 's' : ''} Staged</p>
+          </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
 
           {/* Items Column */}
-          <div className="lg:col-span-7 space-y-8">
+          <div className="lg:col-span-7">
             {items.length === 0 ? (
-              <div className="bg-white rounded-[2.5rem] p-20 flex flex-col items-center text-center border border-slate-100 shadow-sm">
-                <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mb-8 text-slate-200 border border-slate-100 shadow-inner">
-                  <ShoppingBag size={32} />
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-[2.5rem] p-16 lg:p-24 flex flex-col items-center text-center border border-slate-100 shadow-sm"
+              >
+                <div className="w-24 h-24 bg-slate-50 rounded-3xl flex items-center justify-center mb-8 text-slate-200 border border-slate-100 shadow-inner">
+                  <ShoppingBag size={40} />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-3 tracking-tight">Queue is empty.</h2>
-                <p className="text-sm text-slate-400 font-bold uppercase tracking-tight mb-8">Synchronize with marketplace to stage assets.</p>
+                <h2 className="text-3xl font-bold text-slate-900 mb-4 tracking-tight">Your cart is empty.</h2>
+                <p className="text-slate-400 font-medium max-w-xs mx-auto mb-10 leading-relaxed">
+                  Discover amazing products from our verified merchant network.
+                </p>
                 <button
                   onClick={() => router.push('/')}
-                  className="bg-slate-900 text-white px-12 py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-800 transition-all active:scale-95 shadow-lg"
+                  className="bg-slate-900 text-white px-14 py-4 rounded-xl font-bold uppercase tracking-[0.15em] text-[10px] hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-900/10"
                 >
-                  Marketplace Sync
+                  Explore Marketplace
                 </button>
-              </div>
+              </motion.div>
             ) : (
-              <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-                <div className="px-10 py-8 border-b border-slate-50 flex items-center justify-between">
-                  <h2 className="text-base font-bold text-slate-900 uppercase tracking-widest">Asset Registry</h2>
-                  <span className="bg-slate-50 text-slate-900 px-4 py-1.5 rounded-lg text-[10px] font-bold border border-slate-100 shadow-sm">{items.length} Units</span>
+              <div className="space-y-6">
+                <div className="flex items-center justify-between px-6 mb-4">
+                  <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.25em]">Cart Inventory</h2>
+                  <button 
+                    onClick={() => items.forEach(i => handleRemoveItem(i.id))}
+                    className="text-[10px] font-bold text-red-400 uppercase tracking-widest hover:text-red-600 transition-colors"
+                  >
+                    Clear All
+                  </button>
                 </div>
-                <AnimatePresence>
-                  {items.map((item) => (
+                
+                <AnimatePresence mode="popLayout">
+                  {items.map((item, idx) => (
                     <motion.div
                       key={item.id}
                       layout
-                      exit={{ opacity: 0, x: -30, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="flex items-center gap-8 px-10 py-8 border-b border-slate-50 last:border-0 group hover:bg-slate-50/50 transition-colors"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      className="group bg-white rounded-3xl p-6 lg:p-8 flex items-center gap-6 lg:gap-10 border border-slate-100 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all"
                     >
-                      {/* Image */}
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100 shadow-sm">
+                      {/* Scaled Product Image */}
+                      <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-2xl overflow-hidden bg-slate-50 shrink-0 border border-slate-100 relative group/img">
                         <img
-                          src={item.products?.image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=150&h=150&auto=format&fit=crop'}
+                          src={item.products?.image || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop'}
                           alt={item.products.name}
-                          className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
-                          onError={e => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=150&h=150&auto=format&fit=crop'; }}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
+                          onError={e => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=300&h=300&auto=format&fit=crop'; }}
                         />
                       </div>
 
-                      {/* Name & Price */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-2">{item.products.name}</p>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unit Price: ${Number(item.products.price).toFixed(2)} USD</p>
+                      {/* Content Area */}
+                      <div className="flex-1 flex flex-col justify-between py-1 h-full">
+                        <div className="space-y-1">
+                          <h3 className="text-xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">{item.products.name}</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Premium Selection</p>
+                        </div>
+                        
+                        <div className="flex items-center justify-between mt-6 lg:mt-8">
+                          <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100 gap-1">
+                            <button
+                              onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
+                              className="w-9 h-9 flex items-center justify-center hover:bg-white rounded-lg transition-all text-slate-900 shadow-sm hover:shadow"
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <span className="w-10 text-center text-sm font-bold text-slate-900 tabular-nums">{item.quantity}</span>
+                            <button
+                              onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
+                              className="w-9 h-9 flex items-center justify-center bg-white text-slate-900 rounded-lg transition-all shadow-sm hover:shadow"
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-slate-900 tracking-tighter tabular-nums">
+                              ${(Number(item.products.price) * item.quantity).toFixed(2)}
+                            </p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${Number(item.products.price).toFixed(2)} each</p>
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Qty */}
-                      <div className="flex items-center bg-white rounded-xl p-1.5 border border-slate-100 gap-1 shadow-sm">
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
-                          className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-lg transition-all font-bold text-slate-900"
-                        >
-                          <Minus size={16} />
-                        </button>
-                        <span className="w-10 text-center text-sm font-bold text-slate-900 tabular-nums">{item.quantity}</span>
-                        <button
-                          onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
-                          className="w-10 h-10 flex items-center justify-center hover:bg-slate-50 rounded-lg transition-all font-bold text-slate-900"
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
-
-                      {/* Total */}
-                      <div className="w-24 text-right shrink-0">
-                        <p className="text-sm font-bold text-slate-900 tracking-tighter">${(Number(item.products.price) * item.quantity).toFixed(2)}</p>
-                      </div>
-
-                      {/* Remove */}
+                      {/* Remove Button (Float) */}
                       <button
                         onClick={() => handleRemoveItem(item.id)}
-                        className="text-slate-200 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 p-2"
+                        className="absolute top-4 right-4 text-slate-200 hover:text-red-500 transition-colors bg-white group-hover:bg-slate-50 p-2 rounded-xl opacity-0 group-hover:opacity-100"
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={16} />
                       </button>
                     </motion.div>
                   ))}
@@ -381,186 +409,163 @@ export default function CartPage() {
             )}
           </div>
 
-          {/* Summary Sidebar */}
-          <aside className="lg:col-span-5 lg:sticky lg:top-24 space-y-8">
+          {/* Refined Summary Sidebar */}
+          <aside className="lg:col-span-5 lg:sticky lg:top-12 space-y-10">
 
-            {/* Address & Map Picker */}
+            {/* Logistics Configuration (Address/Map) */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-[2.5rem] p-8 lg:p-10 border border-slate-100 shadow-xl overflow-hidden"
             >
-              <div className="p-10 border-b border-slate-50">
-                <div className="flex items-center gap-3 mb-8">
-                   <div className="w-1 h-6 bg-slate-900 rounded-full" />
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Logistics Endpoint</p>
+              <div className="flex items-center gap-3 mb-8">
+                 <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg">
+                    <MapPin size={16} />
+                 </div>
+                 <h3 className="text-lg font-bold text-slate-900 tracking-tight">Logistics Hub</h3>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="relative">
+                  <input
+                    value={address}
+                    onChange={e => setAddress(e.target.value)}
+                    placeholder="Enter delivery address..."
+                    className="w-full h-14 bg-slate-50 px-6 rounded-2xl border border-slate-100 focus:border-slate-900 focus:bg-white outline-none text-sm font-bold text-slate-900 placeholder:text-slate-300 transition-all shadow-inner"
+                  />
                 </div>
-                
-                <div className="space-y-6">
-                  <div className="relative">
-                    <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
-                    <input
-                      value={address}
-                      onChange={e => setAddress(e.target.value)}
-                      placeholder="Coordinates or Address String..."
-                      className="w-full h-16 bg-slate-50 pl-12 pr-4 rounded-2xl border border-transparent focus:border-slate-900 focus:bg-white outline-none text-sm font-bold text-slate-900 placeholder:text-slate-200 transition-all"
-                    />
-                  </div>
 
-                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                     <div className="flex items-center justify-between gap-4">
-                        <div>
-                          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-900">Pinpoint Accuracy</p>
-                          <p className="text-[10px] font-medium text-slate-400 mt-1 uppercase">Coordinate-based geofencing</p>
-                        </div>
-                        <button 
-                          onClick={() => setShowMap(!showMap)}
-                          className="bg-white text-slate-900 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-slate-100 shadow-sm hover:bg-slate-50 transition-all"
-                        >
-                          {showMap ? 'Lock Map' : 'Identify'}
-                        </button>
-                     </div>
-                  </div>
+                <div className="flex items-center gap-4">
+                   <button 
+                     onClick={() => setShowMap(!showMap)}
+                     className={`flex-1 h-12 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all border flex items-center justify-center gap-2 ${showMap ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-200 hover:border-slate-900'}`}
+                   >
+                     {showMap ? <Lock size={14} /> : <Navigation size={14} />}
+                     {showMap ? 'Hide Map Picker' : 'Open Map Selection'}
+                   </button>
                 </div>
               </div>
 
               {showMap && (
-                <div className="h-80 relative">
-                  <MapView 
-                    center={selectedLocation || [30.0444, 31.2357]} 
-                    zoom={15}
-                    markers={selectedLocation ? [{ position: selectedLocation, type: 'selected', label: 'DEPLOYMENT HUB' }] : []}
-                    onMapClick={handleMapClick}
-                    autoCenter={!selectedLocation}
-                  />
-                  <div className="absolute top-6 right-6 z-[500]">
-                     <button
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-8 space-y-4"
+                >
+                  <div className="h-64 rounded-3xl overflow-hidden border border-slate-100 relative shadow-inner">
+                    <MapView 
+                      center={selectedLocation || [30.0444, 31.2357]} 
+                      zoom={15}
+                      markers={selectedLocation ? [{ position: selectedLocation, type: 'selected', label: 'HUB' }] : []}
+                      onMapClick={handleMapClick}
+                      autoCenter={!selectedLocation}
+                    />
+                    <button
                        onClick={handleUseMyLocation}
-                       className="w-12 h-12 bg-white rounded-2xl shadow-xl flex items-center justify-center text-slate-900 hover:bg-slate-50 transition-all border border-slate-100 pointer-events-auto active:scale-95"
-                       title="Identify Origin"
+                       className="absolute top-4 right-4 w-10 h-10 bg-white rounded-xl shadow-xl flex items-center justify-center text-slate-900 hover:bg-slate-50 border border-slate-100 z-[500]"
                      >
-                       <Navigation size={20} />
+                       <Navigation size={16} />
                      </button>
                   </div>
-                  <div className="absolute inset-x-0 bottom-6 flex justify-center z-[500] pointer-events-none">
-                     <p className="bg-slate-900/90 text-white px-6 py-2.5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] backdrop-blur-md shadow-2xl border border-white/10">
-                        {isGeocoding ? 'Analyzing Stream...' : 'Calibrate Position'}
-                     </p>
-                  </div>
-                </div>
-              )}
-              
-              {selectedLocation && (
-                <div className="bg-slate-900 px-10 py-5 flex items-center justify-between">
-                   <div className="flex items-center gap-3">
-                    <ShieldCheck size={18} className="text-white" />
-                    <p className="text-[10px] font-bold text-white uppercase tracking-[0.25em]">Lock Authenticated</p>
-                   </div>
-                   <span className="text-[10px] font-bold text-slate-400 tabular-nums">LAT: {selectedLocation[0].toFixed(4)}</span>
-                </div>
+                  {isGeocoding && <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest text-center animate-pulse">Syncing coordinates...</p>}
+                </motion.div>
               )}
             </motion.div>
 
-            {/* Order Summary */}
+            {/* Financial Protocol */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-xl"
             >
-              <h3 className="text-2xl font-bold text-slate-900 mb-10 tracking-tight">Financial Summary</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-8 tracking-tighter">Summary.</h3>
 
-              <div className="space-y-6 mb-10">
-                <div className="flex justify-between items-center text-slate-400">
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Fulfillment Base</span>
-                  <span className="text-sm font-bold text-slate-900 tabular-nums">${total.toFixed(2)}</span>
+              <div className="space-y-5 mb-10 pb-10 border-b border-slate-50">
+                <div className="flex justify-between items-center px-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Subtotal</span>
+                  <span className="text-base font-bold text-slate-900 tabular-nums">${total.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-400">
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Logistics Fee</span>
-                  <span className="text-sm font-bold text-slate-900 tabular-nums">$3.00</span>
+                <div className="flex justify-between items-center px-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Logistics</span>
+                  <span className="text-base font-bold text-green-600 tabular-nums">$3.00</span>
                 </div>
-                <div className="flex justify-between items-center text-slate-400">
-                  <span className="text-[11px] font-bold uppercase tracking-widest">Service Levy (10%)</span>
-                  <span className="text-sm font-bold text-slate-900 tabular-nums">${(total * 0.1).toFixed(2)}</span>
+                <div className="flex justify-between items-center px-2">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Service Fee</span>
+                  <span className="text-base font-bold text-slate-900 tabular-nums">${(total * 0.1).toFixed(2)}</span>
                 </div>
                 {isPromoApplied && (
-                  <div className="flex justify-between items-center text-slate-900 bg-slate-50 -mx-4 px-4 py-3 rounded-xl border border-slate-100">
-                    <span className="text-[11px] font-bold uppercase tracking-widest">Protocol discount</span>
-                    <span className="text-sm font-bold tabular-nums">-${discount.toFixed(2)}</span>
+                  <div className="flex justify-between items-center bg-blue-50 -mx-6 px-8 py-4 rounded-2xl border border-blue-100">
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-blue-600">Protocol Discount</span>
+                    <span className="text-base font-bold text-blue-600 tabular-nums">-${discount.toFixed(2)}</span>
                   </div>
                 )}
               </div>
 
-              <div className="pt-8 border-t border-slate-100 mb-10">
-                <div className="flex items-baseline justify-between">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Total Terminal</p>
-                  <p className="text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">
-                    ${Math.max(0, (total + 3.00 + (total * 0.1) - discount)).toFixed(2)}
-                  </p>
-                </div>
+              <div className="mb-10 px-2 flex justify-between items-center">
+                <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Total</p>
+                <p className="text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">
+                  ${Math.max(0, (total + 3.00 + (total * 0.1) - discount)).toFixed(2)}
+                </p>
               </div>
 
-              {/* Payment Method Selection */}
-              <div className="space-y-4 mb-8">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Protocol Authorization</p>
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    onClick={() => setPaymentMethod('cash')}
-                    className={`h-16 rounded-2xl flex flex-col items-center justify-center gap-1 border transition-all active:scale-95 ${
-                      paymentMethod === 'cash' 
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xl' 
-                        : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 shadow-sm'
-                    }`}
-                  >
-                    <DollarSign size={18} />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">Liquid</span>
-                  </button>
-                  <button
-                    onClick={() => setPaymentMethod('online')}
-                    className={`h-16 rounded-2xl flex flex-col items-center justify-center gap-1 border transition-all active:scale-95 ${
-                      paymentMethod === 'online' 
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-xl' 
-                        : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 shadow-sm'
-                    }`}
-                  >
-                    <Lock size={18} />
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em]">Registry</span>
-                  </button>
-                </div>
+              {/* Payment Methods - Simplified & Modern */}
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                <button
+                  onClick={() => setPaymentMethod('cash')}
+                  className={`h-16 rounded-2xl flex items-center justify-center gap-3 border transition-all ${
+                    paymentMethod === 'cash' 
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xl ring-4 ring-slate-900/10' 
+                      : 'bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300'
+                  }`}
+                >
+                  <DollarSign size={18} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Liquid</span>
+                </button>
+                <button
+                  onClick={() => setPaymentMethod('online')}
+                  className={`h-16 rounded-2xl flex items-center justify-center gap-3 border transition-all ${
+                    paymentMethod === 'online' 
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xl ring-4 ring-slate-900/10' 
+                      : 'bg-slate-50 text-slate-400 border-slate-100 hover:border-slate-300'
+                  }`}
+                >
+                  <Lock size={18} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Digital</span>
+                </button>
               </div>
 
-              {/* Promo */}
-              <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-4 border border-slate-100 mb-10 focus-within:bg-white focus-within:border-slate-900 transition-all">
-                <Ticket size={18} className="text-slate-300 shrink-0" />
-                <input
-                  placeholder="PROTOCOL CODE"
-                  className="flex-1 bg-transparent border-none outline-none text-xs font-bold text-slate-900 placeholder-slate-200 uppercase tracking-widest"
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value)}
-                />
+              {/* Promo Enhanced */}
+              <div className="flex items-center gap-4 mb-10 group">
+                <div className="flex-1 h-14 bg-slate-50 rounded-2xl border border-slate-100 flex items-center px-6 gap-4 focus-within:border-slate-900 focus-within:bg-white transition-all shadow-inner">
+                   <Ticket size={18} className="text-slate-300" />
+                   <input
+                    placeholder="PROMO CODE"
+                    className="flex-1 bg-transparent border-none outline-none text-[10px] font-bold text-slate-900 placeholder-slate-300 uppercase tracking-widest"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                  />
+                </div>
                 <button
                   onClick={handleApplyPromo}
-                  className="bg-white text-slate-900 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-slate-100 shadow-sm hover:bg-slate-900 hover:text-white transition-all"
+                  className="bg-white text-slate-900 px-8 h-14 rounded-2xl text-[10px] font-bold uppercase tracking-widest border border-slate-200 hover:border-slate-900 transition-all active:scale-95 shadow-sm"
                 >
-                  Sync
+                  Apply
                 </button>
               </div>
 
               <button
                 onClick={handleCheckout}
                 disabled={loading || items.length === 0}
-                className="w-full h-20 bg-slate-900 text-white font-bold uppercase tracking-[0.3em] text-[11px] rounded-[2rem] group shadow-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-5 disabled:opacity-20 active:scale-[0.98] relative overflow-hidden"
+                className="w-full h-20 bg-slate-900 text-white font-bold uppercase tracking-[0.25em] text-xs rounded-3xl hover:bg-slate-800 transition-all flex items-center justify-center gap-4 disabled:opacity-20 active:scale-[0.98] shadow-2xl shadow-slate-900/20"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent skew-x-[-20deg] group-hover:translate-x-full transition-transform duration-1000" />
-                <span className="relative z-10">Initiate Deployment</span>
-                <ChevronRight size={20} className="relative z-10 group-hover:translate-x-2 transition-transform" />
+                <span>Authorize Deployment</span>
+                <ChevronRight size={20} className="text-slate-400" />
               </button>
 
-              <div className="mt-8 flex items-center justify-center gap-3 py-4 border-t border-slate-50">
-                <ShieldCheck size={16} className="text-slate-200" />
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <ShieldCheck size={16} className="text-slate-300" />
                 <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-                  End-to-End Encryption · Verified Logistics
+                  End-to-End Encryption Enabled
                 </p>
               </div>
             </motion.div>

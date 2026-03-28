@@ -28,6 +28,7 @@ interface Store {
   id: string;
   name: string;
   type: string;
+  image?: string;
   location_lat: number;
   location_lng: number;
   products: Product[];
@@ -144,6 +145,104 @@ export default function StorePage() {
     );
   }
 
+  const renderProductCard = (product: Product) => {
+    const qty = getProductQuantity(product.id);
+    const cartItemId = getCartItemId(product.id);
+    const foodImages = [
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop',
+    ];
+    // @ts-ignore
+    const fallbackImg = foodImages[store?.products.indexOf(product) % foodImages.length];
+
+    return (
+      <motion.div
+        variants={itemVariants}
+        key={product.id}
+        transition={{ duration: 0.2 }}
+        className="group relative bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col h-full"
+      >
+        <div className="relative h-64 overflow-hidden bg-slate-50">
+          <img
+            src={product.image || fallbackImg}
+            className="w-full h-full object-cover grayscale-[0.1] group-hover:grayscale-0 transition-transform duration-1000 group-hover:scale-110"
+            alt={product.name}
+            onError={e => { (e.target as HTMLImageElement).src = fallbackImg; }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-40" />
+          
+          {!product.availability && (
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-md flex items-center justify-center">
+              <span className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl">TERMINATED</span>
+            </div>
+          )}
+        </div>
+
+        <div className="p-8 lg:p-10 flex flex-col flex-1 justify-between gap-8">
+          <div className="space-y-3">
+             <div className="flex justify-between items-start gap-4">
+                <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-slate-500 transition-colors">
+                   {product.name}.
+                </h3>
+                <span className="text-xl font-bold text-slate-900 shrink-0 tracking-tighter">
+                   ${Number(product.price).toFixed(2)}
+                </span>
+             </div>
+             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest line-clamp-2 leading-relaxed">
+               {product.description || 'Quality-verified logistics asset prepared for deployment.'}
+             </p>
+          </div>
+
+          <div className="flex items-center justify-end">
+            <div className="relative h-12 w-full flex items-center justify-end">
+              <AnimatePresence mode="wait">
+                {qty > 0 ? (
+                  <motion.div 
+                    key="qty-pill"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex items-center gap-1 bg-slate-900 text-white rounded-xl p-1.5 w-full shadow-xl"
+                  >
+                    <button
+                      onClick={() => handleRemoveFromCart(product.id, cartItemId)}
+                      className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all border border-white/5 active:scale-90"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="flex-1 text-center font-bold text-[10px] uppercase tracking-widest">{qty} Units</span>
+                    <button
+                      onClick={() => handleAddToCart(product)}
+                      className="w-10 h-10 bg-white/10 text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all active:scale-90 border border-white/5"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    key="add-btn"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={() => handleAddToCart(product)}
+                    disabled={!product.availability}
+                    className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-slate-800 hover:-translate-y-1.5 transition-all shadow-xl disabled:opacity-20 disabled:cursor-not-allowed group-hover:rotate-6 active:scale-95"
+                  >
+                    <Plus size={24} />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   if (!store) {
     return (
       <div className="container-responsive py-32 flex flex-col items-center justify-center text-center">
@@ -173,13 +272,15 @@ export default function StorePage() {
             >
               <img
                 src={
-                  store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&auto=format&fit=crop' :
-                  store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop' :
-                  store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&auto=format&fit=crop' :
-                  store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=1200&auto=format&fit=crop' :
-                  store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop' :
-                  store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&auto=format&fit=crop' :
-                  `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=1200&auto=format&fit=crop`
+                  store.image || (
+                    store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&auto=format&fit=crop' :
+                    store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=1200&auto=format&fit=crop' :
+                    store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&auto=format&fit=crop' :
+                    store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=1200&auto=format&fit=crop' :
+                    store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop' :
+                    store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=1200&auto=format&fit=crop' :
+                    `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=1200&auto=format&fit=crop`
+                  )
                 }
                 className="w-full h-full object-cover grayscale-[0.2] transition-all duration-1000 group-hover:scale-110 group-hover:grayscale-0"
                 alt={store.name}
@@ -257,133 +358,60 @@ export default function StorePage() {
           </div>
         </div>
 
-        {/* Product Grid Grouped by Category */}
+        {/* Product Grid Grouped by Category OR All Items */}
         <div className="space-y-32">
-          {categories.filter(c => c !== 'All Items' && (selectedCategory === 'All Items' || selectedCategory === c)).map((catName) => {
-            const categoryProducts = store.products.filter(p => 
-              (p.categories?.name === catName) || 
-              (catName === 'Uncategorized' && !p.category_id)
-            );
-
-            if (categoryProducts.length === 0 && selectedCategory !== 'All Items') return null;
-            if (categoryProducts.length === 0) return null;
-
-            return (
-              <div key={catName} className="space-y-14">
-                <div className="flex items-center gap-8">
-                   <div className="w-1.5 h-10 bg-slate-900 rounded-full" />
-                   <div>
-                    <h3 className="text-3xl font-bold text-slate-900 uppercase tracking-tighter leading-none">{catName}</h3>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Verified Logistics Assets</p>
-                   </div>
-                   <div className="h-px bg-slate-100 flex-1"></div>
-                </div>
-
-                <motion.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="show"
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 xl:gap-14"
-                >
-                  {categoryProducts.map((product) => {
-                    const qty = getProductQuantity(product.id);
-                    const cartItemId = getCartItemId(product.id);
-                    const foodImages = [
-                      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop',
-                      'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&auto=format&fit=crop',
-                      'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&auto=format&fit=crop',
-                      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop',
-                    ];
-                    const fallbackImg = foodImages[store.products.indexOf(product) % foodImages.length];
-                    return (
-                      <motion.div
-                        variants={itemVariants}
-                        key={product.id}
-                        transition={{ duration: 0.2 }}
-                        className="group relative bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col h-full"
-                      >
-                        <div className="relative h-64 overflow-hidden bg-slate-50">
-                          <img
-                            src={product.image || fallbackImg}
-                            className="w-full h-full object-cover grayscale-[0.1] group-hover:grayscale-0 transition-transform duration-1000 group-hover:scale-110"
-                            alt={product.name}
-                            onError={e => { (e.target as HTMLImageElement).src = fallbackImg; }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-40" />
-                          
-                          {!product.availability && (
-                            <div className="absolute inset-0 bg-white/90 backdrop-blur-md flex items-center justify-center">
-                              <span className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl">TERMINATED</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="p-8 lg:p-10 flex flex-col flex-1 justify-between gap-8">
-                          <div className="space-y-3">
-                             <div className="flex justify-between items-start gap-4">
-                                <h3 className="text-2xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-slate-500 transition-colors">
-                                   {product.name}.
-                                </h3>
-                                <span className="text-xl font-bold text-slate-900 shrink-0 tracking-tighter">
-                                   ${Number(product.price).toFixed(2)}
-                                </span>
-                             </div>
-                             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest line-clamp-2 leading-relaxed">
-                               {product.description || 'Quality-verified logistics asset prepared for deployment.'}
-                             </p>
-                          </div>
-
-                          <div className="flex items-center justify-end">
-                            <div className="relative h-12 w-full flex items-center justify-end">
-                              <AnimatePresence mode="wait">
-                                {qty > 0 ? (
-                                  <motion.div 
-                                    key="qty-pill"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="flex items-center gap-1 bg-slate-900 text-white rounded-xl p-1.5 w-full shadow-xl"
-                                  >
-                                    <button
-                                      onClick={() => handleRemoveFromCart(product.id, cartItemId)}
-                                      className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-all border border-white/5 active:scale-90"
-                                    >
-                                      <Minus size={16} />
-                                    </button>
-                                    <span className="flex-1 text-center font-bold text-[10px] uppercase tracking-widest">{qty} Units</span>
-                                    <button
-                                      onClick={() => handleAddToCart(product)}
-                                      className="w-10 h-10 bg-white/10 text-white rounded-lg flex items-center justify-center hover:bg-white/20 transition-all active:scale-90 border border-white/5"
-                                    >
-                                      <Plus size={16} />
-                                    </button>
-                                  </motion.div>
-                                ) : (
-                                  <motion.button
-                                    key="add-btn"
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    transition={{ duration: 0.2 }}
-                                    onClick={() => handleAddToCart(product)}
-                                    disabled={!product.availability}
-                                    className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-slate-800 hover:-translate-y-1.5 transition-all shadow-xl disabled:opacity-20 disabled:cursor-not-allowed group-hover:rotate-6 active:scale-95"
-                                  >
-                                    <Plus size={24} />
-                                  </motion.button>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
+          {selectedCategory === 'All Items' ? (
+            <div className="space-y-14">
+              <div className="flex items-center gap-8">
+                 <div className="w-1.5 h-10 bg-slate-900 rounded-full" />
+                 <div>
+                  <h3 className="text-3xl font-bold text-slate-900 uppercase tracking-tighter leading-none">Catalog Assets</h3>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Full Logistics Inventory</p>
+                 </div>
+                 <div className="h-px bg-slate-100 flex-1"></div>
               </div>
-            );
-          })}
+
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 xl:gap-14"
+              >
+                {store.products.map((product) => renderProductCard(product))}
+              </motion.div>
+            </div>
+          ) : (
+            categories.filter(c => c !== 'All Items' && (selectedCategory === 'All Items' || selectedCategory === c)).map((catName) => {
+              const categoryProducts = store.products.filter(p => 
+                (p.categories?.name === catName) || 
+                (catName === 'Uncategorized' && !p.category_id)
+              );
+
+              if (categoryProducts.length === 0) return null;
+
+              return (
+                <div key={catName} className="space-y-14">
+                  <div className="flex items-center gap-8">
+                     <div className="w-1.5 h-10 bg-slate-900 rounded-full" />
+                     <div>
+                      <h3 className="text-3xl font-bold text-slate-900 uppercase tracking-tighter leading-none">{catName}</h3>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Verified Logistics Assets</p>
+                     </div>
+                     <div className="h-px bg-slate-100 flex-1"></div>
+                  </div>
+
+                  <motion.div
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 xl:gap-14"
+                  >
+                    {categoryProducts.map((product) => renderProductCard(product))}
+                  </motion.div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

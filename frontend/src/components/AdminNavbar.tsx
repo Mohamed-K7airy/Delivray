@@ -88,7 +88,7 @@ export default function AdminNavbar({ isCollapsed = false }: AdminNavbarProps) {
                 {isActive && (
                   <motion.div 
                     layoutId="activeNavAdmin"
-                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-[#0f172a] rounded-full shadow-[0_0_10px_rgba(217,119,87,0.4)]"
+                    className="absolute -bottom-2 left-0 right-0 h-0.5 bg-[#0f172a] rounded-full shadow-[0_0_10px_rgba(15,23,42,0.2)]"
                   />
                 )}
               </Link>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '@/store/cartStore';
 import { Package, Navigation, CheckCircle, Car, Clock, ShieldCheck, ChevronLeft, Star, Phone, MessageCircle, MapPin, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -49,6 +50,7 @@ interface Order {
 export default function OrderTracking() {
   const { id } = useParams();
   const { token, _hasHydrated } = useAuthStore();
+  const { clearCart } = useCartStore();
   const { socket } = useSocket();
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
@@ -103,9 +105,10 @@ export default function OrderTracking() {
       const data = await apiClient(`/orders/${id}/cancel`, {
         method: 'POST',
       });
-
+ 
       if (data) {
         setOrder(data);
+        clearCart(); // Safety clear
         toast.success('Order cancelled successfully');
       }
     } catch (err: any) {

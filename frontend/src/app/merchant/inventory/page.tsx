@@ -86,7 +86,7 @@ export default function MerchantInventory() {
         setNewProduct({ name: '', price: '', description: '', store_id: newProduct.store_id, category: '', image: '' });
         setImageFile(null);
         
-        const productData = await apiClient(`/products?store_id={newProduct.store_id}`);
+        const productData = await apiClient(`/products?store_id=${newProduct.store_id}`);
         if (productData) setProducts(productData);
       }
     } catch (err: any) {

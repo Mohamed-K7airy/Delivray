@@ -104,6 +104,11 @@ export default function MapView({
   // Fetch OSRM route when routingPoints change
   const prevPointsRef = useRef<string>('');
 
+  const onRouteUpdateRef = useRef(onRouteUpdate);
+  useEffect(() => {
+    onRouteUpdateRef.current = onRouteUpdate;
+  }, [onRouteUpdate]);
+
   useEffect(() => {
     if (!routingPoints || routingPoints.length < 2) {
       setRoutingPath(null);
@@ -125,8 +130,8 @@ export default function MapView({
           const path = firstRoute.geometry.coordinates.map((c: any) => [c[1], c[0]]);
           setRoutingPath(path);
           
-          if (onRouteUpdate) {
-             onRouteUpdate({
+          if (onRouteUpdateRef.current) {
+             onRouteUpdateRef.current({
                 distance: firstRoute.distance,
                 duration: firstRoute.duration,
                 steps: firstRoute.legs[0].steps || []
@@ -135,7 +140,7 @@ export default function MapView({
         }
       })
       .catch(err => console.error('OSRM Error:', err));
-  }, [routingPoints, onRouteUpdate]);
+  }, [routingPoints]);
 
   const getIcon = (type?: string) => {
     switch(type) {

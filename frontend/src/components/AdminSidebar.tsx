@@ -31,8 +31,8 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
   const navItems = [
     { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
     { id: 'users', label: 'Users Control', icon: <Users size={20} />, path: '/admin/users' },
-    { id: 'stores', label: 'Store Portals', icon: <ShoppingBag size={20} />, path: '/admin/stores' },
-    { id: 'revenue', label: 'Revenue Flow', icon: <DollarSign size={20} />, path: '/admin/revenue' },
+    { id: 'stores', label: 'Ecosystem Control', icon: <ShoppingBag size={20} />, path: '/admin/stores' },
+    { id: 'revenue', label: 'Fiscal Audit', icon: <DollarSign size={20} />, path: '/admin/revenue' },
     { id: 'logs', label: 'System Logs', icon: <FileText size={20} />, path: '/admin/logs' },
     { id: 'settings', label: 'System Settings', icon: <Settings size={20} />, path: '/admin/settings' },
   ];
