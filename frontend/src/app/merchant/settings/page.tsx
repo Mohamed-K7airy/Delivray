@@ -36,7 +36,7 @@ export default function MerchantSettings() {
       if (imageFile) {
         console.log('[Upload] Starting file upload:', imageFile.name);
         const formData = new FormData();
-        formData.append('file', imageFile);
+        formData.append('image', imageFile); // Unified field name to 'image'
         
         const uploadRes = await fetch(`${API_URL}/upload`, {
           method: 'POST',
