@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
-import { Package, MapPin, CheckCircle, Navigation, LogOut, Filter, Box, Activity, Clock, ChevronRight, Bell, User as UserIcon, LifeBuoy, Camera, CreditCard, RotateCcw, Plus, Trash2, Star } from 'lucide-react';
+import { Package, MapPin, CheckCircle, Navigation, LogOut, Filter, Box, Activity, Clock, ChevronRight, Bell, User as UserIcon, LifeBuoy, Camera, CreditCard, RotateCcw, Plus, Trash2, Star, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '@/store/cartStore';
 import { toast } from 'sonner';
@@ -110,9 +110,10 @@ export default function UserProfile() {
 
   const getStatusStyle = (status: string) => {
     const s = status?.toLowerCase();
-    if (['pending', 'accepted', 'preparing', 'ready_for_pickup'].includes(s)) return 'bg-amber-50 text-amber-600 border-amber-200';
-    if (['delivering', 'picked_up'].includes(s)) return 'bg-[#fef3f2] text-[#d97757] border-[#fee2e2]';
-    return 'bg-gray-50 text-gray-500 border-gray-200';
+    if (['pending', 'accepted', 'preparing', 'ready_for_pickup'].includes(s)) return 'bg-slate-50 text-slate-900 border-slate-200';
+    if (['delivering', 'picked_up'].includes(s)) return 'bg-slate-900 text-white border-slate-900 shadow-sm';
+    if (['completed', 'delivered'].includes(s)) return 'bg-green-50 text-green-700 border-green-100';
+    return 'bg-slate-50 text-slate-400 border-slate-100';
   };
 
   const isActive = (status: string) => {
@@ -121,75 +122,78 @@ export default function UserProfile() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="w-10 h-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   const initials = user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] pb-24">
-      <div className="container-responsive py-10 lg:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="min-h-screen bg-slate-50 pb-32">
+      <div className="container-responsive py-16 lg:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
           {/* Sidebar */}
-          <aside className="lg:col-span-3 space-y-5">
+          <aside className="lg:col-span-3 space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center relative overflow-hidden"
+              transition={{ duration: 0.2 }}
+              className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm text-center relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-[#d97757]/5 rounded-full -mr-10 -mt-10" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-slate-900/5 rounded-full -mr-12 -mt-12" />
 
               {/* Avatar with upload */}
-              <div className="relative inline-block mb-6 group/avatar">
+              <div className="relative inline-block mb-8 group/avatar">
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-24 h-24 rounded-full border-4 border-gray-50 shadow-lg overflow-hidden bg-[#fef3f2] flex items-center justify-center cursor-pointer relative"
+                  className="w-32 h-32 rounded-[2.5rem] border-8 border-slate-50 shadow-inner overflow-hidden bg-slate-100 flex items-center justify-center cursor-pointer relative transition-transform hover:scale-[1.02]"
                 >
                   {userPhoto ? (
-                    <img src={userPhoto} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={userPhoto} alt="Profile" className="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition-all" />
                   ) : (
-                    <span className="text-2xl font-black text-[#d97757]">{initials}</span>
+                    <span className="text-3xl font-bold text-slate-900">{initials}</span>
                   )}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition-opacity rounded-full">
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/avatar:opacity-100 flex items-center justify-center transition-opacity rounded-[2.5rem]">
                     {uploadingPhoto ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Camera size={20} className="text-white" />
+                      <Camera size={24} className="text-white" />
                     )}
                   </div>
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
-                <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-3 border-white rounded-full" />
+                <div className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-white rounded-full shadow-lg" />
               </div>
 
-              <h2 className="text-xl font-black text-[#111111] tracking-tighter mb-1">{user?.name || 'User'}</h2>
-              <p className="text-xs font-bold text-[#888888] mb-4">{user?.phone || ''}</p>
-              <span className="inline-flex items-center bg-[#fef3f2] text-[#d97757] px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-[#fee2e2]">
-                ● Premium Member
-              </span>
+              <h2 className="text-2xl font-bold text-slate-900 tracking-tighter mb-1">{user?.name || 'User'}</h2>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">{user?.phone || 'Auth: Verified'}</p>
+              
+              <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl">
+                <ShieldCheck size={12} />
+                <span>Tier: Enterprise</span>
+              </div>
 
-              <div className="space-y-2 mt-6">
+              <div className="space-y-3 mt-10">
                 {[
-                  { icon: <Package size={16} />, label: 'Orders', tab: 'orders' as const },
-                  { icon: <MapPin size={16} />, label: 'Saved Addresses', tab: 'addresses' as const },
+                  { icon: <Package size={16} />, label: 'Protocol Logs', tab: 'orders' as const },
+                  { icon: <MapPin size={16} />, label: 'Verified Hubs', tab: 'addresses' as const },
                 ].map(item => (
                   <button
                     key={item.label}
                     onClick={() => setActiveTab(item.tab)}
-                    className={`w-full h-12 rounded-xl px-4 flex items-center justify-between transition-all border ${
+                    className={`w-full h-14 rounded-2xl px-5 flex items-center justify-between transition-all border ${
                       activeTab === item.tab
-                        ? 'bg-[#fef3f2] border-[#fee2e2] text-[#d97757]'
-                        : 'bg-[#f9f9f9] border-transparent hover:border-gray-200 text-[#888888] hover:text-[#111111]'
+                        ? 'bg-slate-50 border-slate-200 text-slate-900 shadow-inner'
+                        : 'bg-white border-transparent hover:border-slate-100 text-slate-400 hover:text-slate-900'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       {item.icon}
-                      <span className="text-[11px] font-black uppercase tracking-wider">{item.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
                     </div>
-                    <ChevronRight size={14} />
+                    <ChevronRight size={14} className={activeTab === item.tab ? 'text-slate-900' : 'text-slate-200'} />
                   </button>
                 ))}
               </div>
@@ -197,52 +201,54 @@ export default function UserProfile() {
 
             {/* Help */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-[#111111] rounded-2xl p-6 text-white relative overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.2 }}
+              className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl group"
             >
-              <div className="absolute bottom-0 right-0 opacity-10"><LifeBuoy size={80} /></div>
-              <h4 className="text-base font-black tracking-tighter mb-2 relative z-10">Need help?</h4>
-              <p className="text-[#888888] text-xs font-bold mb-5 relative z-10">24/7 support team available.</p>
-              <button className="h-10 bg-white text-[#111111] rounded-xl px-6 text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-all relative z-10">
-                Contact Support
+              <div className="absolute bottom-0 right-0 opacity-5 scale-150 rotate-12 group-hover:rotate-0 transition-transform duration-700"><LifeBuoy size={120} /></div>
+              <h4 className="text-xl font-bold tracking-tight mb-2 relative z-10 leading-none">Intelligence Hub.</h4>
+              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-8 relative z-10">Real-time system assistance</p>
+              <button className="w-full h-12 bg-white text-slate-900 rounded-xl px-6 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-50 transition-all relative z-10 shadow-lg">
+                Initiate Support
               </button>
             </motion.div>
 
             <button
               onClick={handleLogout}
-              className="w-full h-12 text-red-400 font-black uppercase tracking-widest text-[10px] hover:bg-red-50 transition-all rounded-2xl flex items-center justify-center gap-3"
+              className="w-full h-14 text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-red-50 hover:text-red-500 transition-all rounded-2xl flex items-center justify-center gap-4 border border-transparent hover:border-red-100"
             >
-              <LogOut size={16} /> Sign Out
+              <LogOut size={16} /> Termination sequence
             </button>
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-9 space-y-6">
+          <main className="lg:col-span-9 space-y-10">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-black text-[#d97757] uppercase tracking-[0.3em] mb-1">Your Account</p>
-                <h1 className="text-3xl lg:text-4xl font-black text-[#111111] tracking-tighter">
-                  {activeTab === 'orders' ? 'Recent Orders' : 'Saved Addresses'}
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2">Account Telemetry</p>
+                <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 tracking-tighter">
+                  {activeTab === 'orders' ? 'Protocol History.' : 'Verified Hubs.'}
                 </h1>
               </div>
               {activeTab === 'orders' && (
-                <button className="h-10 bg-white border border-gray-100 rounded-xl px-5 flex items-center gap-3 text-[#111111] hover:bg-gray-50 transition-all shadow-sm text-[10px] font-black uppercase tracking-wider">
-                  <Filter size={14} /> Filter
+                <button className="h-12 bg-white border border-slate-100 rounded-2xl px-6 flex items-center gap-3 text-slate-900 hover:bg-slate-50 transition-all shadow-sm text-[10px] font-bold uppercase tracking-[0.2em]">
+                  <Filter size={14} /> Filter Logic
                 </button>
               )}
             </div>
 
             <AnimatePresence mode="wait">
               {activeTab === 'orders' ? (
-                <motion.div key="orders" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                <motion.div key="orders" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="space-y-6">
                   {orders.length === 0 ? (
-                    <div className="bg-white rounded-2xl p-16 border border-gray-100 text-center">
-                      <Package size={40} className="text-gray-200 mx-auto mb-4" />
-                      <p className="text-sm font-black text-[#888888] uppercase tracking-widest">No orders yet</p>
-                      <button onClick={() => router.push('/')} className="mt-6 h-11 bg-[#d97757] text-white rounded-xl px-8 text-[10px] font-black uppercase tracking-widest hover:bg-[#c2654a] transition-all">
-                        Start Ordering
+                    <div className="bg-white rounded-[2.5rem] p-24 border border-slate-100 text-center shadow-sm">
+                      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-slate-100 shadow-inner">
+                        <Package size={32} className="text-slate-200" />
+                      </div>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Zero staging activity detected</p>
+                      <button onClick={() => router.push('/')} className="mt-10 h-14 bg-slate-900 text-white rounded-2xl px-10 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-xl">
+                        Marketplace Sync
                       </button>
                     </div>
                   ) : orders.map((order, idx) => (
@@ -250,64 +256,62 @@ export default function UserProfile() {
                       key={order.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group"
+                      transition={{ delay: idx * 0.05, duration: 0.2 }}
+                      className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all group overflow-hidden"
                     >
-                      <div className="flex items-center gap-4 p-4 sm:p-5">
-                        {/* Photo from first order item or placeholder */}
-                        <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#fef3f2] shrink-0 flex items-center justify-center">
-                          {order.order_items?.[0]?.products ? (
-                            <span className="text-2xl">🍔</span>
-                          ) : (
-                            <Package size={24} className="text-[#d97757]" />
-                          )}
+                      <div className="flex items-center gap-8 p-8 lg:p-10">
+                        {/* Status Icon or Badge */}
+                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center border border-slate-100 shadow-inner">
+                          <Package size={28} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
                         </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <h3 className="text-sm font-black text-[#111111] tracking-tight truncate">{order.restaurant}</h3>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${getStatusStyle(order.status)}`}>
+                          <div className="flex items-center gap-4 flex-wrap mb-3">
+                            <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate">{order.restaurant}</h3>
+                            <span className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-[0.2em] border shadow-sm ${getStatusStyle(order.status)}`}>
                               {order.status?.replace(/_/g, ' ')}
                             </span>
                           </div>
-                          <p className="text-[10px] font-bold text-[#888888] truncate">
-                            #{order.id.slice(0,8).toUpperCase()} · {order.date}
-                          </p>
-                          <div className="flex items-center gap-4 mt-1">
-                            <span className="text-[10px] font-bold text-[#888888] flex items-center gap-1">
-                              <CreditCard size={10} /> ${Number(order.price).toFixed(2)}
-                            </span>
-                            <span className="text-[10px] font-bold text-[#888888] flex items-center gap-1">
-                              <Clock size={10} /> {order.order_items?.length || 1} item(s)
-                            </span>
+                          <div className="flex items-center gap-8">
+                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest tabular-nums">
+                              ID: {order.id.slice(0,12).toUpperCase()}
+                             </p>
+                             <div className="flex items-center gap-6">
+                              <span className="text-[10px] font-bold text-slate-900 flex items-center gap-2 tabular-nums">
+                                <CreditCard size={12} className="text-slate-300" /> ${Number(order.price).toFixed(2)} USD
+                              </span>
+                              <span className="text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
+                                <Clock size={12} className="text-slate-300" /> {order.date}
+                              </span>
+                            </div>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-3 shrink-0">
                           {isActive(order.status) ? (
                             <button
                               onClick={() => router.push(`/order/${order.id}`)}
-                              className="h-9 px-4 bg-[#d97757] text-white rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-[#c2654a] transition-all"
+                              className="h-14 px-8 bg-slate-900 text-white rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-slate-800 transition-all shadow-xl active:scale-95"
                             >
-                              <Navigation size={12} fill="currentColor" /> Track
+                              <Navigation size={14} fill="currentColor" /> Tracking
                             </button>
                           ) : (
                             <>
                               {order.status === 'completed' && (
                                 <button
                                   onClick={() => setSelectedOrderForReview(order)}
-                                  className="h-9 px-4 bg-[#111111] text-white rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-[#333] transition-all group-hover:scale-105"
+                                  className="h-12 px-6 bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 border border-slate-100 shadow-sm hover:bg-slate-100 transition-all active:scale-95"
                                 >
-                                  <Star size={12} /> Rate
+                                  <Star size={12} className="fill-slate-900" /> Analyze
                                 </button>
                               )}
                               <button
                                 onClick={() => handleOrderAgain(order)}
-                                className="h-9 px-4 bg-[#f9f9f9] hover:bg-[#fef3f2] text-[#111111] hover:text-[#d97757] rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-2 border border-gray-100 hover:border-[#fee2e2] transition-all"
+                                className="h-12 px-6 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 border border-slate-100 shadow-sm transition-all active:scale-95"
                               >
-                                <RotateCcw size={12} /> Order Again
+                                <RotateCcw size={12} /> Sync Base
                               </button>
                             </>
                           )}
@@ -317,55 +321,61 @@ export default function UserProfile() {
                   ))}
                 </motion.div>
               ) : (
-                <motion.div key="addresses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                <motion.div key="addresses" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="space-y-8">
                   {/* Add New */}
-                  <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-                    <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3">Add New Address</p>
-                    <div className="flex gap-3">
+                  <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-10">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-6">Authorize New Endpoint</p>
+                    <div className="flex gap-4">
                       <div className="flex-1 relative">
-                        <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#d97757]" />
+                        <MapPin size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
                         <input
                           value={newAddress}
                           onChange={e => setNewAddress(e.target.value)}
                           onKeyDown={e => e.key === 'Enter' && handleAddAddress()}
-                          placeholder="e.g. 123 Main St, Cairo"
-                          className="w-full h-11 bg-[#f9f9f9] pl-9 pr-4 rounded-xl border border-transparent focus:border-[#d97757] outline-none text-sm font-bold text-[#111111] placeholder:text-gray-300 transition-all"
+                          placeholder="GEOSPATIAL COORDINATES OR ADDRESS STRING..."
+                          className="w-full h-16 bg-slate-50 pl-12 pr-4 rounded-2xl border border-transparent focus:border-slate-900 focus:bg-white outline-none text-xs font-bold text-slate-900 placeholder:text-slate-200 transition-all"
                         />
                       </div>
                       <button
                         onClick={handleAddAddress}
-                        className="h-11 px-5 bg-[#d97757] text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#c2654a] transition-all flex items-center gap-2"
+                        className="h-16 px-10 bg-slate-900 text-white rounded-2xl text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-slate-800 transition-all shadow-xl active:scale-95 flex items-center gap-3"
                       >
-                        <Plus size={14} /> Save
+                        <Plus size={16} /> Authenticate
                       </button>
                     </div>
                   </div>
 
                   {/* Saved List */}
-                  {addresses.length === 0 ? (
-                    <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
-                      <MapPin size={32} className="text-gray-200 mx-auto mb-3" />
-                      <p className="text-xs font-black text-[#888888] uppercase tracking-widest">No saved addresses yet</p>
-                    </div>
-                  ) : addresses.map((addr, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 group"
-                    >
-                      <div className="w-10 h-10 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] shrink-0">
-                        <MapPin size={18} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {addresses.length === 0 ? (
+                      <div className="col-span-full bg-white rounded-[2.5rem] border border-slate-100 p-24 text-center shadow-sm">
+                        <MapPin size={48} className="text-slate-100 mx-auto mb-6" />
+                        <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No authorized hubs detected</p>
                       </div>
-                      <p className="flex-1 text-sm font-bold text-[#111111] truncate">{addr}</p>
-                      <button
-                        onClick={() => handleRemoveAddress(idx)}
-                        className="text-gray-200 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    ) : addresses.map((addr, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-10 flex items-center gap-8 group hover:border-slate-900 transition-all"
                       >
-                        <Trash2 size={16} />
-                      </button>
-                    </motion.div>
-                  ))}
+                        <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-900 border border-slate-100 shadow-inner group-hover:bg-slate-900 group-hover:text-white transition-all">
+                          <MapPin size={24} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Authenticated Hub</p>
+                           <p className="text-base font-bold text-slate-900 truncate tracking-tight">{addr}</p>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveAddress(idx)}
+                          className="w-12 h-12 flex items-center justify-center text-slate-200 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

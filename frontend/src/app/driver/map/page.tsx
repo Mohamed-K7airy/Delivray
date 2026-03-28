@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
-  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Fleet Map...</div>
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-[#888888]">Initializing Fleet Map...</div>
 });
 import { toast } from 'sonner';
 
@@ -99,13 +99,13 @@ export default function DriverMapPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-[#111111] tracking-tighter">Route Map</h1>
+          <h1 className="text-3xl font-bold text-[#111111] tracking-tighter">Route Map</h1>
           <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-0.5">
             {activeOrder ? 'Active delivery in progress' : 'No active delivery'}
           </p>
         </div>
         {activeOrder && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-[#d97757] text-white rounded-xl text-[10px] font-black uppercase tracking-wider">
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#0f172a] text-white rounded-xl text-[10px] font-bold uppercase tracking-wider">
             <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
             Live Tracking Active
           </div>
@@ -129,18 +129,18 @@ export default function DriverMapPage() {
             <div className="absolute bottom-6 left-6 right-6 z-[400] flex gap-4 pointer-events-none">
                 <div className="flex-1 bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-2xl border border-white/50 pointer-events-auto">
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-8 h-8 bg-[#fef3f2] rounded-lg flex items-center justify-center text-[#d97757]">
+                        <div className="w-8 h-8 bg-[#fef3f2] rounded-lg flex items-center justify-center text-[#0f172a]">
                             <Navigation size={14} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Active Route</p>
-                            <p className="text-xs font-black text-[#111111] truncate">{activeOrder.delivery_address}</p>
+                            <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest">Active Route</p>
+                            <p className="text-xs font-bold text-[#111111] truncate">{activeOrder.delivery_address}</p>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <button 
                            onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${activeOrder.delivery_lat},${activeOrder.delivery_lng}`, '_blank')}
-                           className="flex-1 h-10 bg-[#111111] text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-black transition-all"
+                           className="flex-1 h-10 bg-[#111111] text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-black transition-all"
                         >
                             External Maps
                         </button>
@@ -152,7 +152,7 @@ export default function DriverMapPage() {
           {/* Quick info row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Network', value: 'Stable', icon: <Navigation size={14} />, color: '#d97757', bg: '#fef3f2' },
+              { label: 'Network', value: 'Stable', icon: <Navigation size={14} />, color: '#0f172a', bg: '#fef3f2' },
               { label: 'Distance', value: '~1.5 km', icon: <Clock size={14} />, color: '#2563eb', bg: '#eff6ff' },
               { label: 'Earning', value: `$${Number(activeOrder.delivery_fee || 3).toFixed(2)}`, icon: <Package size={14} />, color: '#16a34a', bg: '#f0fdf4' },
               { label: 'Status', value: activeOrder.status.replace('_', ' '), icon: <CheckCircle2 size={14} />, color: '#9333ea', bg: '#f5f3ff' },
@@ -162,7 +162,7 @@ export default function DriverMapPage() {
                   {item.icon}
                 </div>
                 <div>
-                  <p className="text-sm font-black text-[#111111] whitespace-nowrap">{item.value}</p>
+                  <p className="text-sm font-bold text-[#111111] whitespace-nowrap">{item.value}</p>
                   <p className="text-[9px] text-[#888888] font-bold uppercase tracking-wide">{item.label}</p>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export default function DriverMapPage() {
               <MapPin size={48} />
             </div>
           </div>
-          <h3 className="text-xl font-black text-[#111111] tracking-tighter mb-2">GPS Idle.</h3>
+          <h3 className="text-xl font-bold text-[#111111] tracking-tighter mb-2">GPS Idle.</h3>
           <p className="text-xs font-medium text-[#888888] max-w-xs leading-relaxed mb-6">
             Map systems are standby. Accept a delivery task to initialize real-time navigation.
           </p>

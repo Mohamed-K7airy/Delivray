@@ -34,12 +34,14 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Prevent multiple connections for the same session
-    if (socketRef.current?.connected) {
-      return;
+    // 1. Cleanup existing socket if any before creating new one
+    if (socketRef.current) {
+      console.log('[Socket] Cleaning up previous connection before reconnecting...');
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
 
-    // Initialize single socket connection with Auth
+    // 2. Initialize new socket connection with Auth
     const newSocket = io(API_URL, {
       auth: { token },
       withCredentials: true,
@@ -75,12 +77,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => {
-      if (newSocket) {
-        newSocket.disconnect();
+      if (socketRef.current) {
+        console.log('[Socket] Cleaning up connection on unmount/re-run');
+        socketRef.current.disconnect();
         socketRef.current = null;
       }
     };
-  }, [token, user?.id]); // Only reconnect if user ID or token changes
+  }, [token, user?.id]); // Re-run when auth changes
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

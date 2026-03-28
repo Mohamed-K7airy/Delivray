@@ -21,7 +21,7 @@ const createCustomIcon = (color: string) => L.divIcon({
   iconAnchor: [7, 7],
 });
 
-const driverIcon = createCustomIcon('#d97757');
+const driverIcon = createCustomIcon('#0f172a');
 const storeIcon = createCustomIcon('#111111');
 const customerIcon = createCustomIcon('#2563eb');
 
@@ -66,11 +66,11 @@ function ZoomControls() {
     <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
       <button 
         onClick={() => map.zoomIn()}
-        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-bold text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
       >+</button>
       <button 
         onClick={() => map.zoomOut()}
-        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+        className="w-10 h-10 bg-white rounded-xl shadow-md flex items-center justify-center font-bold text-lg border border-gray-100 hover:bg-gray-50 transition-colors"
       >-</button>
     </div>
   );
@@ -102,31 +102,40 @@ export default function MapView({
   const [routingPath, setRoutingPath] = useState<[number, number][] | null>(null);
 
   // Fetch OSRM route when routingPoints change
+  const prevPointsRef = useRef<string>('');
+
   useEffect(() => {
-    if (routingPoints && routingPoints.length >= 2) {
-      const coords = routingPoints.map(p => `${p[1]},${p[0]}`).join(';');
-      fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.routes && data.routes[0]) {
-            const firstRoute = data.routes[0];
-            const path = firstRoute.geometry.coordinates.map((c: any) => [c[1], c[0]]);
-            setRoutingPath(path);
-            
-            if (onRouteUpdate) {
-               onRouteUpdate({
-                  distance: firstRoute.distance,
-                  duration: firstRoute.duration,
-                  steps: firstRoute.legs[0].steps || []
-               });
-            }
-          }
-        })
-        .catch(err => console.error('OSRM Error:', err));
-    } else {
+    if (!routingPoints || routingPoints.length < 2) {
       setRoutingPath(null);
+      prevPointsRef.current = '';
+      return;
     }
-  }, [routingPoints]);
+
+    const currentPointsStr = JSON.stringify(routingPoints);
+    if (currentPointsStr === prevPointsRef.current) return;
+
+    prevPointsRef.current = currentPointsStr;
+    const coords = routingPoints.map(p => `${p[1]},${p[0]}`).join(';');
+    
+    fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson&steps=true`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.routes && data.routes[0]) {
+          const firstRoute = data.routes[0];
+          const path = firstRoute.geometry.coordinates.map((c: any) => [c[1], c[0]]);
+          setRoutingPath(path);
+          
+          if (onRouteUpdate) {
+             onRouteUpdate({
+                distance: firstRoute.distance,
+                duration: firstRoute.duration,
+                steps: firstRoute.legs[0].steps || []
+             });
+          }
+        }
+      })
+      .catch(err => console.error('OSRM Error:', err));
+  }, [routingPoints, onRouteUpdate]);
 
   const getIcon = (type?: string) => {
     switch(type) {
@@ -143,7 +152,7 @@ export default function MapView({
       {!center[0] || !center[1] ? (
         <div className="flex flex-col items-center gap-3 opacity-40">
            <div className="w-10 h-10 rounded-full border-2 border-dashed border-gray-400 animate-spin" />
-           <p className="text-[10px] font-black uppercase tracking-widest">Waiting for GPS Signal</p>
+           <p className="text-[10px] font-bold uppercase tracking-widest">Waiting for GPS Signal</p>
         </div>
       ) : (
         <MapContainer 
@@ -172,7 +181,7 @@ export default function MapView({
                 >
                   {marker.label && (
                      <Popup className="premium-popup">
-                       <div className="p-1 font-black uppercase tracking-widest text-[8px]">{marker.label}</div>
+                       <div className="p-1 font-bold uppercase tracking-widest text-[8px]">{marker.label}</div>
                      </Popup>
                   )}
                 </Marker>
@@ -184,7 +193,7 @@ export default function MapView({
           {routingPath && (
             <Polyline 
               positions={routingPath} 
-              color="#d97757" 
+              color="#0f172a" 
               weight={5} 
               opacity={0.8} 
               className="line-animation"
@@ -195,7 +204,7 @@ export default function MapView({
           {polyline && !routingPath && (
             <Polyline 
               positions={polyline} 
-              color="#d97757" 
+              color="#0f172a" 
               weight={4} 
               opacity={0.4} 
               dashArray="8, 12"
@@ -227,7 +236,7 @@ export default function MapView({
           margin: 12px;
         }
         .leaflet-container {
-          background: #f9f9f9 !important;
+          background: #f8fafc !important;
         }
       `}</style>
     </div>

@@ -29,18 +29,18 @@ class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6">
           <div className="max-w-md w-full bg-white rounded-3xl p-10 border border-gray-100 shadow-2xl text-center">
             <div className="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-red-500">
               <AlertTriangle size={40} />
             </div>
-            <h2 className="text-2xl font-black text-[#111111] tracking-tighter mb-4">Something went wrong</h2>
+            <h2 className="text-2xl font-bold text-[#111111] tracking-tighter mb-4">Something went wrong</h2>
             <p className="text-sm font-bold text-[#888888] mb-8 leading-relaxed">
               An unexpected error occurred in the application. Our team has been notified.
             </p>
             <Button 
               variant="primary" 
-              className="w-full h-14 uppercase tracking-widest text-[10px] font-black gap-3"
+              className="w-full h-14 uppercase tracking-widest text-[10px] font-bold gap-3"
               onClick={() => window.location.reload()}
             >
               <RotateCcw size={16} />

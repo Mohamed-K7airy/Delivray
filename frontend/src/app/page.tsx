@@ -17,7 +17,7 @@ interface Store {
 }
 
 const categories = [
-  { name: 'All Offers', icon: <Zap size={14} />, color: 'bg-[#d97757]' },
+  { name: 'All Offers', icon: <Zap size={14} />, color: 'bg-[#0f172a]' },
   { name: 'Restaurant', icon: <Utensils size={14} />, color: 'bg-white' },
   { name: 'Grocery', icon: <ShoppingCart size={14} />, color: 'bg-white' },
   { name: 'Bakery', icon: <Croissant size={14} />, color: 'bg-white' },
@@ -63,55 +63,56 @@ export default function Home() {
 
   if (!_hasHydrated) {
     return (
-      <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#0f172a] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!token) {
     return (
-      <div className="bg-white min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-hidden">
-        <div className="container-responsive py-12 lg:py-24">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
+      <div className="bg-white min-h-[calc(100vh-80px)] flex flex-col justify-center overflow-x-hidden">
+        <div className="container-responsive py-16 lg:py-32">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-20 lg:gap-12">
             {/* Left Content */}
-            <div className="w-full lg:w-1/2 space-y-10 text-center lg:text-left">
+            <div className="w-full lg:w-1/2 space-y-12 text-center lg:text-left">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 bg-[#fef3f2] px-4 py-2 rounded-full border border-[#fee2e2]"
+                transition={{ duration: 0.2 }}
+                className="inline-flex items-center gap-3 bg-slate-50 px-5 py-2.5 rounded-full border border-slate-100 shadow-sm"
               >
-                <Zap size={14} className="text-[#d97757]" fill="currentColor" />
-                <span className="text-[10px] sm:text-[11px] font-black text-[#d97757] uppercase tracking-widest">Lightning Fast Delivery</span>
+                <Zap size={14} className="text-slate-900" fill="currentColor" />
+                <span className="text-[10px] sm:text-[11px] font-bold text-slate-900 uppercase tracking-[0.2em]">Operational Excellence</span>
               </motion.div>
 
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-[3.5rem] sm:text-[5.5rem] lg:text-[7.5rem] font-black tracking-tight leading-[0.9] text-[#111111]"
+                transition={{ duration: 0.2, delay: 0.05 }}
+                className="text-[4rem] sm:text-[6.5rem] lg:text-[8.5rem] font-bold tracking-tight leading-[0.85] text-slate-900"
               >
-                Craving <span className="text-[#d97757]">it.</span> <br />
-                We deliver <span className="text-[#d97757]">it.</span>
+                Gourmet <br />
+                Logistics.
               </motion.h1>
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="max-w-xl mx-auto lg:mx-0 relative"
+                transition={{ duration: 0.2, delay: 0.1 }}
+                className="max-w-xl mx-auto lg:mx-0"
               >
-                <div className="bg-white rounded-2xl p-3 shadow-md border border-gray-100 flex flex-col sm:flex-row items-center gap-3">
-                  <div className="flex-1 flex items-center w-full group">
-                    <MapPin className="ml-4 text-gray-400 group-focus-within:text-[#d97757] transition-colors" size={20} />
+                <div className="bg-white rounded-2xl p-4 shadow-xl border border-slate-100 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex-1 flex items-center w-full group text-left px-2">
+                    <MapPin className="text-slate-300 group-focus-within:text-slate-900 transition-colors" size={20} />
                     <input
                       type="text"
-                      placeholder="Enter delivery address..."
-                      className="w-full px-4 py-4 md:py-5 outline-none text-sm md:text-base font-bold text-[#111111] placeholder-gray-300 bg-transparent focus:ring-0"
+                      placeholder="Specify logistics endpoint..."
+                      className="w-full px-4 py-5 outline-none text-base font-bold text-slate-900 placeholder-slate-200 bg-transparent"
                     />
                   </div>
-                  <button className="w-full sm:w-auto bg-[#d97757] text-white px-10 py-5 rounded-xl font-bold text-sm uppercase tracking-wider shadow-md hover:bg-[#c2654a] transition-all flex items-center justify-center gap-2">
-                    Order Now <ChevronRight size={18} />
+                  <button className="w-full sm:w-auto bg-slate-900 text-white px-12 py-5 rounded-xl font-bold text-xs uppercase tracking-[0.2em] shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-3 group active:scale-[0.98]">
+                    Initiate <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </motion.div>
@@ -119,74 +120,76 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="flex flex-wrap items-center justify-center lg:justify-start gap-12 pt-8"
+                transition={{ duration: 0.2, delay: 0.2 }}
+                className="flex flex-wrap items-center justify-center lg:justify-start gap-16 pt-12"
               >
-                <div className="text-left border-l-4 border-[#fef3f2] pl-6">
-                  <p className="text-3xl font-black text-[#111111]">15k+</p>
-                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-1">Active Riders</p>
+                <div className="text-left">
+                  <p className="text-4xl font-bold text-slate-900 tracking-tighter">24/7</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2">Network Availability</p>
                 </div>
-                <div className="text-left border-l-4 border-[#fef3f2] pl-6">
-                  <p className="text-3xl font-black text-[#111111]">4.9/5</p>
-                  <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-1">User Rating</p>
+                <div className="text-left">
+                  <p className="text-4xl font-bold text-slate-900 tracking-tighter">99.9%</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2">Fulfillment Rate</p>
                 </div>
               </motion.div>
             </div>
 
             {/* Right Media */}
-            <div className="w-full lg:w-[45%] relative">
+            <div className="w-full lg:w-[48%] relative">
                <motion.div
-                 initial={{ opacity: 0, scale: 0.9 }}
+                 initial={{ opacity: 0, scale: 0.98 }}
                  animate={{ opacity: 1, scale: 1 }}
-                 transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
-                 className="relative aspect-[4/5] sm:aspect-square"
+                 transition={{ duration: 0.8 }}
+                 className="relative aspect-square"
                >
-                  <div className="w-full h-full rounded-2xl sm:rounded-[4rem] overflow-hidden rotate-[-2deg] shadow-xl border border-gray-100">
+                  <div className="w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border border-slate-100">
                      <img 
                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=3000&auto=format&fit=crop" 
                        className="w-full h-full object-cover" 
-                       alt="Gourmet Burger"
+                       alt="Gourmet Logistics"
                      />
+                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent" />
                   </div>
 
-                  {/* Badge: Courier */}
+                  {/* Courier Badge */}
                   <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                    className="absolute -top-8 -right-4 sm:-right-8 bg-white p-3 sm:p-5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-4 z-20"
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                    className="absolute -top-10 -right-4 bg-white p-6 rounded-[2rem] shadow-2xl border border-slate-100 flex items-center gap-5 z-20 min-w-[240px]"
                   >
-                     <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 border-[#d97757]/20 shadow-sm">
-                        <img src="https://i.pravatar.cc/150?img=12" className="w-full h-full object-cover" alt="Courier" />
+                     <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-50 shadow-sm">
+                        <img src="https://i.pravatar.cc/150?img=12" className="w-full h-full object-cover" alt="Logistics Partner" />
                      </div>
-                     <div className="text-left pr-4">
-                        <p className="text-sm font-black text-[#111111] tracking-tight">Marco R.</p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                           <Star size={10} className="text-[#FFDA3C] fill-[#FFDA3C]" />
-                           <span className="text-[10px] font-bold text-[#888888]">5.0 Courier</span>
+                     <div className="text-left">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Fleet Partner</p>
+                        <p className="text-lg font-bold text-slate-900 tracking-tight leading-none">Marcus Verity</p>
+                        <div className="flex items-center gap-1.5 mt-2 bg-slate-50 px-2 py-1 rounded w-fit">
+                           <Star size={10} className="text-slate-900 fill-slate-900" />
+                           <span className="text-[9px] font-bold text-slate-900">VERIFIED LOGISTICS</span>
                         </div>
                      </div>
                   </motion.div>
 
-                  {/* Badge: Delivery Status */}
+                  {/* Status Card */}
                   <motion.div
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                    className="absolute -bottom-10 sm:-bottom-12 -left-4 sm:-left-12 bg-white p-6 sm:p-10 rounded-2xl shadow-xl border border-gray-100 w-[85%] sm:w-[320px] z-20 text-left"
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ repeat: Infinity, duration: 8, ease: "easeInOut", delay: 1 }}
+                    className="absolute -bottom-12 -left-8 bg-white/95 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 w-[90%] sm:w-[360px] z-20 text-left"
                   >
-                     <div className="flex justify-between items-start mb-6">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] border border-[#fee2e2] shadow-inner">
-                            <Zap size={24} />
+                     <div className="flex justify-between items-start mb-8">
+                        <div className="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                            <Zap size={28} />
                         </div>
-                        <span className="bg-[#fef3f2] text-[#d97757] px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest border border-[#fee2e2]">In Transit</span>
+                        <span className="bg-slate-50 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-slate-100 shadow-sm">Flow Status: Active</span>
                      </div>
-                     <h4 className="text-lg sm:text-2xl font-black text-[#111111] tracking-tight leading-none">Your order is arriving</h4>
-                     <p className="text-[10px] sm:text-xs font-bold text-[#888888] mt-2">Estimated arrival in <span className="text-[#111111]">12 mins</span></p>
+                     <h4 className="text-3xl font-bold text-slate-900 tracking-tight leading-none mb-3">Intercepting Request.</h4>
+                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Estimated arrival in <span className="text-slate-900">12 minutes</span> from dispatch.</p>
                      
-                     <div className="mt-8 flex gap-1.5 h-1.5">
-                        <div className="flex-1 bg-[#d97757] rounded-full shadow-[0_0_8px_rgba(217,119,87,0.4)]"></div>
-                        <div className="flex-1 bg-[#d97757] rounded-full"></div>
-                        <div className="flex-1 bg-[#d97757] rounded-full opacity-40"></div>
-                        <div className="flex-1 bg-gray-100 rounded-full"></div>
+                     <div className="mt-10 flex gap-2 h-1.5">
+                        <div className="flex-[2] bg-slate-900 rounded-full shadow-[0_0_12px_rgba(15,23,42,0.3)]"></div>
+                        <div className="flex-1 bg-slate-200 rounded-full"></div>
+                        <div className="flex-1 bg-slate-100 rounded-full"></div>
+                        <div className="flex-1 bg-slate-50 rounded-full border border-slate-100"></div>
                      </div>
                   </motion.div>
                </motion.div>
@@ -199,27 +202,31 @@ export default function Home() {
 
   // Logged In Home
   return (
-    <div className="bg-[#f9f9f9] min-h-screen">
-      <div className="container-responsive py-12 lg:py-20 space-y-12">
+    <div className="bg-slate-50 min-h-screen">
+      <div className="container-responsive py-16 lg:py-24 space-y-16">
         {/* Header */}
-        <div className="space-y-4">
-          <h2 className="text-5xl lg:text-6xl font-black text-[#111111] tracking-tight">What's on the <span className="text-[#d97757]">menu?</span></h2>
-          <p className="text-[#555555] font-medium max-w-xl text-lg lg:text-xl">Discover the best local restaurants and groceries delivered straight to your doorstep.</p>
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+             <div className="w-2 h-2 bg-slate-900 rounded-full animate-pulse" />
+             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Network Online</span>
+          </div>
+          <h2 className="text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-[0.9]">Select Your <br /> <span className="text-slate-300">Operational Hub.</span></h2>
+          <p className="text-slate-400 font-medium max-w-2xl text-lg lg:text-xl uppercase tracking-tighter">Real-time marketplace sync. Quality-verified logistics partners available now.</p>
         </div>
 
         {/* Categories */}
-        <div className="flex overflow-x-auto no-scrollbar gap-2 pb-2">
+        <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4">
           {categories.map((cat) => (
             <button
               key={cat.name}
               onClick={() => setFilterType(cat.name)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full font-black text-[10px] uppercase tracking-wider whitespace-nowrap transition-all border shrink-0 ${
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-[0.2em] whitespace-nowrap transition-all border shrink-0 active:scale-95 ${
                 filterType === cat.name 
-                  ? 'bg-[#d97757] text-white border-[#d97757] shadow-sm' 
-                  : 'bg-white text-[#888888] border-gray-200 hover:border-gray-300'
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xl' 
+                  : 'bg-white text-slate-400 border-slate-100 hover:border-slate-300 shadow-sm'
               }`}
             >
-              <span className={filterType === cat.name ? 'text-white' : 'text-[#d97757]'}>{cat.icon}</span>
+              <span className={filterType === cat.name ? 'text-white' : 'text-slate-900'}>{cat.icon}</span>
               {cat.name}
             </button>
           ))}
@@ -233,10 +240,11 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              transition={{ duration: 0.2 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14"
             >
               {[1,2,3,4,5,6].map(i => (
-                <div key={i} className="bg-white rounded-[2.5rem] h-[450px] animate-pulse border border-gray-100" />
+                <div key={i} className="bg-white rounded-[2.5rem] h-[520px] animate-pulse border border-slate-100" />
               ))}
             </motion.div>
           ) : (
@@ -245,53 +253,80 @@ export default function Home() {
               variants={containerVariants}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14 xl:gap-16"
             >
               {stores.map((store) => (
-                <motion.div key={store.id} variants={itemVariants}>
-                  <Link href={`/store/${store.id}`} className="group block">
-                    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm group-hover:shadow-md transition-all duration-300">
-                      {/* Image */}
-                      <div className="relative h-40 overflow-hidden">
+                <motion.div key={store.id} variants={itemVariants} transition={{ duration: 0.2 }}>
+                  <Link href={`/store/${store.id}`} className="group block h-full">
+                    <div className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm group-hover:shadow-2xl group-hover:-translate-y-2 transition-all duration-300 h-full flex flex-col relative">
+                      {/* Image Frame */}
+                      <div className="relative h-64 lg:h-72 overflow-hidden">
                         <img 
                           src={
-                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop' :
-                            store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&auto=format&fit=crop' :
-                            store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop' :
-                            store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=600&auto=format&fit=crop' :
-                            store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop' :
-                            store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop' :
-                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=600&auto=format&fit=crop`
+                            store.name === 'FreshMart' ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&auto=format&fit=crop' :
+                            store.name === 'Daily Bread' ? 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&auto=format&fit=crop' :
+                            store.name === 'Sweet Tooth' ? 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=800&auto=format&fit=crop' :
+                            store.name === 'Bean & Brew' ? 'https://images.unsplash.com/photo-1501339818198-5ac8388f63ac?w=800&auto=format&fit=crop' :
+                            store.name === 'La Bella Italia' ? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop' :
+                            store.name === 'Sushi Zen' ? 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=800&auto=format&fit=crop' :
+                            `https://images.unsplash.com/photo-${store.type === 'Restaurant' ? '1504674900247-0877df9cc836' : '1542831371-29b0f74f9713'}?w=800&auto=format&fit=crop`
                           }
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                          className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" 
                           alt={store.name} 
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                        {/* Rating */}
-                        <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm">
-                          <Star size={11} className="text-[#d97757] fill-[#d97757]" />
-                          <span className="text-[11px] font-black text-[#111111]">4.8</span>
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60" />
+                        
+                        {/* Status Badges */}
+                        <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-xl border border-slate-100">
+                          <Star size={12} className="text-slate-900 fill-slate-900" />
+                          <span className="text-[12px] font-bold text-slate-900 tabular-nums tracking-tighter">4.8</span>
                         </div>
-                        {/* Type badge */}
-                        <div className="absolute bottom-3 left-3">
-                          <span className="bg-white/90 backdrop-blur-md text-[#d97757] px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">{store.type}</span>
+
+                        <div className="absolute bottom-6 left-6 flex gap-2">
+                          <span className="bg-white/95 backdrop-blur-md text-slate-900 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] shadow-xl border border-slate-100">
+                            {store.type}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Info Row */}
-                      <div className="px-4 py-3 flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-sm font-black text-[#111111] tracking-tight group-hover:text-[#d97757] transition-colors line-clamp-1">{store.name}</h3>
-                          <div className="flex items-center gap-3 mt-0.5">
-                            <span className="flex items-center gap-1 text-[#888888] font-bold text-[10px]">
-                              <Clock size={10} className="text-[#d97757]" /> 20-30 min
-                            </span>
-                            <span className="text-gray-200">·</span>
-                            <span className="text-[10px] font-bold text-[#888888]">$2.99 delivery</span>
+                      {/* Content Area */}
+                      <div className="p-8 lg:p-10 flex flex-col flex-1 justify-between gap-10">
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-start gap-4">
+                            <h3 className="text-3xl font-bold text-slate-900 tracking-tighter leading-none">
+                              {store.name}.
+                            </h3>
+                            <div className="w-12 h-12 bg-slate-50 group-hover:bg-slate-900 rounded-2xl flex items-center justify-center transition-all shrink-0 -mt-2 group-hover:rotate-12 shadow-sm">
+                              <ChevronRight size={20} className="text-slate-300 group-hover:text-white transition-colors" />
+                            </div>
                           </div>
+                          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                            Verified quality selection from <span className="text-slate-900">{store.name}</span> terminal.
+                          </p>
                         </div>
-                        <div className="w-8 h-8 bg-gray-50 group-hover:bg-[#d97757] rounded-full flex items-center justify-center transition-all shrink-0 ml-3">
-                          <ChevronRight size={14} className="text-gray-400 group-hover:text-white transition-colors" />
+
+                        {/* Metadata Footer */}
+                        <div className="pt-8 border-t border-slate-50 flex items-center justify-between">
+                          <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-900 border border-slate-100">
+                                  <Clock size={14} />
+                               </div>
+                               <div>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Lead Time</p>
+                                  <p className="text-[11px] font-bold text-slate-900 uppercase">20-30 MIN</p>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-900 border border-slate-100">
+                                  <MapPin size={14} />
+                               </div>
+                               <div>
+                                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Base Fee</p>
+                                  <p className="text-[11px] font-bold text-slate-900 uppercase">$2.99 USD</p>
+                               </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

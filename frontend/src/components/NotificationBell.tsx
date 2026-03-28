@@ -48,11 +48,11 @@ export default function NotificationBell() {
     <div className="relative">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="text-gray-400 hover:text-[#d97757] transition-all relative p-2 rounded-xl hover:bg-gray-50"
+        className="text-slate-400 hover:text-slate-900 transition-all relative p-2 rounded-xl hover:bg-slate-50"
       >
         <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 w-4 h-4 bg-[#d97757] text-white text-[8px] font-black flex items-center justify-center rounded-full border-2 border-white animate-bounce">
+          <span className="absolute top-1 right-1 w-4 h-4 bg-slate-900 text-white text-[8px] font-bold flex items-center justify-center rounded-full border-2 border-white">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -66,42 +66,42 @@ export default function NotificationBell() {
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 15, scale: 0.95 }}
-              className="absolute right-0 mt-4 w-80 bg-white border border-gray-100 rounded-2xl shadow-2xl z-50 overflow-hidden"
+              className="absolute right-0 mt-4 w-80 bg-white border border-slate-100 rounded-2xl shadow-2xl z-50 overflow-hidden"
             >
-              <div className="p-5 border-b border-gray-50 flex items-center justify-between bg-white sticky top-0">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#111111]">Notifications</h3>
-                <span className="text-[9px] font-black text-[#888888] uppercase tracking-widest">{unreadCount} New</span>
+              <div className="p-5 border-b border-slate-50 flex items-center justify-between bg-white sticky top-0">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-900">Notifications</h3>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{unreadCount} New</span>
               </div>
 
               <div className="max-h-96 overflow-y-auto custom-scrollbar">
                 {notifications.length === 0 ? (
                   <div className="p-12 text-center">
-                    <Bell size={32} className="mx-auto text-gray-100 mb-4" />
-                    <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest leading-loose">No Alerts Found</p>
+                    <Bell size={32} className="mx-auto text-slate-100 mb-4" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-loose">No Alerts Found</p>
                   </div>
                 ) : (
                   notifications.map((n) => (
                     <div 
                       key={n.id}
                       onClick={() => !n.is_read && markAsRead(n.id)}
-                      className={`p-5 border-b border-gray-50 transition-all cursor-pointer hover:bg-[#f9f9f9] relative group ${!n.is_read ? 'bg-[#fef3f2]/30' : ''}`}
+                      className={`p-5 border-b border-slate-50 transition-all cursor-pointer hover:bg-slate-50 relative group ${!n.is_read ? 'bg-slate-50/50' : ''}`}
                     >
                       {!n.is_read && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#d97757]" />
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-900" />
                       )}
                       <div className="flex gap-4">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${!n.is_read ? 'bg-[#d97757] text-white' : 'bg-gray-100 text-[#888888]'}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${!n.is_read ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-400'}`}>
                           {n.type === 'order_update' ? <Clock size={14} /> : <Bell size={14} />}
                         </div>
                         <div className="space-y-1">
-                          <p className={`text-[11px] font-black uppercase tracking-tight ${!n.is_read ? 'text-[#111111]' : 'text-[#888888]'}`}>{n.title}</p>
-                          <p className="text-[10px] font-medium text-[#888888] leading-relaxed">{n.body}</p>
-                          <p className="text-[8px] font-bold text-[#bbbbbb] uppercase mt-2">{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                          <p className={`text-[11px] font-bold uppercase tracking-tight ${!n.is_read ? 'text-slate-900' : 'text-slate-400'}`}>{n.title}</p>
+                          <p className="text-[10px] font-medium text-slate-400 leading-relaxed">{n.body}</p>
+                          <p className="text-[8px] font-bold text-slate-200 uppercase mt-2">{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                         </div>
                       </div>
                       {!n.is_read && (
                         <div className="absolute top-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Check size={12} className="text-[#888888]" />
+                            <Check size={12} className="text-slate-400" />
                         </div>
                       )}
                     </div>
@@ -110,8 +110,8 @@ export default function NotificationBell() {
               </div>
 
               {notifications.length > 0 && (
-                <div className="p-4 bg-gray-50 text-center">
-                   <button className="text-[9px] font-black uppercase tracking-widest text-[#d97757] hover:underline">View All Activity</button>
+                <div className="p-4 bg-slate-50 text-center">
+                   <button className="text-[9px] font-bold uppercase tracking-widest text-slate-900 hover:underline">View All Activity</button>
                 </div>
               )}
             </motion.div>

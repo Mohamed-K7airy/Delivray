@@ -33,14 +33,14 @@ export default function EarningsPage() {
     <div className="space-y-6 pb-24">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-[#111111] tracking-tighter">Earnings</h1>
+        <h1 className="text-3xl font-bold text-[#111111] tracking-tighter">Earnings</h1>
         <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mt-0.5">Your delivery payout history</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Total Earned', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={18} />, accent: '#d97757', bg: '#fef3f2', desc: 'All-time delivery fees' },
+          { label: 'Total Earned', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={18} />, accent: '#0f172a', bg: '#fef3f2', desc: 'All-time delivery fees' },
           { label: 'Deliveries', value: stats.deliveries, icon: <Package size={18} />, accent: '#2563eb', bg: '#eff6ff', desc: 'Completed trips' },
           { label: 'Per Delivery', value: `$${stats.delivery_fee.toFixed(2)}`, icon: <DollarSign size={18} />, accent: '#16a34a', bg: '#f0fdf4', desc: 'Fixed delivery fee' },
         ].map((s, i) => (
@@ -51,9 +51,9 @@ export default function EarningsPage() {
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: s.bg, color: s.accent }}>
                 {s.icon}
               </div>
-              <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest leading-tight">{s.label}</p>
+              <p className="text-[9px] font-bold text-[#888888] uppercase tracking-widest leading-tight">{s.label}</p>
             </div>
-            <p className="text-3xl font-black text-[#111111] tracking-tighter">{s.value}</p>
+            <p className="text-3xl font-bold text-[#111111] tracking-tighter">{s.value}</p>
             <p className="text-[10px] text-[#888888] mt-1 font-medium">{s.desc}</p>
           </motion.div>
         ))}
@@ -63,14 +63,14 @@ export default function EarningsPage() {
       <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs font-black text-[#111111] tracking-tight">Weekly Goal</p>
+            <p className="text-xs font-bold text-[#111111] tracking-tight">Weekly Goal</p>
             <p className="text-[10px] text-[#888888] font-medium">{stats.deliveries} of {weeklyGoal} deliveries</p>
           </div>
-          <span className="text-[10px] font-black text-[#d97757] uppercase tracking-wider">{Math.round(progress)}%</span>
+          <span className="text-[10px] font-bold text-[#0f172a] uppercase tracking-wider">{Math.round(progress)}%</span>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="h-full bg-[#d97757] rounded-full"
+            className="h-full bg-[#0f172a] rounded-full"
           />
         </div>
         <p className="text-[10px] text-[#888888] font-medium mt-2">
@@ -84,9 +84,9 @@ export default function EarningsPage() {
           <TrendingUp size={18} />
         </div>
         <div>
-          <p className="text-xs font-black text-[#111111] mb-1">How Your Pay Works</p>
+          <p className="text-xs font-bold text-[#111111] mb-1">How Your Pay Works</p>
           <p className="text-[11px] text-[#555555] font-medium leading-relaxed">
-            You earn a <strong className="text-[#d97757]">${stats.delivery_fee.toFixed(2)} delivery fee</strong> per completed delivery.
+            You earn a <strong className="text-[#0f172a]">${stats.delivery_fee.toFixed(2)} delivery fee</strong> per completed delivery.
             The product subtotal (order value) goes directly to the merchant.
             Simple, transparent, fair.
           </p>
@@ -97,10 +97,10 @@ export default function EarningsPage() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
           <div>
-            <p className="text-sm font-black text-[#111111] tracking-tight">Delivery History</p>
+            <p className="text-sm font-bold text-[#111111] tracking-tight">Delivery History</p>
             <p className="text-[10px] text-[#888888] font-medium">{history.length} completed trips</p>
           </div>
-          <div className="flex items-center gap-2 text-[10px] font-black text-[#888888] uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-[10px] font-bold text-[#888888] uppercase tracking-wider">
             <Calendar size={14} /> All Time
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function EarningsPage() {
         ) : history.length === 0 ? (
           <div className="py-20 text-center">
             <Package size={40} className="mx-auto text-gray-200 mb-4" />
-            <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">No completed deliveries yet</p>
+            <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest">No completed deliveries yet</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-50">
@@ -123,18 +123,18 @@ export default function EarningsPage() {
                 className="px-6 py-4 flex items-center justify-between hover:bg-[#fafafa] transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-[#fef3f2] text-[#d97757] flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-[#fef3f2] text-[#0f172a] flex items-center justify-center">
                     <Package size={16} />
                   </div>
                   <div>
-                    <p className="text-xs font-black text-[#111111]">#{order.id.slice(0, 8).toUpperCase()}</p>
+                    <p className="text-xs font-bold text-[#111111]">#{order.id.slice(0, 8).toUpperCase()}</p>
                     <p className="text-[10px] text-[#888888] font-medium">
                       {order.stores?.name || 'Delivery'} · {new Date(order.updated_at || order.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-black text-green-600">+${stats.delivery_fee.toFixed(2)}</p>
+                  <p className="text-sm font-bold text-green-600">+${stats.delivery_fee.toFixed(2)}</p>
                   <p className="text-[9px] text-[#888888] font-bold uppercase tracking-wide">Delivery Fee</p>
                 </div>
               </motion.div>

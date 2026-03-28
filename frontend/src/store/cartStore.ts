@@ -39,10 +39,17 @@ export const useCartStore = create<CartState>((set) => ({
   addItem: (newItem) => set((state) => {
     const existing = state.items.find((i) => i.product_id === newItem.product_id);
     if (existing) {
-      const updatedQty = existing.quantity + newItem.quantity;
+      // If we already have the item, we use the quantity as the NEW total or INCREMENT?
+      // Based on audit, the system might pass the new TOTAL quantity.
+      // To be safe, we check if the quantity is unusually large or if we should always use diff.
+      // Actually, standardizing on REPLACE if found or INCREMENT?
+      // The audit says: (newItem.quantity - existing.quantity) * price.
+      const diff = newItem.quantity - existing.quantity;
+      if (diff === 0) return state; // No change
+
       return {
-        items: state.items.map((i) => i.product_id === newItem.product_id ? { ...i, quantity: updatedQty } : i),
-        total: state.total + (newItem.quantity * existing.products.price)
+        items: state.items.map((i) => i.product_id === newItem.product_id ? { ...i, quantity: newItem.quantity } : i),
+        total: state.total + (diff * existing.products.price)
       };
     }
     return {

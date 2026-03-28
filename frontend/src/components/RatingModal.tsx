@@ -40,13 +40,13 @@ export default function RatingModal({
     try {
       await apiClient('/reviews', {
         method: 'POST',
-        body: JSON.stringify({
+        data: {
           order_id: orderId,
           driver_id: driverId,
           store_id: storeId,
           rating,
           comment
-        })
+        }
       });
       toast.success('Thank you for your feedback!');
       onClose();
@@ -76,7 +76,7 @@ export default function RatingModal({
             className="relative w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl overflow-hidden"
           >
             {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full blur-3xl -mr-16 -mt-16" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#0f172a]/5 rounded-full blur-3xl -mr-16 -mt-16" />
             
             <button 
               onClick={onClose}
@@ -86,7 +86,7 @@ export default function RatingModal({
             </button>
 
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-black text-[#111111] tracking-tighter mb-2">How was your delivery?</h3>
+              <h3 className="text-2xl font-bold text-[#111111] tracking-tighter mb-2">How was your delivery?</h3>
               <p className="text-sm font-bold text-[#888888]">Rate your experience with {storeName} and {driverName}</p>
             </div>
 
@@ -103,7 +103,7 @@ export default function RatingModal({
                     size={36} 
                     className={`${
                       (hover || rating) >= star 
-                        ? 'fill-[#d97757] text-[#d97757]' 
+                        ? 'fill-[#0f172a] text-[#0f172a]' 
                         : 'text-gray-200'
                     } transition-colors duration-200`}
                   />
@@ -119,13 +119,13 @@ export default function RatingModal({
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share your experience... (optional)"
-                className="w-full h-32 pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:border-[#d97757]/30 focus:bg-white rounded-2xl text-sm font-bold text-[#111111] outline-none transition-all resize-none"
+                className="w-full h-32 pl-12 pr-4 py-4 bg-gray-50 border border-transparent focus:border-[#0f172a]/30 focus:bg-white rounded-2xl text-sm font-bold text-[#111111] outline-none transition-all resize-none"
               />
             </div>
 
             <Button 
               variant="primary" 
-              className="w-full h-14 uppercase tracking-widest text-[10px] font-black"
+              className="w-full h-14 uppercase tracking-widest text-[10px] font-bold"
               onClick={handleSubmit}
               loading={isSubmitting}
             >

@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
-  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-[#888888]">Initializing Global Pulse...</div>
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-[#888888]">Initializing Global Pulse...</div>
 });
 import { useSocket } from '@/context/SocketContext';
 import { Truck, Navigation as NavIcon, Map as MapIcon } from 'lucide-react';
@@ -165,283 +165,274 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="container-responsive py-6 sm:py-10 space-y-12 sm:space-y-16">
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-        <div>
-           <h1 className="heading-responsive !text-3xl sm:!text-5xl">Admin <span className="text-[#d97757] italic">Portal.</span></h1>
-           <p className="text-responsive mt-3 max-w-2xl font-medium text-[#888888]">Global infrastructure telemetry and security authorization console.</p>
+    <div className="bg-slate-50 min-h-screen">
+      <div className="container-responsive py-8 sm:py-12 space-y-10 sm:space-y-14">
+        <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+          <div>
+             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">Admin Console.</h1>
+             <p className="text-slate-400 mt-2 max-w-2xl font-medium text-sm sm:text-base">Infrastructure telemetry and security authorization terminal.</p>
+          </div>
+          <div className="bg-white px-5 py-2.5 rounded-full border border-slate-100 flex items-center space-x-3 shadow-sm">
+             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+             <span className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Signal: Operational</span>
+          </div>
+        </header>
+        
+        {/* Tabs */}
+        <div className="flex items-center gap-4 border-b border-slate-100 pb-2 overflow-x-auto no-scrollbar">
+          {[
+            { id: 'overview', label: 'Overview', icon: Activity },
+            { id: 'users', label: 'Personnel', icon: Users },
+            { id: 'stores', label: 'Partner Sockets', icon: Store },
+            { id: 'economics', label: 'Economics', icon: DollarSign },
+            { id: 'promos', label: 'Promos', icon: Zap },
+            { id: 'fleet', label: 'Fleet Schedule', icon: Truck },
+            { id: 'pulse', label: 'Global Pulse', icon: MapIcon }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
+                activeTab === tab.id ? 'bg-slate-900 text-white shadow-md' : 'text-slate-400 hover:bg-white hover:text-slate-900'
+              }`}
+            >
+              <tab.icon size={14} />
+              {tab.label}
+            </button>
+          ))}
         </div>
-        <div className="bg-[#fef3f2] px-6 py-3 rounded-xl border border-[#fee2e2] flex items-center space-x-4 shadow-sm">
-           <div className="w-2.5 h-2.5 bg-[#d97757] rounded-full animate-pulse shadow-[0_0_8px_rgba(217,119,87,0.5)]"></div>
-           <span className="text-[10px] font-black text-[#d97757] uppercase tracking-[0.3em]">System Status: Operational</span>
-        </div>
-      </header>
-      
-      {/* Tabs */}
-      <div className="flex items-center gap-8 border-b border-gray-100 pb-4">
-        {[
-          { id: 'overview', label: 'Overview', icon: Activity },
-          { id: 'users', label: 'Personnel', icon: Users },
-          { id: 'stores', label: 'Partner Sockets', icon: Store },
-          { id: 'economics', label: 'Economics', icon: DollarSign },
-          { id: 'promos', label: 'Promos', icon: Zap },
-          { id: 'fleet', label: 'Fleet Schedule', icon: Truck },
-          { id: 'pulse', label: 'Global Pulse', icon: MapIcon }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-              activeTab === tab.id ? 'bg-[#111111] text-white' : 'text-[#888888] hover:bg-gray-50'
-            }`}
-          >
-            <tab.icon size={14} />
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <AnimatePresence mode="wait">
-        {activeTab === 'overview' && (
-          <motion.div
-            key="overview"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            className="space-y-16"
-          >
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
-              {[
-                { label: 'Network Orders', value: stats?.totalOrders || 0, icon: ShoppingBag, color: 'text-[#d97757]', bg: 'bg-[#fef3f2]' },
-                { label: 'Active Personnel', value: stats?.totalUsers || 0, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-                { label: 'Capital Throughput', value: `$${stats?.totalRevenue.toFixed(2) || '0.00'}`, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50' },
-                { label: 'Partner Sockets', value: stats?.totalStores || 0, icon: Activity, color: 'text-purple-600', bg: 'bg-purple-50' },
-              ].map((item, idx) => (
-                <div key={item.label} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-md">
-                   <div className="flex items-center justify-between mb-8">
-                      <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-xl flex items-center justify-center`}>
-                        <item.icon size={24}/>
+ 
+        <AnimatePresence mode="wait">
+          {activeTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-12"
+            >
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+                {[
+                  { label: 'Network Orders', value: stats?.totalOrders || 0, icon: ShoppingBag, color: 'text-slate-900' },
+                  { label: 'Active Personnel', value: stats?.totalUsers || 0, icon: Users, color: 'text-slate-900' },
+                  { label: 'Capital Flow', value: `$${stats?.totalRevenue.toFixed(2) || '0.00'}`, icon: DollarSign, color: 'text-slate-900' },
+                  { label: 'Partner Sockets', value: stats?.totalStores || 0, icon: Activity, color: 'text-slate-900' },
+                ].map((item, idx) => (
+                  <div key={item.label} className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
+                     <div className="flex items-center justify-between mb-6">
+                        <div className={`w-10 h-10 bg-slate-50 ${item.color} rounded-lg flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all`}>
+                          <item.icon size={20}/>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-300 group-hover:text-slate-900 transition-colors">LIVE</span>
+                     </div>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-2">{item.label}</p>
+                     <p className="text-3xl font-bold text-slate-900 tracking-tight">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Analytics Trends */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <AnalyticsChart data={analyticsData} type="orders" />
+                <AnalyticsChart data={analyticsData} type="revenue" />
+              </div>
+ 
+              {/* Authorization Queue */}
+              <div className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between">
+                  <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Authorization Queue</h2>
+                  <span className="px-3 py-1 bg-slate-50 text-slate-900 rounded-full text-[9px] font-bold uppercase tracking-widest border border-slate-100">{pendingUsers.length} Pending</span>
+                </div>
+                <div className="p-8">
+                  {pendingUsers.length === 0 ? (
+                    <div className="py-20 text-center text-[10px] font-bold uppercase tracking-widest text-slate-300">Auth Grid is Secure.</div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {pendingUsers.map(u => (
+                        <div key={u.id} className="p-5 rounded-xl border border-slate-50 bg-slate-50/50 flex items-center justify-between group hover:bg-white hover:shadow-md transition-all">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-slate-900 font-bold text-lg shadow-sm">{u.name?.[0].toUpperCase()}</div>
+                            <div>
+                              <h4 className="text-sm font-bold text-slate-900 uppercase tracking-tight">{u.name}</h4>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{u.role} · {u.email}</p>
+                            </div>
+                          </div>
+                          <button onClick={() => handleApprove(u.id)} className="px-6 py-3 bg-slate-900 text-white rounded-lg font-bold uppercase text-[9px] tracking-widest hover:bg-slate-800 transition-all">Authorize</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          )}
+ 
+          {activeTab === 'users' && (
+            <motion.div key="users" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="space-y-6">
+              <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                 <div className="relative flex-1 w-full">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                    <input
+                      type="text"
+                      placeholder="Search personnel directory..."
+                      className="w-full h-12 bg-slate-50 pl-11 pr-4 rounded-xl border border-transparent outline-none text-xs font-bold text-slate-900 placeholder-slate-300 focus:border-slate-100 focus:bg-white transition-all"
+                      value={userSearch}
+                      onChange={e => setUserSearch(e.target.value)}
+                    />
+                 </div>
+                 <select
+                   className="h-12 bg-slate-50 px-6 rounded-xl border border-transparent outline-none text-xs font-bold uppercase tracking-widest text-slate-900 cursor-pointer focus:bg-white transition-all"
+                   value={userRoleFilter}
+                   onChange={e => setUserRoleFilter(e.target.value)}
+                 >
+                   <option value="">All Roles</option>
+                   <option value="customer">Customer</option>
+                   <option value="merchant">Merchant</option>
+                   <option value="driver">Driver</option>
+                 </select>
+              </div>
+ 
+              <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                 <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                       <thead className="bg-slate-50 border-b border-slate-100">
+                         <tr>
+                           <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Personnel</th>
+                           <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Role</th>
+                           <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
+                           <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 text-right">Actions</th>
+                         </tr>
+                       </thead>
+                       <tbody className="divide-y divide-slate-50">
+                         {allUsers.map(u => (
+                           <tr key={u.id} className="hover:bg-slate-50/30 transition-colors">
+                             <td className="px-8 py-5">
+                                <div className="flex items-center gap-4">
+                                   <div className="w-9 h-9 bg-white border border-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-900 text-xs shadow-sm">{u.name?.[0].toUpperCase()}</div>
+                                   <div>
+                                      <p className="text-sm font-bold text-slate-900 tracking-tight">{u.name}</p>
+                                      <p className="text-[10px] font-medium text-slate-400">{u.email}</p>
+                                   </div>
+                                </div>
+                             </td>
+                             <td className="px-8 py-5"><span className="text-[10px] font-bold uppercase tracking-widest text-slate-900">{u.role}</span></td>
+                             <td className="px-8 py-5">
+                                <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border ${
+                                  u.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' :
+                                  u.status === 'banned' ? 'bg-red-50 text-red-600 border-red-100' :
+                                  'bg-slate-50 text-slate-400 border-slate-100'
+                                }`}>
+                                  {u.status}
+                                </span>
+                             </td>
+                             <td className="px-8 py-5 text-right">
+                                <div className="flex items-center justify-end gap-1">
+                                  {u.status === 'pending' && (
+                                    <>
+                                      <button onClick={() => handleApprove(u.id)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><Check size={16}/></button>
+                                      <button onClick={() => handleUpdateStatus(u.id, 'rejected')} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><X size={16}/></button>
+                                    </>
+                                  )}
+                                  {u.status === 'active' && (
+                                    <button onClick={() => handleUpdateStatus(u.id, 'banned')} className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Ban size={16}/></button>
+                                  )}
+                                  {u.status === 'banned' && (
+                                    <button onClick={() => handleUpdateStatus(u.id, 'active')} className="p-2 text-slate-400 hover:text-green-500 transition-colors"><RotateCcw size={16}/></button>
+                                  )}
+                                </div>
+                             </td>
+                           </tr>
+                         ))}
+                       </tbody>
+                    </table>
+                 </div>
+              </div>
+            </motion.div>
+          )}
+ 
+          {activeTab === 'stores' && (
+            <motion.div key="stores" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allStores.map(s => (
+                <div key={s.id} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
+                   <div className="flex justify-between items-start mb-6">
+                      <div>
+                         <h3 className="text-xl font-bold text-slate-900 uppercase tracking-tight mb-1">{s.name}</h3>
+                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{s.type}</p>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-lg text-[8px] font-bold uppercase tracking-widest border ${
+                        s.admin_disabled ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-900 border-slate-100'
+                      }`}>
+                        {s.admin_disabled ? 'Suspended' : 'Operational'}
+                      </span>
+                   </div>
+                   <div className="bg-slate-50 rounded-xl p-4 grid grid-cols-2 gap-4 mb-6">
+                      <div>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Owner</p>
+                         <p className="text-xs font-bold text-slate-900 truncate">{s.users?.name}</p>
+                      </div>
+                      <div>
+                         <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mb-1">Created</p>
+                         <p className="text-xs font-bold text-slate-900">{new Date(s.created_at).toLocaleDateString()}</p>
                       </div>
                    </div>
-                   <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest leading-none mb-3">{item.label}</p>
-                   <p className="text-3xl font-black text-[#111111] tracking-tighter">{item.value}</p>
+                   <div className="flex gap-2">
+                      <button className="flex-1 h-11 bg-slate-50 hover:bg-slate-100 text-slate-900 rounded-lg font-bold uppercase text-[9px] tracking-widest transition-all">Analytics</button>
+                      <button 
+                        onClick={() => handleToggleStore(s.id, s.admin_disabled)}
+                        className={`px-6 h-11 rounded-lg font-bold uppercase text-[9px] tracking-widest transition-all ${
+                          s.admin_disabled ? 'bg-slate-900 text-white' : 'bg-red-50 text-red-600 border border-red-100 hover:bg-red-100'
+                        }`}
+                      >
+                        {s.admin_disabled ? 'Restore' : 'Suspend'}
+                      </button>
+                   </div>
                 </div>
               ))}
-            </div>
-            
-            {/* Analytics Trends */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <AnalyticsChart data={analyticsData} type="orders" />
-              <AnalyticsChart data={analyticsData} type="revenue" />
-            </div>
-
-            {/* Authorization Queue */}
-            <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100">
-              <div className="px-8 py-8 border-b border-gray-50 flex items-center justify-between">
-                <h2 className="text-2xl font-black text-[#111111] uppercase tracking-tight">Authorization Queue</h2>
-                <span className="text-[10px] font-black text-[#d97757] uppercase tracking-widest">{pendingUsers.length} INCOMING</span>
-              </div>
-              <div className="p-8">
-                {pendingUsers.length === 0 ? (
-                  <div className="py-20 text-center opacity-40">Grid is Secure.</div>
-                ) : (
-                  <div className="space-y-4">
-                    {pendingUsers.map(u => (
-                      <div key={u.id} className="p-6 rounded-2xl bg-[#f9f9f9] flex items-center justify-between">
-                        <div className="flex items-center gap-6">
-                          <div className="w-16 h-16 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] font-black text-2xl">{u.name?.[0].toUpperCase()}</div>
-                          <div>
-                            <h4 className="text-xl font-black text-[#111111] uppercase tracking-tight">{u.name}</h4>
-                            <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">{u.role} · {u.email}</p>
-                          </div>
-                        </div>
-                        <button onClick={() => handleApprove(u.id)} className="px-8 py-4 bg-[#111111] text-white rounded-xl font-black uppercase text-[9px] tracking-widest">Authorize</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {activeTab === 'users' && (
-          <motion.div key="users" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-6 rounded-2xl border border-gray-100">
-               <div className="relative flex-1 w-full">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input
-                    type="text"
-                    placeholder="Search personnel by name or email..."
-                    className="w-full h-12 bg-[#f9f9f9] pl-12 pr-4 rounded-xl border-none outline-none text-xs font-bold"
-                    value={userSearch}
-                    onChange={e => setUserSearch(e.target.value)}
-                  />
-               </div>
-               <select
-                 className="h-12 bg-[#f9f9f9] px-6 rounded-xl border-none outline-none text-xs font-black uppercase tracking-widest"
-                 value={userRoleFilter}
-                 onChange={e => setUserRoleFilter(e.target.value)}
-               >
-                 <option value="">All Roles</option>
-                 <option value="customer">Customer</option>
-                 <option value="merchant">Merchant</option>
-                 <option value="driver">Driver</option>
-               </select>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-               <table className="w-full text-left">
-                  <thead className="bg-[#f9f9f9] border-b border-gray-100">
-                    <tr>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Personnel</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Role</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Status</th>
-                      <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888] text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {allUsers.map(u => (
-                      <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-8 py-6">
-                           <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center font-black text-[#111111]">{u.name?.[0].toUpperCase()}</div>
-                              <div>
-                                 <p className="text-sm font-black text-[#111111] tracking-tight">{u.name}</p>
-                                 <p className="text-[10px] font-medium text-[#888888]">{u.email}</p>
-                              </div>
-                           </div>
-                        </td>
-                        <td className="px-8 py-6"><span className="text-[10px] font-black uppercase tracking-widest text-[#d97757]">{u.role}</span></td>
-                        <td className="px-8 py-6">
-                           <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                             u.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' :
-                             u.status === 'banned' ? 'bg-red-50 text-red-600 border-red-100' :
-                             u.status === 'rejected' ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                             'bg-yellow-50 text-yellow-600 border-yellow-100'
-                           }`}>
-                             {u.status}
-                           </span>
-                        </td>
-                        <td className="px-8 py-6 text-right">
-                           <div className="flex items-center justify-end gap-2">
-                             {u.status === 'pending' && (
-                               <>
-                                 <button onClick={() => handleApprove(u.id)} className="p-2 text-green-400 hover:text-green-600 transition-colors"><Check size={16}/></button>
-                                 <button onClick={() => handleUpdateStatus(u.id, 'rejected')} className="p-2 text-orange-400 hover:text-orange-600 transition-colors"><X size={16}/></button>
-                               </>
-                             )}
-                             {u.status === 'active' && (
-                               <button onClick={() => handleUpdateStatus(u.id, 'banned')} className="p-2 text-red-400 hover:text-red-600 transition-colors"><Ban size={16}/></button>
-                             )}
-                             {u.status === 'banned' && (
-                               <button onClick={() => handleUpdateStatus(u.id, 'active')} className="p-2 text-green-400 hover:text-green-600 transition-colors"><RotateCcw size={16}/></button>
-                             )}
-                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-               </table>
-            </div>
-          </motion.div>
-        )}
-
-        {activeTab === 'stores' && (
-          <motion.div key="stores" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {allStores.map(s => (
-              <div key={s.id} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
-                 <div className={`absolute top-0 right-0 w-1 h-full ${s.admin_disabled ? 'bg-red-500' : 'bg-green-500'}`} />
-                 <div className="flex justify-between items-start mb-8">
-                    <div>
-                       <h3 className="text-2xl font-black text-[#111111] uppercase tracking-tight mb-2">{s.name}</h3>
-                       <p className="text-[10px] font-black text-[#d97757] uppercase tracking-widest italic">{s.type}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                       <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
-                         s.admin_disabled ? 'bg-red-50 text-red-600 border-red-100' : 'bg-green-50 text-green-600 border-green-100'
-                       }`}>
-                         {s.admin_disabled ? 'Suspended' : 'Operational'}
-                       </span>
-                    </div>
-                 </div>
-                 <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="p-4 bg-gray-50 rounded-xl">
-                       <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-1">Owner</p>
-                       <p className="text-xs font-bold text-[#111111] truncate">{s.users?.name}</p>
-                    </div>
-                    <div className="p-4 bg-gray-50 rounded-xl">
-                       <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mb-1">Created</p>
-                       <p className="text-xs font-bold text-[#111111]">{new Date(s.created_at).toLocaleDateString()}</p>
-                    </div>
-                 </div>
-                 <div className="flex gap-4">
-                    <button className="flex-1 h-12 bg-gray-50 hover:bg-gray-100 text-[#111111] rounded-xl font-black uppercase text-[9px] tracking-widest transition-all">View Analytics</button>
-                    <button 
-                      onClick={() => handleToggleStore(s.id, s.admin_disabled)}
-                      className={`h-12 px-6 rounded-xl font-black uppercase text-[9px] tracking-widest transition-all border ${
-                        s.admin_disabled ? 'bg-green-500 text-white border-green-500' : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
-                      }`}
-                    >
-                      {s.admin_disabled ? 'Unsuspend' : 'Suspend Node'}
-                    </button>
-                 </div>
-              </div>
-            ))}
-          </motion.div>
-        )}
-
-        {activeTab === 'economics' && (
-          <motion.div key="economics" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-                <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3">Gross Merchandise Value (GMV)</p>
-                <p className="text-4xl font-black text-[#111111] tracking-tighter">${financials?.gmv || '0.00'}</p>
-                <div className="mt-4 h-1 bg-green-500/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-500 w-[70%]" />
+            </motion.div>
+          )}
+ 
+          {activeTab === 'economics' && (
+            <motion.div key="economics" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Gross Merchandise Value (GMV)</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.gmv || '0.00'}</p>
+                </div>
+                <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Platform Revenue (20%)</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.platformCommission || '0.00'}</p>
+                </div>
+                <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Merchant Payouts</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.netMerchantPayout || '0.00'}</p>
                 </div>
               </div>
-              <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-                <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3">Platform Commission (20%)</p>
-                <p className="text-4xl font-black text-[#d97757] tracking-tighter">${financials?.platformCommission || '0.00'}</p>
-                 <div className="mt-4 h-1 bg-[#d97757]/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#d97757] w-[45%]" />
-                </div>
+ 
+              <div className="bg-slate-900 p-10 rounded-2xl text-white shadow-xl relative overflow-hidden group">
+                 <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-10">
+                    <div className="space-y-4">
+                       <h3 className="text-3xl font-bold tracking-tight">Financial Health Status</h3>
+                       <p className="text-sm font-medium text-slate-400 max-w-md">Global fiscal integrity is currently at 99.8%. All merchant payouts are processed through the automated ledger.</p>
+                    </div>
+                    <div className="flex gap-4">
+                       <button className="h-14 px-10 bg-white text-slate-900 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-50 transition-all">Export Report</button>
+                       <button className="h-14 px-10 bg-slate-800 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-700 transition-all">Deep Audit</button>
+                    </div>
+                 </div>
               </div>
-              <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
-                <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3">Net Merchant Payouts</p>
-                <p className="text-4xl font-black text-blue-600 tracking-tighter">${financials?.netMerchantPayout || '0.00'}</p>
-                 <div className="mt-4 h-1 bg-blue-600/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-600 w-[85%]" />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-[#111111] p-10 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
-               <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-10">
-                  <div className="space-y-4 text-center lg:text-left">
-                     <h3 className="text-3xl font-black tracking-tight">Financial Health <span className="text-[#d97757]">Active.</span></h3>
-                     <p className="text-sm font-medium text-gray-400 max-w-md">System wide fiscal integrity is currently at 99.8%. All merchant payouts are processed through the secure ledger.</p>
-                  </div>
-                  <div className="flex gap-4">
-                     <button className="h-14 px-10 bg-white text-[#111111] rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-100 transition-all">Export Ledger</button>
-                     <button className="h-14 px-10 bg-[#d97757] text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-[#c2654a] transition-all">System Audit</button>
-                  </div>
-               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
 
         {activeTab === 'promos' && (
-          <motion.div key="promos" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
-            <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-md">
-               <h3 className="text-xl font-black uppercase tracking-tight mb-8">Deploy New Promo</h3>
-               <form onSubmit={handleCreatePromo} className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          <motion.div key="promos" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="space-y-10">
+            <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+               <h3 className="text-sm font-bold uppercase tracking-widest mb-8 text-slate-900">Deploy New Promotion</h3>
+               <form onSubmit={handleCreatePromo} className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <input 
                     placeholder="CODE" 
-                    className="h-14 px-6 bg-[#f9f9f9] rounded-xl font-black uppercase tracking-widest text-[10px] border-none outline-none focus:ring-2 ring-[#d97757]"
+                    className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.code}
                     onChange={e => setNewPromo({...newPromo, code: e.target.value.toUpperCase()})}
                     required
@@ -449,7 +440,7 @@ export default function AdminDashboard() {
                   <input 
                     type="number" 
                     placeholder="Discount ($)" 
-                    className="h-14 px-6 bg-[#f9f9f9] rounded-xl font-black uppercase tracking-widest text-[10px] border-none outline-none focus:ring-2 ring-[#d97757]"
+                    className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.discount_amount}
                     onChange={e => setNewPromo({...newPromo, discount_amount: e.target.value})}
                     required
@@ -457,32 +448,31 @@ export default function AdminDashboard() {
                   <input 
                     type="number" 
                     placeholder="Min Order ($)" 
-                    className="h-14 px-6 bg-[#f9f9f9] rounded-xl font-black uppercase tracking-widest text-[10px] border-none outline-none focus:ring-2 ring-[#d97757]"
+                    className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.min_subtotal}
                     onChange={e => setNewPromo({...newPromo, min_subtotal: e.target.value})}
                   />
                   <input 
                     type="date"
-                    className="h-14 px-6 bg-[#f9f9f9] rounded-xl font-black uppercase tracking-widest text-[10px] border-none outline-none focus:ring-2 ring-[#d97757]"
+                    className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.expires_at}
                     onChange={e => setNewPromo({...newPromo, expires_at: e.target.value})}
                     required
                   />
-                  <button type="submit" className="bg-[#111111] text-white rounded-xl font-black uppercase tracking-widest text-[10px] h-14 hover:bg-black transition-all">Activate</button>
+                  <button type="submit" className="bg-slate-900 text-white rounded-lg font-bold uppercase tracking-widest text-[10px] h-12 hover:bg-slate-800 transition-all shadow-sm">Activate</button>
                </form>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {promos.map(promo => (
-                 <div key={promo.id} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm relative group overflow-hidden">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#d97757]/5 rounded-full -mr-12 -mt-12 blur-2xl" />
+                 <div key={promo.id} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm relative group overflow-hidden">
                     <div className="flex justify-between items-start mb-6">
-                       <h4 className="text-3xl font-black text-[#111111] tracking-tighter">{promo.code}</h4>
-                       <button onClick={() => handleDeletePromo(promo.id)} className="p-2 text-red-400 hover:text-red-600 transition-colors"><Trash2 size={16}/></button>
+                       <h4 className="text-3xl font-bold text-slate-900 tracking-tight">{promo.code}</h4>
+                       <button onClick={() => handleDeletePromo(promo.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                     </div>
-                    <div className="space-y-2">
-                       <p className="text-xs font-black text-[#d97757] uppercase tracking-widest">-${promo.value} USD</p>
-                       <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Min Order: ${promo.min_subtotal}</p>
+                    <div className="space-y-1">
+                       <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">-${promo.value} USD</p>
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Min Order: ${promo.min_subtotal}</p>
                     </div>
                  </div>
                ))}
@@ -491,45 +481,45 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'fleet' && (
-          <motion.div key="fleet" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+          <motion.div key="fleet" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="space-y-6">
+             <div className="bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
                 <table className="w-full text-left">
-                   <thead className="bg-[#f9f9f9] border-b border-gray-100">
+                   <thead className="bg-slate-50 border-b border-slate-100">
                       <tr>
-                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Driver</th>
-                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Date</th>
-                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Shift</th>
-                         <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-[#888888]">Status</th>
+                         <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Driver</th>
+                         <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Date</th>
+                         <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Shift</th>
+                         <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Status</th>
                       </tr>
                    </thead>
-                   <tbody className="divide-y divide-gray-50">
+                   <tbody className="divide-y divide-slate-50">
                       {schedulingData.map(s => (
-                        <tr key={s.id} className="hover:bg-gray-50 transition-colors">
-                           <td className="px-8 py-6">
+                        <tr key={s.id} className="hover:bg-slate-50/30 transition-colors">
+                           <td className="px-8 py-5">
                               <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center font-black text-[10px]">{s.drivers?.users?.name?.[0]}</div>
-                                 <p className="text-xs font-black text-[#111111]">{s.drivers?.users?.name}</p>
+                                 <div className="w-8 h-8 bg-white border border-slate-100 rounded-lg flex items-center justify-center font-bold text-slate-900 text-[10px] shadow-sm">{s.drivers?.users?.name?.[0]}</div>
+                                 <p className="text-xs font-bold text-slate-900 tracking-tight">{s.drivers?.users?.name}</p>
                               </div>
                            </td>
-                           <td className="px-8 py-6 text-xs font-bold text-[#888888]">{new Date(s.date).toLocaleDateString()}</td>
-                           <td className="px-8 py-6 text-[10px] font-black text-[#111111] uppercase tracking-tighter">{s.start_time.slice(0,5)} - {s.end_time.slice(0,5)}</td>
-                           <td className="px-8 py-6">
-                              <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-green-100">{s.status}</span>
+                           <td className="px-8 py-5 text-xs font-bold text-slate-400">{new Date(s.date).toLocaleDateString()}</td>
+                           <td className="px-8 py-5 text-[10px] font-bold text-slate-900 uppercase tracking-tight">{s.start_time.slice(0,5)} - {s.end_time.slice(0,5)}</td>
+                           <td className="px-8 py-5">
+                              <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-[9px] font-bold uppercase tracking-widest border border-green-100">{s.status}</span>
                            </td>
                         </tr>
                       ))}
                    </tbody>
                 </table>
-                {schedulingData.length === 0 && <div className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-[#888888] opacity-40">No Fleet Movements Scheduled</div>}
+                {schedulingData.length === 0 && <div className="py-20 text-center text-[10px] font-bold uppercase tracking-widest text-slate-300">No Fleet Movements Scheduled</div>}
              </div>
           </motion.div>
         )}
 
         {activeTab === 'pulse' && (
-          <motion.div key="pulse" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden relative h-[600px]">
+          <motion.div key="pulse" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="space-y-8">
+             <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xl overflow-hidden relative h-[600px]">
                 <MapView 
-                  center={[30.0444, 31.2357]} // Default Cairo center (change as needed)
+                  center={[30.0444, 31.2357]} 
                   zoom={12}
                   markers={Object.values(activeDrivers).map(d => ({
                     position: [d.lat, d.lng],
@@ -538,20 +528,20 @@ export default function AdminDashboard() {
                   })) as any}
                 />
                 <div className="absolute top-8 left-8 z-[400] flex flex-col gap-4">
-                   <div className="bg-white/95 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/50 shadow-2xl flex items-center gap-4">
-                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_15px_rgba(34,197,94,0.6)]" />
+                   <div className="bg-white/95 backdrop-blur-md px-5 py-3 rounded-xl border border-slate-100 shadow-2xl flex items-center gap-4">
+                      <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
                       <div>
-                        <p className="text-[10px] font-black text-[#111111] uppercase tracking-[0.2em]">Network Pulse Active</p>
-                        <p className="text-[9px] font-bold text-[#888888] uppercase tracking-widest">{Object.keys(activeDrivers).length} live points detected</p>
+                        <p className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Network Pulse Active</p>
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{Object.keys(activeDrivers).length} active signals</p>
                       </div>
                    </div>
                 </div>
                 
-                <div className="absolute top-8 right-8 z-[400] flex flex-col gap-3">
+                <div className="absolute top-8 right-8 z-[400] flex flex-col gap-2">
                    {Object.values(activeDrivers).slice(0, 5).map(d => (
-                      <div key={d.driverId} className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/40 shadow-sm flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
-                         <div className="w-1.5 h-1.5 bg-[#d97757] rounded-full" />
-                         <span className="text-[9px] font-black text-[#111111] uppercase tracking-wider">#{d.driverId.slice(0,8)} Signal update</span>
+                      <div key={d.driverId} className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-50 shadow-sm flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                         <div className="w-1 h-1 bg-slate-900 rounded-full" />
+                         <span className="text-[9px] font-bold text-slate-900 uppercase tracking-widest">#{d.driverId.slice(0,8)} Signal update</span>
                       </div>
                    ))}
                 </div>
@@ -559,17 +549,17 @@ export default function AdminDashboard() {
              
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { label: 'Active Couriers', value: Object.keys(activeDrivers).length, icon: Truck, color: 'text-[#d97757]' },
-                  { label: 'Latency', value: '14ms', icon: Activity, color: 'text-green-500' },
-                  { label: 'Signal Stream', value: 'Encrypted', icon: ShieldCheck, color: 'text-blue-500' },
+                  { label: 'Active Couriers', value: Object.keys(activeDrivers).length, icon: Truck },
+                  { label: 'Signal Latency', value: '14ms', icon: Activity },
+                  { label: 'Network Stream', value: 'Encrypted', icon: ShieldCheck },
                 ].map((stat, i) => (
-                  <div key={i} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-xl bg-gray-50 ${stat.color} flex items-center justify-center`}>
+                  <div key={i} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex items-center gap-4 group hover:bg-slate-50 transition-colors">
+                    <div className={`w-10 h-10 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 group-hover:bg-white transition-colors`}>
                        <stat.icon size={18} />
                     </div>
                     <div>
-                       <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest leading-none mb-1.5">{stat.label}</p>
-                       <p className="text-xl font-black text-[#111111] tracking-tight">{stat.value}</p>
+                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1.5">{stat.label}</p>
+                       <p className="text-xl font-bold text-slate-900 tracking-tight">{stat.value}</p>
                     </div>
                   </div>
                 ))}
@@ -579,16 +569,17 @@ export default function AdminDashboard() {
       </AnimatePresence>
 
       {/* Admin Branding Footer */}
-      <div className="pt-12 text-center opacity-30 hover:opacity-100 transition-opacity cursor-default">
-         <div className="flex items-center justify-center gap-4 mb-6">
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#111111]">Delivray <span className="text-[#d97757]">Core</span></h2>
+      <footer className="pt-16 pb-8 text-center border-t border-slate-100 mt-20">
+         <div className="flex items-center justify-center gap-3 mb-6">
+            <h2 className="text-xl font-bold uppercase tracking-tight text-slate-900 underline decoration-slate-200 underline-offset-8">Delivray Core.</h2>
          </div>
-         <div className="flex items-center justify-center gap-10 text-[9px] font-black uppercase tracking-[0.5em] text-[#888888]">
-            <span>Kernel Access</span>
-            <span>Security Terminal</span>
-            <span>Global Pulse</span>
+         <div className="flex items-center justify-center gap-8 text-[9px] font-bold uppercase tracking-[0.4em] text-slate-300">
+            <span className="hover:text-slate-900 transition-colors cursor-default">Kernel Access</span>
+            <span className="hover:text-slate-900 transition-colors cursor-default">Security Hub</span>
+            <span className="hover:text-slate-900 transition-colors cursor-default">Signal Terminal</span>
          </div>
-      </div>
+      </footer>
     </div>
-  );
+  </div>
+);
 }

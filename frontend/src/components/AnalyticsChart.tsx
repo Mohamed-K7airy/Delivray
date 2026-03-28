@@ -33,10 +33,10 @@ export default function AnalyticsChart({ data, type }: AnalyticsChartProps) {
   return (
     <div className="w-full bg-white rounded-3xl p-6 border border-gray-100 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between mb-6">
-        <h4 className="text-xs font-black uppercase tracking-widest text-[#888888]">
+        <h4 className="text-xs font-bold uppercase tracking-widest text-[#888888]">
           Last 30 Days: {type.toUpperCase()}
         </h4>
-        <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black rounded-full">
+        <div className="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full">
           + Trendy
         </div>
       </div>
@@ -46,8 +46,8 @@ export default function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           {/* Gradient Definition */}
           <defs>
             <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#d97757" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#d97757" stopOpacity="0" />
+              <stop offset="0%" stopColor="#0f172a" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
             </linearGradient>
           </defs>
 
@@ -63,7 +63,7 @@ export default function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           {/* Line */}
           <motion.polyline
             fill="none"
-            stroke="#d97757"
+            stroke="#0f172a"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -84,7 +84,7 @@ export default function AnalyticsChart({ data, type }: AnalyticsChartProps) {
                 cy={y}
                 r="4"
                 fill="white"
-                stroke="#d97757"
+                stroke="#0f172a"
                 strokeWidth="2"
                 className="cursor-pointer hover:r-6 transition-all"
               />

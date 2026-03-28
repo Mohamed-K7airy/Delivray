@@ -80,90 +80,93 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] flex flex-col items-center justify-center p-6 lg:p-12 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 lg:p-16 relative overflow-hidden">
       {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden opacity-50">
-         <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-[#d97757]/5 rounded-full blur-[100px]"></div>
-         <div className="absolute -bottom-[10%] -right-[10%] w-[60%] h-[60%] bg-[#d97757]/5 rounded-full blur-[120px]"></div>
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+         <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-slate-200/20 rounded-full blur-[120px]"></div>
+         <div className="absolute bottom-[-5%] left-[-5%] w-[35%] h-[35%] bg-slate-200/20 rounded-full blur-[100px]"></div>
       </div>
       
       <motion.div 
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
         className="w-full max-w-2xl z-10"
       >
-        <div className="flex flex-col items-center text-center mb-12">
-           <Logo className="mb-10 scale-125" />
-           <h1 className="text-4xl lg:text-5xl font-black text-[#111111] tracking-tighter leading-none mb-4">Start your <span className="text-[#d97757]">journey.</span></h1>
-           <p className="text-[#555555] font-bold max-w-sm">Select your role and become part of the fastest delivery network in the city.</p>
+        <div className="flex flex-col items-center text-center mb-16 space-y-8">
+           <Logo className="scale-150 grayscale opacity-80" />
+           <div className="space-y-3">
+              <h1 className="text-6xl font-bold text-slate-900 tracking-tighter leading-none">Access <br /><span className="text-slate-300">Onboarding.</span></h1>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Initialize Global Account Protocol</p>
+           </div>
         </div>
 
         {/* Role Selection */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-3 gap-6 mb-12">
            {[
-             { id: 'customer', label: 'Customer', icon: <User size={20} /> },
-             { id: 'merchant', label: 'Merchant', icon: <ShoppingBag size={20} /> },
-             { id: 'driver', label: 'Courier', icon: <Truck size={20} /> }
+             { id: 'customer', label: 'User', icon: <User size={20} /> },
+             { id: 'merchant', label: 'Vendor', icon: <ShoppingBag size={20} /> },
+             { id: 'driver', label: 'Operator', icon: <Truck size={20} /> }
            ].map((item) => (
              <button
                key={item.id}
                type="button"
                onClick={() => setRole(item.id as any)}
-               className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl transition-all border shrink-0 gap-3
+               className={`flex flex-col items-center justify-center p-6 rounded-[2rem] transition-all border shrink-0 gap-4 group/item
                  ${role === item.id 
-                   ? 'bg-white border-[#d97757] text-[#d97757] shadow-md ring-1 ring-[#d97757]/10' 
-                   : 'bg-white/50 border-gray-100 text-[#888888] hover:bg-white hover:border-gray-200 hover:text-[#111111]'}`}
+                   ? 'bg-slate-900 border-slate-900 text-white shadow-2xl scale-105' 
+                   : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300 hover:text-slate-900 shadow-sm'}`}
              >
-               <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${role === item.id ? 'bg-[#fef3f2]' : 'bg-gray-50'}`}>
+               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${role === item.id ? 'bg-white/10' : 'bg-slate-50'}`}>
                   {item.icon}
                </div>
-               <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
+               <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{item.label}</span>
              </button>
            ))}
         </div>
 
-        <div className="bg-white rounded-2xl p-8 sm:p-12 border border-gray-100 shadow-md relative">
-           <form onSubmit={handleRegister} className="space-y-10">
-              <div className="space-y-8">
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    <div className="sm:col-span-2">
-                       <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Full Name</label>
+        <div className="bg-white rounded-[2.5rem] p-12 lg:p-16 border border-slate-100 shadow-2xl relative">
+           <form onSubmit={handleRegister} className="space-y-12">
+              <div className="space-y-10">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                    <div className="sm:col-span-2 space-y-3">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Identity Designation</label>
                        <input 
                           name="name"
-                          placeholder="John Doe"
+                          placeholder="FULL NAME SPEC"
                           required
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-bold text-lg focus:outline-none focus:border-[#d97757] transition-all"
+                          className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-base placeholder:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white transition-all shadow-inner"
                        />
                     </div>
-                    <div>
-                       <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Phone Number</label>
+                    <div className="space-y-3">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Link Frequency</label>
                        <input 
                           name="phone"
                           type="tel"
-                          placeholder="+1..."
+                          placeholder="PHONE-000-000"
                           required
                           value={formData.phone}
                           onChange={handleInputChange}
-                          className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-bold text-lg focus:outline-none focus:border-[#d97757] transition-all"
+                          className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-base placeholder:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white transition-all shadow-inner"
                        />
                     </div>
-                    <div>
-                       <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Email Address</label>
+                    <div className="space-y-3">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Network Address</label>
                        <input 
                           name="email"
                           type="email"
-                          placeholder="john@example.com"
+                          placeholder="USER@DOMAIN.SYS"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-bold text-lg focus:outline-none focus:border-[#d97757] transition-all"
+                          className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-base placeholder:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white transition-all shadow-inner"
                        />
                     </div>
                  </div>
 
-                 <div className="relative">
-                    <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Choose a Password</label>
+                 <div className="space-y-3 relative">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Encryption Key</label>
                     <input 
                        name="password"
                        type={showPassword ? 'text' : 'password'}
@@ -171,14 +174,14 @@ export default function RegisterPage() {
                        required
                        value={formData.password}
                        onChange={handleInputChange}
-                       className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-bold text-lg focus:outline-none focus:border-[#d97757] transition-all"
+                       className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-base placeholder:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white transition-all shadow-inner"
                     />
                     <button 
                        type="button"
                        onClick={() => setShowPassword(!showPassword)}
-                       className="absolute right-5 bottom-4 text-gray-300 hover:text-[#d97757] transition-colors p-2"
+                       className="absolute right-5 bottom-4 text-slate-200 hover:text-slate-900 transition-colors p-2"
                     >
-                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                  </div>
 
@@ -188,35 +191,36 @@ export default function RegisterPage() {
                           key="merchant-fields"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-gray-100"
+                          transition={{ duration: 0.2 }}
+                          className="grid grid-cols-1 sm:grid-cols-2 gap-10 pt-10 border-t border-slate-50"
                        >
-                          <div>
-                             <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Store Name</label>
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Enterprise Label</label>
                              <input 
                                 name="store_name"
-                                placeholder="The Burger Joint"
+                                placeholder="BRAND-ID"
                                 required
                                 value={formData.store_name}
                                 onChange={handleInputChange}
-                                className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-bold text-lg focus:outline-none focus:border-[#d97757] transition-all"
+                                className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-base placeholder:text-slate-200 focus:outline-none focus:border-slate-900 focus:bg-white transition-all shadow-inner"
                              />
                           </div>
-                          <div>
-                             <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Business Category</label>
+                          <div className="space-y-3">
+                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Domain category</label>
                              <div className="relative">
                                 <select
                                    name="store_type"
                                    value={formData.store_type}
                                    onChange={handleInputChange}
-                                   className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-black text-xs uppercase tracking-[0.2em] outline-none focus:border-[#d97757] transition-all appearance-none cursor-pointer"
+                                   className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-[10px] uppercase tracking-[0.2em] outline-none focus:border-slate-900 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner"
                                    required
                                 >
-                                   <option value="" disabled>Select...</option>
-                                   <option value="Restaurant">Restaurant</option>
-                                   <option value="Grocery">Grocery</option>
-                                   <option value="Pharmacy">Pharmacy</option>
+                                   <option value="" disabled>Select Sector...</option>
+                                   <option value="Restaurant">Culinary Hub</option>
+                                   <option value="Grocery">Supply Node</option>
+                                   <option value="Pharmacy">Medical Unit</option>
                                 </select>
-                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-[#888888]" />
+                                <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300" />
                              </div>
                           </div>
                        </motion.div>
@@ -227,23 +231,24 @@ export default function RegisterPage() {
                           key="driver-fields"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="pt-8 border-t border-gray-100"
+                          transition={{ duration: 0.2 }}
+                          className="pt-10 border-t border-slate-50 space-y-3"
                        >
-                          <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 block ml-1">Transportation Type</label>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Vector Class</label>
                           <div className="relative">
                              <select
                                 name="vehicle_type"
                                 value={formData.vehicle_type}
                                 onChange={handleInputChange}
-                                className="w-full h-16 px-6 rounded-xl bg-gray-50 border border-gray-100 text-[#111111] font-black text-xs uppercase tracking-[0.2em] outline-none focus:border-[#d97757] transition-all appearance-none cursor-pointer"
+                                className="w-full h-16 px-6 rounded-2xl bg-slate-50 border border-transparent text-slate-900 font-bold text-[10px] uppercase tracking-[0.2em] outline-none focus:border-slate-900 focus:bg-white transition-all appearance-none cursor-pointer shadow-inner"
                                 required
                              >
-                                <option value="" disabled>Select vehicle...</option>
-                                <option value="Motorcycle">Motorcycle</option>
-                                <option value="Car">Car</option>
-                                <option value="Bicycle">Bicycle</option>
+                                <option value="" disabled>Select Vector...</option>
+                                <option value="Motorcycle">Rapid Vector</option>
+                                <option value="Car">Heavy Vector</option>
+                                <option value="Bicycle">Lite Vector</option>
                              </select>
-                             <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-[#888888]" />
+                             <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300" />
                           </div>
                        </motion.div>
                     )}
@@ -253,35 +258,35 @@ export default function RegisterPage() {
               <button
                  type="submit"
                  disabled={loading}
-                 className="w-full h-20 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest shadow-md hover:bg-[#c2654a] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group"
+                 className="w-full h-20 bg-slate-900 text-white rounded-[2rem] font-bold uppercase tracking-[0.3em] text-[11px] shadow-2xl hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center gap-5 disabled:opacity-20 group relative overflow-hidden"
               >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent skew-x-[-20deg] group-hover:translate-x-full transition-transform duration-1000" />
                  {loading ? (
-                    <div className="flex items-center gap-3">
-                       <Zap size={20} className="animate-pulse" />
+                    <div className="flex items-center gap-4 relative z-10">
+                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                        <span>Initializing...</span>
                     </div>
                  ) : (
                     <>
-                       <CheckCircle2 size={24} className="group-hover:scale-110 transition-transform" />
-                       <span>Create Account</span>
+                       <span className="relative z-10">Complete Onboarding</span>
                     </>
                  )}
               </button>
            </form>
 
-           <div className="mt-12 pt-8 border-t border-gray-100 text-center">
-              <p className="text-[#555555] font-bold text-sm">
-                 Already registered?{' '}
-                 <Link href="/login" className="text-[#d97757] hover:underline underline-offset-8 transition-all">
-                    Log In Here
+           <div className="mt-12 pt-10 border-t border-slate-50 text-center">
+              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+                 Existing Entity?{' '}
+                 <Link href="/login" className="text-slate-900 hover:underline underline-offset-8 transition-all">
+                    Authorize Terminal
                  </Link>
               </p>
            </div>
         </div>
 
-        <div className="mt-12 flex items-center justify-center gap-4 opacity-40">
-           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#111111]">
-              <Lock size={12} fill="currentColor" />
+        <div className="mt-16 flex items-center justify-center gap-4 opacity-20">
+           <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-slate-900">
+              <Lock size={14} fill="currentColor" />
               Secure Data Protocol
            </div>
         </div>

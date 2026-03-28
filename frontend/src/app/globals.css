@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f9f9f9;
-  --foreground: #111111;
-  --primary: #d97757;
-  --primary-hover: #c2654a;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
   --card: #ffffff;
-  --text-secondary: #555555;
-  --text-muted: #888888;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 }
 
 @theme inline {
@@ -21,7 +21,7 @@
   
   --radius-lg: 12px;
   --radius-xl: 16px;
-  --radius-2xl: 24px;
+  --radius-2xl: 20px;
 }
 
 body {

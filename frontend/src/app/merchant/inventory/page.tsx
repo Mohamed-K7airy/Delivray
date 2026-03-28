@@ -128,255 +128,258 @@ export default function MerchantInventory() {
   };
 
   return (
-    <div className="container-responsive py-6 sm:py-10 space-y-12 sm:space-y-16">
-        {/* Page Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-           <div>
-              <h1 className="heading-responsive !text-3xl sm:!text-5xl font-black text-[#111111] tracking-tighter">Store <span className="text-[#d97757] italic">Catalog.</span></h1>
-              <p className="text-responsive mt-3 max-w-2xl font-medium text-[#888888]">Manage your menu items, pricing, and real-time inventory levels.</p>
-           </div>
-           <div className="bg-white px-6 py-3 rounded-xl border border-gray-100 flex items-center space-x-4 shadow-sm whitespace-nowrap">
-              <div className="w-2 h-2 bg-[#d97757] rounded-full animate-pulse shadow-[0_0_8px_rgba(217,119,87,0.5)]"></div>
-              <span className="text-[10px] font-black text-[#888888] uppercase tracking-[0.3em]">{products.length} Units Online</span>
-           </div>
-        </div>
+    <div className="bg-slate-50 min-h-screen">
+      <div className="container-responsive py-8 sm:py-12 space-y-10 sm:space-y-14">
+          {/* Page Header */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
+             <div>
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900">Inventory Registry.</h1>
+                <p className="text-slate-400 mt-2 max-w-2xl font-medium text-sm sm:text-base">Manage your menu items, pricing, and real-time stock levels.</p>
+             </div>
+             <div className="bg-white px-5 py-2.5 rounded-full border border-slate-100 flex items-center space-x-3 shadow-sm">
+                <div className="w-1.5 h-1.5 bg-slate-900 rounded-full animate-pulse shadow-[0_0_8px_rgba(15,23,42,0.3)]"></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{products.length} Units Online</span>
+             </div>
+          </div>
 
-       <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 lg:gap-16 items-start">
-          {/* Add Product Form */}
-           <div className="xl:col-span-12 2xl:col-span-12">
-              <div className="bg-white rounded-2xl p-8 sm:p-12 border border-gray-100 shadow-md">
-                 <div className="flex items-center space-x-5 mb-12">
-                    <div className="w-12 h-12 bg-[#fef3f2] rounded-xl flex items-center justify-center text-[#d97757] border border-[#fee2e2]">
-                       <Plus size={24} />
-                    </div>
-                    <h2 className="text-2xl font-black uppercase tracking-tight text-[#111111]">Add <span className="text-[#d97757]">Item</span></h2>
-                 </div>
+         <div className="grid grid-cols-1 gap-10">
+            {/* Add Product Form */}
+             <div className="w-full">
+                <div className="bg-white rounded-xl p-8 sm:p-10 border border-slate-100 shadow-sm">
+                   <div className="flex items-center space-x-4 mb-10">
+                      <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+                         <Plus size={20} />
+                      </div>
+                      <h2 className="text-xl font-bold uppercase tracking-widest text-slate-900">New Offering</h2>
+                   </div>
 
-                 <form onSubmit={handleCreateProduct} className="space-y-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                       <div className="lg:col-span-1">
-                         <Input 
-                            label="Item Name"
-                            required
-                            value={newProduct.name}
-                            onChange={e => setNewProduct({...newProduct, name: e.target.value})}
-                            placeholder="e.g. Double Smash Burger"
-                         />
-                       </div>
-                       <div>
-                         <Input 
-                            label="Price ($)"
-                            required
-                            type="number"
-                            step="0.01"
-                            value={newProduct.price}
-                            onChange={e => setNewProduct({...newProduct, price: e.target.value})}
-                            placeholder="0.00"
-                         />
-                       </div>
-                       <div>
-                          <label className="block text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 ml-1">Category</label>
-                          <div className="flex gap-2">
-                            <select 
-                               className="flex-1 h-14 px-6 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none focus:border-[#d97757] transition-all text-sm appearance-none"
-                               value={newProduct.category}
-                               onChange={e => setNewProduct({...newProduct, category: e.target.value})}
-                            >
-                               <option value="">Select Category</option>
-                               {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                            </select>
-                            <button 
-                              type="button"
-                              onClick={() => setShowCategoryModal(true)}
-                              className="w-14 h-14 bg-[#f9f9f9] border border-gray-100 rounded-xl flex items-center justify-center text-[#d97757] hover:bg-gray-100 transition-all"
-                            >
-                              <Plus size={20} />
-                            </button>
-                          </div>
-                       </div>
-                       <div className="sm:col-span-2 lg:col-span-3">
-                          <label className="block text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 ml-1">Description</label>
-                          <textarea 
-                             required
-                             value={newProduct.description}
-                             onChange={e => setNewProduct({...newProduct, description: e.target.value})}
-                             placeholder="Detail ingredients or specials..."
-                             className="w-full px-6 py-5 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] outline-none focus:border-[#d97757] transition-all text-sm min-h-[120px] resize-none"
-                          />
-                       </div>
-                       <div className="sm:col-span-2 lg:col-span-3">
-                           <label className="block text-[10px] font-black text-[#888888] uppercase tracking-widest mb-3 ml-1">Product Image</label>
-                           <div className="relative group cursor-pointer">
-                              <input 
-                                type="file" 
-                                accept="image/*"
-                                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                                className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
-                              />
-                              <div className="h-32 bg-[#f9f9f9] border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center group-hover:border-[#d97757]/30 transition-all">
-                                 {imageFile ? (
-                                   <div className="flex flex-col items-center">
-                                      <p className="text-sm font-bold text-[#111111]">{imageFile.name}</p>
-                                      <p className="text-[10px] font-black text-[#d97757] uppercase tracking-widest mt-1">Ready to upload</p>
-                                   </div>
-                                 ) : (
-                                   <>
-                                      <UploadCloud className="text-gray-300 mb-2" size={32} />
-                                      <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest">Click or drag image here</p>
-                                   </>
-                                 )}
-                              </div>
-                           </div>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-end">
-                       <button type="submit" disabled={uploading} className="h-16 px-12 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all flex items-center gap-3 shadow-md disabled:opacity-50">
-                          {uploading ? <Activity size={20} className="animate-spin" /> : <UploadCloud size={20} />}
-                          <span>{uploading ? 'Processing...' : 'Release To Catalog'}</span>
-                       </button>
-                    </div>
-                 </form>
-              </div>
-           </div>
-
-           {/* Product List */}
-           <div className="xl:col-span-12 flex flex-col space-y-8">
-              <div className="bg-white rounded-2xl p-8 sm:p-12 border border-gray-100 shadow-md">
-                 <div className="flex items-center justify-between mb-12">
-                    <div className="flex items-center space-x-5">
-                       <div className="w-12 h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#111111] border border-gray-100">
-                          <ListOrdered size={24} />
-                       </div>
-                       <h2 className="text-2xl font-black uppercase tracking-tight text-[#111111]">Active <span className="text-[#d97757] italic">Stock</span></h2>
-                    </div>
-                    <div className="hidden sm:flex items-center space-x-3 px-4 py-2 bg-green-50 border border-green-100 rounded-full">
-                       <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                       <span className="text-[9px] font-black text-green-600 uppercase tracking-widest">Live Sync</span>
-                    </div>
-                 </div>
-
-                 <div className="space-y-6">
-                    <AnimatePresence mode='popLayout'>
-                       {loading ? (
-                          <div className="py-20 flex flex-col items-center justify-center space-y-6">
-                             <Activity size={40} className="animate-spin text-[#d97757]" />
-                             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#888888]">Fetching Registry</p>
-                          </div>
-                       ) : products.length === 0 ? (
-                          <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="py-32 text-center border-2 border-dashed border-gray-100 rounded-2xl"
-                          >
-                             <Box size={48} className="mx-auto mb-6 text-gray-200" />
-                             <p className="text-[10px] font-black uppercase tracking-widest text-[#888888]">No Items Registered</p>
-                          </motion.div>
-                       ) : products.map((product, idx) => (
-                          <motion.div 
-                             key={product.id}
-                             initial={{ opacity: 0, y: 10 }}
-                             animate={{ opacity: 1, y: 0 }}
-                             exit={{ opacity: 0, scale: 0.95 }}
-                             transition={{ delay: idx * 0.05 }}
-                             className="bg-[#f9f9f9] p-6 sm:p-8 rounded-xl border border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-8 hover:bg-white hover:shadow-lg transition-all group relative overflow-hidden"
-                          >
-                             <div className="flex items-center space-x-6 w-full sm:w-auto z-10">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-xl flex items-center justify-center text-[#d97757] border border-gray-100 group-hover:scale-105 transition-transform shadow-sm overflow-hidden">
-                                   {product.image ? (
-                                       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                   <form onSubmit={handleCreateProduct} className="space-y-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                         <div className="lg:col-span-1">
+                           <Input 
+                              label="ITEM NAME"
+                              required
+                              value={newProduct.name}
+                              onChange={e => setNewProduct({...newProduct, name: e.target.value})}
+                              placeholder="e.g. Signature Burger"
+                           />
+                         </div>
+                         <div>
+                           <Input 
+                              label="UNIT PRICE ($)"
+                              required
+                              type="number"
+                              step="0.01"
+                              value={newProduct.price}
+                              onChange={e => setNewProduct({...newProduct, price: e.target.value})}
+                              placeholder="0.00"
+                           />
+                         </div>
+                         <div>
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Category</label>
+                            <div className="flex gap-2">
+                              <select 
+                                 className="flex-1 h-12 px-4 bg-slate-50 border border-transparent rounded-lg text-slate-900 font-bold outline-none focus:bg-white focus:border-slate-100 transition-all text-sm appearance-none cursor-pointer"
+                                 value={newProduct.category}
+                                 onChange={e => setNewProduct({...newProduct, category: e.target.value})}
+                              >
+                                 <option value="">Select Category</option>
+                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                              </select>
+                              <button 
+                                type="button"
+                                onClick={() => setShowCategoryModal(true)}
+                                className="w-12 h-12 bg-slate-50 border border-transparent rounded-lg flex items-center justify-center text-slate-900 hover:bg-slate-100 transition-all"
+                              >
+                                <Plus size={18} />
+                              </button>
+                            </div>
+                         </div>
+                         <div className="sm:col-span-2 lg:col-span-3">
+                            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Description</label>
+                            <textarea 
+                               required
+                               value={newProduct.description}
+                               onChange={e => setNewProduct({...newProduct, description: e.target.value})}
+                               placeholder="Ingredients, allergens, or special notes..."
+                               className="w-full px-5 py-4 bg-slate-50 border border-transparent rounded-lg text-slate-900 outline-none focus:bg-white focus:border-slate-100 transition-all text-sm min-h-[100px] resize-none font-medium"
+                            />
+                         </div>
+                         <div className="sm:col-span-2 lg:col-span-3">
+                             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5 ml-1">Asset Upload</label>
+                             <div className="relative group cursor-pointer">
+                                <input 
+                                  type="file" 
+                                  accept="image/*"
+                                  onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                                  className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                                />
+                                <div className="h-28 bg-slate-50 border-2 border-dashed border-slate-100 rounded-xl flex flex-col items-center justify-center group-hover:bg-white group-hover:border-slate-200 transition-all">
+                                   {imageFile ? (
+                                     <div className="flex flex-col items-center">
+                                        <p className="text-sm font-bold text-slate-900">{imageFile.name}</p>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ready for deployment</p>
+                                     </div>
                                    ) : (
-                                       <Package size={28} />
+                                     <>
+                                        <UploadCloud className="text-slate-300 mb-2" size={24} />
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Select Product Media</p>
+                                     </>
                                    )}
                                 </div>
-                                <div>
-                                   <div className="flex items-center gap-3 mb-2">
-                                      <h4 className="font-black uppercase tracking-tight text-xl text-[#111111]">{product.name}</h4>
-                                      <span className="px-2 py-0.5 bg-white border border-gray-100 rounded text-[8px] font-black text-[#888888] uppercase tracking-widest">{product.category || 'GEN'}</span>
-                                   </div>
-                                   <p className="text-2xl font-black text-[#d97757] tracking-tight">${product.price.toFixed(2)}</p>
-                                   <p className="text-[10px] text-[#888888] font-medium mt-2 line-clamp-1 italic">{product.description}</p>
-                                </div>
                              </div>
-                             
-                             <div className="flex items-center space-x-4 w-full sm:w-auto z-10 shrink-0">
-                                <button className="flex-1 sm:flex-none h-14 w-14 flex items-center justify-center bg-white text-[#888888] hover:text-[#d97757] rounded-xl transition-all border border-gray-100 shadow-sm">
-                                   <Edit size={18} />
-                                 </button>
-                                 <button 
-                                   onClick={() => deleteProduct(product.id)}
-                                   className="flex-1 sm:flex-none h-14 w-14 flex items-center justify-center bg-[#fef3f2] text-red-500 hover:text-white hover:bg-red-500 rounded-xl transition-all border border-[#fee2e2] shadow-sm"
-                                 >
-                                   <Trash size={18} />
-                                 </button>
-                             </div>
-                          </motion.div>
-                       ))}
-                    </AnimatePresence>
-                 </div>
+                          </div>
+                      </div>
 
-                 <div className="mt-12 pt-10 border-t border-gray-100 flex items-center justify-between text-[#888888]">
-                    <div className="flex items-center space-x-3">
-                       <ShieldCheck size={14} />
-                       <span className="text-[9px] font-black uppercase tracking-widest">Secure Stock Channel</span>
-                    </div>
-                    <span className="text-[9px] font-black uppercase tracking-widest">Protocol v4.2</span>
-                 </div>
-              </div>
-           </div>
-       </div>
+                      <div className="flex justify-end pt-4">
+                         <button type="submit" disabled={uploading} className="h-14 px-10 bg-slate-900 text-white rounded-lg font-bold uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all flex items-center gap-3 shadow-md disabled:opacity-50">
+                            {uploading ? <Activity size={18} className="animate-spin" /> : <UploadCloud size={18} />}
+                            <span>{uploading ? 'Processing...' : 'Deploy to Catalog'}</span>
+                         </button>
+                      </div>
+                   </form>
+                </div>
+             </div>
 
-       {/* Category Modal */}
-       <AnimatePresence>
-         {showCategoryModal && (
-           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-             <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               onClick={() => setShowCategoryModal(false)}
-               className="absolute inset-0 bg-[#111111]/60 backdrop-blur-sm"
-             />
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9, y: 20 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-               className="relative w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
-             >
-               <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full -mr-16 -mt-16 blur-2xl" />
-               
-               <div className="relative z-10 space-y-8">
-                 <div className="flex items-center justify-between">
-                   <h3 className="text-2xl font-black uppercase tracking-tight text-[#111111]">New <span className="text-[#d97757]">Category</span></h3>
-                   <button onClick={() => setShowCategoryModal(false)} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-50 transition-colors text-gray-400">
-                     <X size={20} />
+             {/* Product List */}
+             <div className="w-full flex flex-col space-y-6">
+                <div className="bg-white rounded-xl p-8 sm:p-10 border border-slate-100 shadow-sm">
+                   <div className="flex items-center justify-between mb-10">
+                      <div className="flex items-center space-x-4">
+                         <div className="w-10 h-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-900 border border-slate-100">
+                            <ListOrdered size={20} />
+                         </div>
+                         <h2 className="text-xl font-bold uppercase tracking-widest text-slate-900">Active Registry</h2>
+                      </div>
+                      <div className="hidden sm:flex items-center space-x-2.5 px-3 py-1 bg-slate-50 border border-slate-100 rounded-full">
+                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                         <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Network Synchronized</span>
+                      </div>
+                   </div>
+
+                   <div className="space-y-4">
+                      <AnimatePresence mode='popLayout'>
+                         {loading ? (
+                            <div className="py-20 flex flex-col items-center justify-center space-y-4">
+                               <Activity size={32} className="animate-spin text-slate-200" />
+                               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300">Syncing Registry</p>
+                            </div>
+                         ) : products.length === 0 ? (
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.2 }}
+                              className="py-24 text-center border-2 border-dashed border-slate-50 rounded-xl"
+                            >
+                               <Package size={40} className="mx-auto mb-4 text-slate-100" />
+                               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-300">No signals detected in catalog</p>
+                            </motion.div>
+                         ) : products.map((product, idx) => (
+                            <motion.div 
+                               key={product.id}
+                               initial={{ opacity: 0, y: 10 }}
+                               animate={{ opacity: 1, y: 0 }}
+                               exit={{ opacity: 0, scale: 0.98 }}
+                               transition={{ duration: 0.2, delay: idx * 0.03 }}
+                               className="bg-slate-50/50 p-5 rounded-xl border border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 hover:bg-white hover:shadow-md transition-all group relative overflow-hidden"
+                            >
+                               <div className="flex items-center space-x-5 w-full sm:w-auto">
+                                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-lg flex items-center justify-center text-slate-900 border border-slate-100 group-hover:scale-105 transition-all shadow-sm overflow-hidden">
+                                     {product.image ? (
+                                         <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                     ) : (
+                                         <Package size={24} className="text-slate-200" />
+                                     )}
+                                  </div>
+                                  <div>
+                                     <div className="flex items-center gap-2.5 mb-1.5">
+                                        <h4 className="font-bold uppercase tracking-tight text-lg text-slate-900">{product.name}</h4>
+                                        <span className="px-2 py-0.5 bg-slate-900/5 border border-slate-900/10 rounded-md text-[8px] font-bold text-slate-500 uppercase tracking-widest">{product.category || 'STD'}</span>
+                                     </div>
+                                     <p className="text-xl font-bold text-slate-900 tracking-tight">${product.price.toFixed(2)}</p>
+                                     <p className="text-[10px] text-slate-400 font-medium mt-1.5 line-clamp-1">{product.description}</p>
+                                  </div>
+                               </div>
+                               
+                               <div className="flex items-center space-x-2 w-full sm:w-auto shrink-0">
+                                  <button className="flex-1 sm:flex-none h-12 w-12 flex items-center justify-center bg-white text-slate-400 hover:text-slate-900 rounded-lg transition-all border border-slate-100 shadow-sm">
+                                     <Edit size={16} />
+                                   </button>
+                                   <button 
+                                     onClick={() => deleteProduct(product.id)}
+                                     className="flex-1 sm:flex-none h-12 w-12 flex items-center justify-center bg-white text-slate-400 hover:text-red-500 rounded-lg transition-all border border-slate-100 shadow-sm"
+                                   >
+                                     <Trash size={16} />
+                                   </button>
+                               </div>
+                            </motion.div>
+                         ))}
+                      </AnimatePresence>
+                   </div>
+
+                   <div className="mt-12 pt-8 border-t border-slate-50 flex items-center justify-between text-slate-200">
+                      <div className="flex items-center space-x-3">
+                         <ShieldCheck size={14} />
+                         <span className="text-[9px] font-bold uppercase tracking-[0.2em]">Validated Asset Channel</span>
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-slate-300">Rev v4.5</span>
+                   </div>
+                </div>
+             </div>
+         </div>
+
+         {/* Category Modal */}
+         <AnimatePresence>
+           {showCategoryModal && (
+             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+               <motion.div 
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 transition={{ duration: 0.2 }}
+                 onClick={() => setShowCategoryModal(false)}
+                 className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+               />
+               <motion.div 
+                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                 transition={{ duration: 0.2 }}
+                 className="relative w-full max-w-sm bg-white rounded-2xl p-8 shadow-2xl overflow-hidden"
+               >
+                 <div className="relative z-10 space-y-6">
+                   <div className="flex items-center justify-between">
+                     <h3 className="text-xl font-bold uppercase tracking-widest text-slate-900">New Category</h3>
+                     <button onClick={() => setShowCategoryModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-50 transition-colors text-slate-300">
+                       <X size={18} />
+                     </button>
+                   </div>
+
+                   <div className="space-y-3">
+                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Registry Name</label>
+                     <input 
+                       autoFocus
+                       value={newCatName}
+                       onChange={e => setNewCatName(e.target.value)}
+                       onKeyDown={e => e.key === 'Enter' && handleCreateCategory()}
+                       placeholder="e.g. Signature Sides"
+                       className="w-full h-12 px-5 bg-slate-50 border border-transparent rounded-lg text-slate-900 font-bold outline-none focus:bg-white focus:border-slate-100 transition-all text-sm"
+                     />
+                   </div>
+
+                   <button 
+                     onClick={handleCreateCategory}
+                     disabled={!newCatName}
+                     className="w-full h-12 bg-slate-900 text-white rounded-lg font-bold uppercase tracking-widest text-[10px] hover:bg-slate-800 transition-all disabled:opacity-40 shadow-sm"
+                   >
+                     Create Category
                    </button>
                  </div>
-
-                 <div className="space-y-4">
-                   <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest ml-1">Category Name</label>
-                   <input 
-                     autoFocus
-                     value={newCatName}
-                     onChange={e => setNewCatName(e.target.value)}
-                     onKeyDown={e => e.key === 'Enter' && handleCreateCategory()}
-                     placeholder="e.g. Signature Sides"
-                     className="w-full h-16 px-8 bg-[#f9f9f9] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none focus:border-[#d97757] transition-all"
-                   />
-                 </div>
-
-                 <button 
-                   onClick={handleCreateCategory}
-                   disabled={!newCatName}
-                   className="w-full h-16 bg-[#d97757] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all disabled:opacity-40 shadow-md"
-                 >
-                   Create Category
-                 </button>
-               </div>
-             </motion.div>
-           </div>
-         )}
-       </AnimatePresence>
+               </motion.div>
+             </div>
+           )}
+         </AnimatePresence>
+      </div>
     </div>
   );
 }

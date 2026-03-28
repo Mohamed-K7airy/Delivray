@@ -47,7 +47,7 @@ export default function DriverHistory() {
   }, [token, user, router]);
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] pb-24">
+    <div className="min-h-screen bg-[#f8fafc] pb-24">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-30">
         <div className="container-responsive h-20 flex items-center justify-between">
@@ -58,11 +58,11 @@ export default function DriverHistory() {
             >
               <ArrowLeft size={20} />
             </button>
-            <h1 className="text-xl font-black text-[#111111] uppercase tracking-tighter">Mission Logs</h1>
+            <h1 className="text-xl font-bold text-[#111111] uppercase tracking-tighter">Mission Logs</h1>
           </div>
           <div className="hidden sm:flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 rounded-full border border-green-100">
              <PackageCheck size={14} />
-             <span className="text-[10px] font-black uppercase tracking-widest">{pagination.total || 0} Deliveries Completed</span>
+             <span className="text-[10px] font-bold uppercase tracking-widest">{pagination.total || 0} Deliveries Completed</span>
           </div>
         </div>
       </header>
@@ -75,7 +75,7 @@ export default function DriverHistory() {
              placeholder="Search past missions..." 
              className="flex-1 bg-transparent border-none outline-none text-sm font-medium placeholder:text-gray-300"
            />
-           <button className="h-10 px-6 bg-[#f9f9f9] text-[#111111] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">Filter</button>
+           <button className="h-10 px-6 bg-[#f8fafc] text-[#111111] rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 transition-colors">Filter</button>
         </div>
 
         {/* History List */}
@@ -98,13 +98,13 @@ export default function DriverHistory() {
                 >
                   <div className="flex flex-col md:flex-row justify-between gap-6">
                     <div className="flex items-start gap-5">
-                      <div className="w-14 h-14 bg-[#fef3f2] rounded-2xl flex items-center justify-center text-[#d97757] shrink-0 group-hover:scale-110 transition-transform">
+                      <div className="w-14 h-14 bg-[#fef3f2] rounded-2xl flex items-center justify-center text-[#0f172a] shrink-0 group-hover:scale-110 transition-transform">
                         <MapPin size={24} />
                       </div>
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-black text-[#111111] uppercase tracking-tight text-lg">{order.stores?.name}</h3>
-                          <span className="px-2 py-0.5 bg-gray-50 text-gray-400 rounded-md text-[8px] font-black uppercase tracking-widest">#{order.id.slice(0,8)}</span>
+                          <h3 className="font-bold text-[#111111] uppercase tracking-tight text-lg">{order.stores?.name}</h3>
+                          <span className="px-2 py-0.5 bg-gray-50 text-gray-400 rounded-md text-[8px] font-bold uppercase tracking-widest">#{order.id.slice(0,8)}</span>
                         </div>
                         <p className="text-sm font-medium text-[#888888] flex items-center gap-2">
                           <Calendar size={14} /> {new Date(order.updated_at).toLocaleDateString()}
@@ -116,16 +116,16 @@ export default function DriverHistory() {
 
                     <div className="flex items-center justify-between md:justify-end gap-10 border-t md:border-t-0 pt-4 md:pt-0">
                       <div className="text-center md:text-right">
-                        <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-1">Fee Earned</p>
-                        <p className="text-xl font-black text-green-600 tracking-tighter">${Number(order.delivery_fee || 3.00).toFixed(2)}</p>
+                        <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-1">Fee Earned</p>
+                        <p className="text-xl font-bold text-green-600 tracking-tighter">${Number(order.delivery_fee || 3.00).toFixed(2)}</p>
                       </div>
                       <div className="text-center md:text-right">
-                        <p className="text-[10px] font-black text-[#888888] uppercase tracking-widest mb-1">Status</p>
-                        <span className="px-3 py-1 bg-green-50 text-green-600 border border-green-100 rounded-full text-[9px] font-black uppercase tracking-widest">Success</span>
+                        <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-1">Status</p>
+                        <span className="px-3 py-1 bg-green-50 text-green-600 border border-green-100 rounded-full text-[9px] font-bold uppercase tracking-widest">Success</span>
                       </div>
                       <button 
                         onClick={() => router.push(`/order/${order.id}`)}
-                        className="w-12 h-12 bg-gray-50 text-gray-300 rounded-xl flex items-center justify-center hover:bg-[#fef3f2] hover:text-[#d97757] transition-all border border-gray-100"
+                        className="w-12 h-12 bg-gray-50 text-gray-300 rounded-xl flex items-center justify-center hover:bg-[#fef3f2] hover:text-[#0f172a] transition-all border border-gray-100"
                       >
                         <ChevronRight size={20} />
                       </button>
@@ -137,7 +137,7 @@ export default function DriverHistory() {
           ) : (
             <div className="py-20 flex flex-col items-center gap-4 text-center opacity-40">
               <PackageCheck size={48} />
-              <p className="text-sm font-black uppercase tracking-widest">No Missions Recorded Yet.</p>
+              <p className="text-sm font-bold uppercase tracking-widest">No Missions Recorded Yet.</p>
             </div>
           )}
         </div>
@@ -152,7 +152,7 @@ export default function DriverHistory() {
             >
               <ChevronLeft size={20} />
             </button>
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-[#111111]">
+            <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#111111]">
               Page {pagination.page} / {pagination.totalPages}
             </span>
             <button 

@@ -12,18 +12,18 @@ export default function Input({ icon, error, label, className = '', ...props }: 
   const [focused, setFocused] = useState(false);
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      {label && <label className="text-[10px] font-black text-[#555555] uppercase tracking-[0.2em] ml-2">{label}</label>}
+    <div className="w-full flex flex-col gap-2.5">
+      {label && <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-2">{label}</label>}
       <div 
-        className={`relative flex items-center bg-white rounded-xl overflow-hidden border transition-all duration-300 ${focused ? 'border-[#d97757] shadow-md bg-white' : error ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}
+        className={`relative flex items-center bg-white rounded-xl overflow-hidden border transition-all duration-300 ${focused ? 'border-slate-900 shadow-sm bg-white' : error ? 'border-red-500 bg-red-50' : 'border-slate-200 hover:border-slate-300'}`}
       >
         {icon && (
-          <div className={`pl-5 transition-colors ${focused ? 'text-[#d97757]' : 'text-gray-400'}`}>
+          <div className={`pl-5 transition-colors ${focused ? 'text-slate-900' : 'text-slate-400'}`}>
             {icon}
           </div>
         )}
         <input 
-          className={`flex-grow px-5 py-4 sm:py-5 outline-none text-[#111111] bg-transparent placeholder-gray-400 text-sm font-medium ${className}`}
+          className={`flex-grow px-5 py-4 sm:py-5 outline-none text-slate-900 bg-transparent placeholder-slate-300 text-sm font-medium ${className}`}
           onFocus={(e) => {
             setFocused(true);
             props.onFocus?.(e);

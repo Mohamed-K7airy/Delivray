@@ -43,18 +43,18 @@ export default function MerchantPayouts() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
            <div className="space-y-2">
-              <h1 className="text-3xl sm:text-6xl font-black uppercase tracking-tighter text-[#111111]">Payouts</h1>
+              <h1 className="text-3xl sm:text-6xl font-bold uppercase tracking-tighter text-[#111111]">Payouts</h1>
               <p className="text-[#888888] font-bold text-sm">Financial telemetry and transaction settlement history.</p>
            </div>
            <div className="bg-white px-6 py-3 rounded-xl border border-gray-100 flex items-center space-x-6 shadow-sm">
-              <div className="flex items-center space-x-3 text-[#d97757]">
+              <div className="flex items-center space-x-3 text-[#0f172a]">
                  <Lock size={14} className="stroke-[3]" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">Secure Settlement</span>
+                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Secure Settlement</span>
               </div>
               <div className="h-4 w-px bg-gray-100"></div>
               <div className="flex items-center space-x-3">
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888]">Next Payout:</span>
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#111111]">24h</span>
+                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888]">Next Payout:</span>
+                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#111111]">24h</span>
               </div>
            </div>
         </div>
@@ -69,14 +69,14 @@ export default function MerchantPayouts() {
                  transition={{ delay: idx * 0.1 }}
                  className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-100 shadow-md relative overflow-hidden group hover:shadow-xl transition-all"
               >
-                 <div className="absolute -top-4 -right-4 text-[#d97757]/[0.05] transform rotate-12">
+                 <div className="absolute -top-4 -right-4 text-[#0f172a]/[0.05] transform rotate-12">
                     {stat.icon}
                  </div>
-                 <div className="w-12 h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#d97757] border border-gray-100 mb-8 shadow-inner">
+                 <div className="w-12 h-12 bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#0f172a] border border-gray-100 mb-8 shadow-inner">
                     {stat.icon}
                  </div>
-                 <p className="text-[10px] font-black text-[#888888] uppercase tracking-[0.3em] mb-3">{stat.label}</p>
-                 <h3 className={`text-4xl font-black ${stat.color === 'primary' ? 'text-[#d97757]' : 'text-[#111111]'} tracking-tighter`}>{stat.value}</h3>
+                 <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.3em] mb-3">{stat.label}</p>
+                 <h3 className={`text-4xl font-bold ${stat.color === 'primary' ? 'text-[#0f172a]' : 'text-[#111111]'} tracking-tighter`}>{stat.value}</h3>
               </motion.div>
            ))}
         </div>
@@ -84,15 +84,15 @@ export default function MerchantPayouts() {
         {/* Transaction History */}
         <div className="bg-white p-6 sm:p-12 rounded-2xl border border-gray-100 shadow-xl relative overflow-hidden">
            <div className="flex items-center space-x-5 mb-14 relative z-10">
-              <div className="w-10 h-10 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#111111] border border-gray-100">
+              <div className="w-10 h-10 bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#111111] border border-gray-100">
                  <CreditCard size={20} />
               </div>
-              <h2 className="text-2xl font-black uppercase tracking-widest italic text-[#111111]">Transaction History</h2>
+              <h2 className="text-2xl font-bold uppercase tracking-widest italic text-[#111111]">Transaction History</h2>
            </div>
 
            <div className="space-y-6 relative z-10">
               {loading ? (
-                 <div className="py-20 text-center text-[#888888] font-black uppercase tracking-widest text-xs animate-pulse">Loading telemetry...</div>
+                 <div className="py-20 text-center text-[#888888] font-bold uppercase tracking-widest text-xs animate-pulse">Loading telemetry...</div>
               ) : transactions.length === 0 ? (
                  <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-2xl">
                     <CreditCard size={40} className="mx-auto text-gray-200 mb-4" />
@@ -104,29 +104,29 @@ export default function MerchantPayouts() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 + (idx * 0.1) }}
-                    className="bg-[#f9f9f9] p-8 rounded-xl border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-lg transition-all group cursor-pointer"
+                    className="bg-[#f8fafc] p-8 rounded-xl border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-lg transition-all group cursor-pointer"
                  >
                     <div className="flex items-center space-x-8">
-                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#888888] transition-colors group-hover:text-[#d97757] border border-gray-100 shadow-sm">
+                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#888888] transition-colors group-hover:text-[#0f172a] border border-gray-100 shadow-sm">
                           <ArrowDownRight size={20} />
                        </div>
                        <div className="space-y-1">
-                          <h4 className="font-black uppercase tracking-tighter text-xl text-[#111111]">{tx.id}</h4>
+                          <h4 className="font-bold uppercase tracking-tighter text-xl text-[#111111]">{tx.id}</h4>
                           <p className="text-[9px] font-bold text-[#888888] uppercase tracking-[0.3em]">{new Date(tx.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}</p>
                        </div>
                     </div>
                     <div className="text-right space-y-2">
-                       <p className="text-3xl font-black tracking-tighter text-[#111111]">${Number(tx.amount).toFixed(2)}</p>
+                       <p className="text-3xl font-bold tracking-tighter text-[#111111]">${Number(tx.amount).toFixed(2)}</p>
                        <div className="flex items-center justify-end space-x-2">
-                          <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${tx.status === 'settled' ? 'bg-[#d97757]' : 'bg-yellow-500'}`}></div>
-                          <span className={`text-[9px] font-black uppercase tracking-widest italic ${tx.status === 'settled' ? 'text-[#d97757]' : 'text-yellow-500'}`}>{tx.status}</span>
+                          <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${tx.status === 'settled' ? 'bg-[#0f172a]' : 'bg-yellow-500'}`}></div>
+                          <span className={`text-[9px] font-bold uppercase tracking-widest italic ${tx.status === 'settled' ? 'text-[#0f172a]' : 'text-yellow-500'}`}>{tx.status}</span>
                        </div>
                     </div>
                  </motion.div>
               ))}
            </div>
            
-           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#d97757]/5 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40 opacity-30"></div>
+           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#0f172a]/5 rounded-full blur-[120px] pointer-events-none -mr-40 -mt-40 opacity-30"></div>
        </div>
     </div>
   );

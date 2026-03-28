@@ -33,14 +33,14 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
 
   if (!mounted || !token || user?.role !== 'merchant') {
      return (
-        <div className="min-h-screen bg-[#f9f9f9] flex items-center justify-center font-black">
-           <div className="w-12 h-12 border-4 border-[#d97757] border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center font-bold">
+           <div className="w-12 h-12 border-4 border-[#0f172a] border-t-transparent rounded-full animate-spin" />
         </div>
      );
   }
 
   return (
-    <div className="min-h-screen bg-[#f9f9f9] text-[#111111] flex relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#f8fafc] text-[#111111] flex relative overflow-x-hidden">
       <MerchantSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
       <main 
         className={`flex-1 flex flex-col min-h-screen relative z-10 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
@@ -50,7 +50,7 @@ export default function MerchantLayout({ children }: { children: React.ReactNode
         <MerchantNavbar isCollapsed={isCollapsed} />
         <div className="flex-1 overflow-y-auto custom-scrollbar relative">
           {/* Background Decor */}
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#d97757]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
+          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#0f172a]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>
           
           <motion.div 
             initial={{ opacity: 0, y: 10 }}

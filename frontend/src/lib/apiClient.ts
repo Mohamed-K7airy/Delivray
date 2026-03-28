@@ -35,7 +35,7 @@ export const apiClient = async (endpoint: string, options: RequestOptions = {}) 
       toast.error('Session expired. Please login again.');
       logout();
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.dispatchEvent(new CustomEvent('delivray-unauthorized'));
       }
       return null;
     }
@@ -52,6 +52,9 @@ export const apiClient = async (endpoint: string, options: RequestOptions = {}) 
 
     return data;
   } catch (error: any) {
+    if (error.name === 'AbortError') {
+      throw error; // Let the caller handle it if they want, but don't log/toast
+    }
     if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
       toast.error('Network Error: Please check your internet connection.');
     }

@@ -25,7 +25,7 @@ export default function ReviewModal({ orderId, storeName, isOpen, onClose, onSuc
     try {
       const data = await apiClient('/reviews', {
         method: 'POST',
-        body: JSON.stringify({ order_id: orderId, rating, comment })
+        data: { order_id: orderId, rating, comment }
       });
       if (data) {
         toast.success('Review submitted! Thank you.');
@@ -61,10 +61,10 @@ export default function ReviewModal({ orderId, storeName, isOpen, onClose, onSuc
             </button>
 
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-[#fef3f2] rounded-2xl flex items-center justify-center text-[#d97757] mx-auto mb-4">
+              <div className="w-16 h-16 bg-[#fef3f2] rounded-2xl flex items-center justify-center text-[#0f172a] mx-auto mb-4">
                 <Star size={32} fill="currentColor" />
               </div>
-              <h2 className="text-2xl font-black text-[#111111] tracking-tighter">Rate your experience</h2>
+              <h2 className="text-2xl font-bold text-[#111111] tracking-tighter">Rate your experience</h2>
               <p className="text-xs font-bold text-[#888888] uppercase tracking-widest mt-1">Order from {storeName}</p>
             </div>
 
@@ -91,14 +91,14 @@ export default function ReviewModal({ orderId, storeName, isOpen, onClose, onSuc
 
               {/* Comment */}
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-[#888888] uppercase tracking-widest ml-1 flex items-center gap-2">
+                <label className="text-[10px] font-bold text-[#888888] uppercase tracking-widest ml-1 flex items-center gap-2">
                   <MessageSquare size={12} /> Share your thoughts (Optional)
                 </label>
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   placeholder="How was the food and delivery?"
-                  className="w-full h-32 p-5 bg-[#f9f9f9] border border-gray-100 rounded-2xl text-sm font-bold text-[#111111] outline-none focus:border-[#d97757] transition-all resize-none"
+                  className="w-full h-32 p-5 bg-[#f8fafc] border border-gray-100 rounded-2xl text-sm font-bold text-[#111111] outline-none focus:border-[#0f172a] transition-all resize-none"
                 />
               </div>
 
@@ -106,7 +106,7 @@ export default function ReviewModal({ orderId, storeName, isOpen, onClose, onSuc
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full h-14 bg-[#111111] text-white rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-[#333] transition-all shadow-lg active:scale-[0.98] disabled:opacity-50"
+                className="w-full h-14 bg-[#111111] text-white rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-[#333] transition-all shadow-lg active:scale-[0.98] disabled:opacity-50"
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

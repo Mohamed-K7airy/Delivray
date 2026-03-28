@@ -56,26 +56,26 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-4"
           >
-            <div className="w-10 h-10 bg-[#fef3f2] rounded-xl flex items-center justify-center border border-[#fee2e2] shadow-sm">
-               <Truck className="text-[#d97757]" size={20} />
+            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center shadow-lg transition-transform hover:scale-105">
+               <Truck className="text-white" size={20} />
             </div>
             <div>
-               <h1 className="text-xs font-black uppercase tracking-[0.2em] text-[#111111] leading-none">Driver Hub</h1>
-               <p className="text-[8px] font-bold text-[#888888] uppercase tracking-tighter mt-1">Nexus Fleet</p>
+               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 leading-none">Driver Hub</h1>
+               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-1">Nexus Fleet</p>
             </div>
           </motion.div>
         )}
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl bg-gray-50 border border-gray-100 text-[#888888] hover:text-[#111111] hover:bg-gray-100 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-slate-900 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
         >
           {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-1 pt-4">
+      <nav className="flex-1 px-4 space-y-1.5 pt-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -84,14 +84,14 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
               href={item.href}
               className={`flex items-center space-x-3 lg:space-x-4 px-4 lg:px-5 py-3 lg:py-4 rounded-xl transition-all group relative overflow-hidden ${
                 isActive 
-                  ? 'bg-[#fef3f2] text-[#d97757] border border-[#fee2e2] shadow-sm' 
-                  : 'text-[#888888] hover:text-[#111111] hover:bg-gray-50'
+                  ? 'bg-slate-50 text-slate-900 border border-slate-100 shadow-sm' 
+                  : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50/50'
               } ${isCollapsed ? 'justify-center px-0' : ''}`}
             >
-              <item.icon size={20} className={`${isActive ? 'text-[#d97757] scale-110' : 'group-hover:text-[#d97757] group-hover:scale-110'} transition-all duration-300 ${isCollapsed ? 'mx-auto' : ''}`} />
-              {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>}
+              <item.icon size={20} className={`${isActive ? 'text-slate-900 scale-110' : 'group-hover:text-slate-900 group-hover:scale-105'} transition-all duration-300 ${isCollapsed ? 'mx-auto' : ''}`} />
+              {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>}
               {isActive && !isCollapsed && (
-                <motion.div layoutId="activeDot" className="absolute right-4 w-1 h-6 bg-[#d97757] rounded-full shadow-[0_0_8px_rgba(217,119,87,0.5)]" />
+                <motion.div layoutId="activeDot" className="absolute left-0 w-1 h-6 bg-slate-900 rounded-r-full" />
               )}
             </Link>
           );
@@ -101,23 +101,23 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
       {/* Bottom Actions */}
       <div className="p-4 lg:p-6 space-y-3 lg:space-y-4">
         {!isCollapsed && (
-          <div className="p-5 bg-white rounded-2xl border border-gray-100 flex items-center space-x-4 shadow-sm">
-             <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 border border-green-100 shadow-inner">
+          <div className="p-5 bg-white rounded-2xl border border-slate-100 flex items-center space-x-4 shadow-sm">
+             <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-900 border border-slate-100">
                 <ShieldCheck size={20} />
              </div>
              <div>
-                <p className="text-[8px] font-black uppercase tracking-widest text-[#d97757]">Tier Status</p>
-                <p className="text-[10px] font-black text-[#111111] uppercase">Elite Courier</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Tier Status</p>
+                <p className="text-[10px] font-bold text-slate-900 uppercase">Elite Courier</p>
              </div>
           </div>
         )}
 
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 text-[#888888] hover:text-[#111111] transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
+          className={`w-full flex items-center space-x-4 text-slate-400 hover:text-red-600 transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
         >
           <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-          {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest italic leading-none">Logout</span>}
+          {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout</span>}
         </button>
       </div>
     </aside>

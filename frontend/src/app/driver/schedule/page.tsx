@@ -71,12 +71,12 @@ export default function DriverSchedule() {
     <div className="space-y-8 pb-24 max-w-2xl px-4 sm:px-0">
       <div className="flex justify-between items-end">
         <div>
-            <h1 className="text-4xl font-black text-[#111111] tracking-tighter">Schedule.</h1>
+            <h1 className="text-4xl font-bold text-[#111111] tracking-tighter">Schedule.</h1>
             <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.3em] mt-2">Manage your availability</p>
         </div>
         <button 
             onClick={() => setShowAddModal(true)}
-            className="w-12 h-12 bg-[#d97757] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#d97757]/20 hover:scale-105 active:scale-95 transition-all"
+            className="w-12 h-12 bg-[#0f172a] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#0f172a]/20 hover:scale-105 active:scale-95 transition-all"
         >
             <Plus size={24} />
         </button>
@@ -85,16 +85,16 @@ export default function DriverSchedule() {
       {/* Stats summary */}
       <div className="grid grid-cols-2 gap-4">
         {[
-          { label: 'Active Shifts', value: shifts.length, icon: <Calendar size={16} />, accent: '#d97757', bg: '#fef3f2' },
-          { label: 'Estimated Hours', value: `${totalHours.toFixed(1)}h`, icon: <Clock size={16} />, accent: '#212121', bg: '#f9f9f9' },
+          { label: 'Active Shifts', value: shifts.length, icon: <Calendar size={16} />, accent: '#0f172a', bg: '#fef3f2' },
+          { label: 'Estimated Hours', value: `${totalHours.toFixed(1)}h`, icon: <Clock size={16} />, accent: '#212121', bg: '#f8fafc' },
         ].map((s, i) => (
           <div key={s.label} className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: s.bg, color: s.accent }}>
               {s.icon}
             </div>
             <div>
-              <p className="text-2xl font-black text-[#111111] tracking-tighter leading-none">{s.value}</p>
-              <p className="text-[9px] font-black text-[#888888] uppercase tracking-widest mt-1">{s.label}</p>
+              <p className="text-2xl font-bold text-[#111111] tracking-tighter leading-none">{s.value}</p>
+              <p className="text-[9px] font-bold text-[#888888] uppercase tracking-widest mt-1">{s.label}</p>
             </div>
           </div>
         ))}
@@ -103,35 +103,35 @@ export default function DriverSchedule() {
       {/* Shifts List */}
       <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden p-2">
         <div className="px-8 py-6 border-b border-gray-50 flex justify-between items-center">
-          <p className="text-xs font-black uppercase tracking-widest text-[#111111]">Upcoming Shifts</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#111111]">Upcoming Shifts</p>
           <div className="flex items-center gap-2">
-             <div className="w-1.5 h-1.5 bg-[#d97757] rounded-full animate-pulse" />
-             <span className="text-[9px] font-black text-[#888888] uppercase tracking-widest">Real-time sync</span>
+             <div className="w-1.5 h-1.5 bg-[#0f172a] rounded-full animate-pulse" />
+             <span className="text-[9px] font-bold text-[#888888] uppercase tracking-widest">Real-time sync</span>
           </div>
         </div>
         
         <div className="divide-y divide-gray-50">
            {loading ? (
               <div className="py-20 flex flex-col items-center gap-4">
-                  <Activity size={32} className="text-[#d97757] animate-spin" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#888888]">Syncing Cloud...</p>
+                  <Activity size={32} className="text-[#0f172a] animate-spin" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#888888]">Syncing Cloud...</p>
               </div>
            ) : shifts.length === 0 ? (
               <div className="py-20 text-center space-y-4">
                   <Calendar size={48} className="mx-auto text-gray-100" />
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#888888]">No Shifts Logged</p>
-                  <button onClick={() => setShowAddModal(true)} className="text-[10px] font-black text-[#d97757] uppercase tracking-widest hover:underline">Pick a shift now</button>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#888888]">No Shifts Logged</p>
+                  <button onClick={() => setShowAddModal(true)} className="text-[10px] font-bold text-[#0f172a] uppercase tracking-widest hover:underline">Pick a shift now</button>
               </div>
            ) : shifts.map((shift, i) => (
             <motion.div key={shift.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
-              className="px-8 py-6 flex items-center justify-between group hover:bg-[#f9f9f9] transition-all"
+              className="px-8 py-6 flex items-center justify-between group hover:bg-[#f8fafc] transition-all"
             >
               <div className="flex items-center gap-5">
-                <div className="w-12 h-12 rounded-2xl bg-[#fef3f2] text-[#d97757] flex items-center justify-center border border-[#fee2e2]">
+                <div className="w-12 h-12 rounded-2xl bg-[#fef3f2] text-[#0f172a] flex items-center justify-center border border-[#fee2e2]">
                    <Sun size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-[#111111]">{new Date(shift.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                  <p className="text-sm font-bold text-[#111111]">{new Date(shift.date).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     <Clock size={10} className="text-[#888888]" />
                     <p className="text-[10px] text-[#888888] font-bold tracking-tight uppercase">
@@ -162,41 +162,41 @@ export default function DriverSchedule() {
             <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
               className="relative w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-2xl overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full blur-3xl -mr-16 -mt-16" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#0f172a]/5 rounded-full blur-3xl -mr-16 -mt-16" />
               
               <div className="relative z-10">
                 <div className="flex justify-between items-center mb-10">
-                    <h3 className="text-2xl font-black text-[#111111] tracking-tighter uppercase">Pick <span className="text-[#d97757]">Shift.</span></h3>
+                    <h3 className="text-2xl font-bold text-[#111111] tracking-tighter uppercase">Pick <span className="text-[#0f172a]">Shift.</span></h3>
                     <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600"><X size={24} /></button>
                 </div>
 
                 <form onSubmit={handleCreateShift} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] ml-1">Select Date</label>
+                        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888] ml-1">Select Date</label>
                         <input 
                             required type="date"
                             value={newShift.date}
                             onChange={e => setNewShift({...newShift, date: e.target.value})}
-                            className="w-full h-16 px-6 bg-[#f9f9f9] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#d97757] transition-all"
+                            className="w-full h-16 px-6 bg-[#f8fafc] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#0f172a] transition-all"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] ml-1">Starts</label>
+                             <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888] ml-1">Starts</label>
                              <input 
                                 required type="time"
                                 value={newShift.start_time}
                                 onChange={e => setNewShift({...newShift, start_time: e.target.value})}
-                                className="w-full h-16 px-6 bg-[#f9f9f9] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#d97757] transition-all"
+                                className="w-full h-16 px-6 bg-[#f8fafc] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#0f172a] transition-all"
                              />
                         </div>
                         <div className="space-y-2">
-                             <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] ml-1">Ends</label>
+                             <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888] ml-1">Ends</label>
                              <input 
                                 required type="time"
                                 value={newShift.end_time}
                                 onChange={e => setNewShift({...newShift, end_time: e.target.value})}
-                                className="w-full h-16 px-6 bg-[#f9f9f9] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#d97757] transition-all"
+                                className="w-full h-16 px-6 bg-[#f8fafc] border border-gray-100 rounded-2xl text-sm font-bold outline-none focus:border-[#0f172a] transition-all"
                              />
                         </div>
                     </div>
@@ -204,7 +204,7 @@ export default function DriverSchedule() {
                     <button 
                         type="submit" 
                         disabled={isSubmitting}
-                        className="w-full h-16 bg-[#d97757] text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all disabled:opacity-50 shadow-lg shadow-[#d97757]/20 flex items-center justify-center gap-3"
+                        className="w-full h-16 bg-[#0f172a] text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-[#c2654a] transition-all disabled:opacity-50 shadow-lg shadow-[#0f172a]/20 flex items-center justify-center gap-3"
                     >
                         {isSubmitting ? <Activity size={20} className="animate-spin" /> : <Calendar size={20} />}
                         Log Shift

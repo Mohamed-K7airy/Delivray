@@ -44,7 +44,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         {/* Mobile Menu Toggle */}
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#d97757]"
+          className="md:hidden w-10 h-10 flex items-center justify-center bg-gray-50 border border-gray-100 rounded-xl text-[#0f172a]"
         >
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -71,10 +71,10 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
             <Link 
               key={link} 
               href={`/driver/${link.toLowerCase()}`}
-              className="text-[10px] font-black uppercase tracking-[0.25em] text-[#888888] hover:text-[#111111] transition-all relative group"
+              className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#888888] hover:text-[#111111] transition-all relative group"
             >
                {link}
-               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#d97757] transition-all group-hover:w-full" />
+               <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-[#0f172a] transition-all group-hover:w-full" />
             </Link>
           ))}
         </div>
@@ -82,7 +82,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
 
       <div className="flex items-center space-x-4 sm:space-x-10">
         {/* Search */}
-        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f9f9f9] rounded-xl flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-white transition-all active:scale-95 border border-gray-100">
+        <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#888888] hover:text-[#111111] hover:bg-white transition-all active:scale-95 border border-gray-100">
           <Search size={18} />
         </button>
 
@@ -95,16 +95,16 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
         <div className="relative" ref={dropdownRef}>
            <button 
              onClick={() => setShowProfile(!showProfile)}
-             className="flex items-center space-x-2 sm:space-x-4 bg-white p-1.5 sm:p-2 pr-4 sm:pr-6 rounded-2xl border border-gray-100 hover:bg-[#f9f9f9] transition-all group shadow-sm"
+             className="flex items-center space-x-2 sm:space-x-4 bg-white p-1.5 sm:p-2 pr-4 sm:pr-6 rounded-2xl border border-gray-100 hover:bg-[#f8fafc] transition-all group shadow-sm"
            >
-              <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#fef3f2] rounded-full flex items-center justify-center text-[#d97757] font-black text-base sm:text-lg border border-[#fee2e2] shadow-sm group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 sm:w-12 sm:h-12 bg-[#fef3f2] rounded-full flex items-center justify-center text-[#0f172a] font-bold text-base sm:text-lg border border-[#fee2e2] shadow-sm group-hover:scale-105 transition-transform">
                  {user?.name?.[0]?.toUpperCase() || 'D'}
               </div>
               <div className="text-left hidden md:block">
-                 <p className="text-sm font-black text-[#111111]">{user?.name || 'Driver'}</p>
+                 <p className="text-sm font-bold text-[#111111]">{user?.name || 'Driver'}</p>
                  <div className="flex items-center space-x-2">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_5px_#22c55e]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#d97757]">Online</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#0f172a]">Online</span>
                  </div>
               </div>
               <ChevronDown size={16} className={`text-[#888888] transition-transform duration-300 ${showProfile ? 'rotate-180' : ''}`} />
@@ -119,28 +119,28 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
                  className="absolute right-0 top-full mt-4 w-72 bg-white border border-gray-100 rounded-2xl shadow-xl p-3 z-50 overflow-hidden"
                >
                  <div className="p-4 mb-2 border-b border-gray-100">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888]">Account Managed by</p>
-                    <p className="text-md font-black text-[#111111]">{user?.email}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888]">Account Managed by</p>
+                    <p className="text-md font-bold text-[#111111]">{user?.email}</p>
                  </div>
                  <div className="space-y-1">
-                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] font-black uppercase tracking-widest text-[10px]">
+                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f8fafc] transition-all text-[#888888] hover:text-[#111111] font-bold uppercase tracking-widest text-[10px]">
                        <SettingsIcon size={18} />
                        <span>Profile Settings</span>
                     </button>
-                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f9f9f9] transition-all text-[#888888] hover:text-[#111111] font-black uppercase tracking-widest text-[10px]">
+                    <button className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-[#f8fafc] transition-all text-[#888888] hover:text-[#111111] font-bold uppercase tracking-widest text-[10px]">
                        <Activity size={18} />
                        <span>Performance Stat</span>
                     </button>
                     <div className="h-px bg-gray-100 my-2" />
                     <button 
                       onClick={() => logout()}
-                      className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-50 transition-all text-red-500 font-black uppercase tracking-widest text-[10px]"
+                      className="w-full flex items-center space-x-4 px-6 py-4 rounded-xl hover:bg-red-50 transition-all text-red-500 font-bold uppercase tracking-widest text-[10px]"
                     >
                        <LogOut size={18} />
                        <span>Logout Hub</span>
                     </button>
                  </div>
-                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#d97757]/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#0f172a]/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
                </motion.div>
              )}
            </AnimatePresence>
@@ -166,10 +166,10 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
               className="fixed inset-y-0 left-0 w-[280px] bg-white z-[70] md:hidden shadow-2xl p-8 flex flex-col"
             >
               <div className="flex items-center space-x-4 mb-12">
-                 <div className="w-10 h-10 bg-[#d97757] rounded-xl flex items-center justify-center border border-[#fee2e2]">
+                 <div className="w-10 h-10 bg-[#0f172a] rounded-xl flex items-center justify-center border border-[#fee2e2]">
                     <Truck className="text-white" size={20} />
                  </div>
-                 <h2 className="text-lg font-black tracking-tighter uppercase">Driver Hub</h2>
+                 <h2 className="text-lg font-bold tracking-tighter uppercase">Driver Hub</h2>
               </div>
               
               <div className="flex-1 space-y-4">
@@ -178,7 +178,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
                     key={link}
                     href={`/driver/${link.toLowerCase()}`}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] hover:bg-gray-50 hover:text-[#d97757] transition-all"
+                    className="block px-6 py-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888] hover:bg-gray-50 hover:text-[#0f172a] transition-all"
                   >
                     {link}
                   </Link>
@@ -187,7 +187,7 @@ export default function DriverNavbar({ isCollapsed = false }: DriverNavbarProps)
 
               <button 
                 onClick={() => logout()}
-                className="w-full h-14 bg-gray-50 text-[#888888] rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3"
+                className="w-full h-14 bg-gray-50 text-[#888888] rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-3"
               >
                 <LogOut size={16} />
                 Logout Hub

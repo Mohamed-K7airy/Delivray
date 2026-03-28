@@ -21,10 +21,10 @@ export default function Button({
   const baseStyle = "inline-flex items-center justify-center font-bold tracking-tight transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed rounded-xl relative";
   
   const variants = {
-    primary: "bg-[#d97757] text-white hover:bg-[#c2654a] shadow-md",
-    secondary: "bg-white text-[#111111] border border-gray-200 hover:bg-gray-50 shadow-sm",
-    outline: "border-2 border-gray-200 text-[#555555] hover:border-[#d97757] hover:text-[#d97757] bg-transparent",
-    ghost: "bg-transparent text-[#888888] hover:bg-gray-100 hover:text-[#111111]"
+    primary: "bg-slate-900 text-white hover:bg-slate-800 shadow-md",
+    secondary: "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 shadow-sm",
+    outline: "border border-slate-200 text-slate-600 hover:border-slate-900 hover:text-slate-900 bg-transparent",
+    ghost: "bg-transparent text-slate-400 hover:bg-slate-50 hover:text-slate-900"
   };
 
   const sizes = {

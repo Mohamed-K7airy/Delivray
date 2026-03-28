@@ -48,7 +48,7 @@ const CheckoutForm = ({ clientSecret, onCancel, onSuccess }: { clientSecret: str
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-[#888888] ml-2 mb-4 block">Secure Card Entry</label>
+        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#888888] ml-2 mb-4 block">Secure Card Entry</label>
         <div className="px-4 py-3 bg-white rounded-xl border border-gray-100 shadow-sm">
           <CardElement options={{
             style: {
@@ -68,7 +68,7 @@ const CheckoutForm = ({ clientSecret, onCancel, onSuccess }: { clientSecret: str
         <button
           type="submit"
           disabled={isProcessing || !stripe}
-          className="w-full h-16 bg-[#d97757] text-white font-black uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-[#d97757]/20 hover:bg-[#c2654a] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+          className="w-full h-16 bg-[#0f172a] text-white font-bold uppercase tracking-widest text-xs rounded-2xl shadow-xl shadow-[#0f172a]/20 hover:bg-[#c2654a] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
         >
           {isProcessing ? <Activity className="animate-spin" size={20} /> : <Lock size={18} />}
           {isProcessing ? 'Authorizing...' : 'Confirm Payment'}
@@ -76,7 +76,7 @@ const CheckoutForm = ({ clientSecret, onCancel, onSuccess }: { clientSecret: str
         <button
           type="button"
           onClick={onCancel}
-          className="text-[10px] font-black uppercase tracking-widest text-[#888888] hover:text-[#111111] transition-colors"
+          className="text-[10px] font-bold uppercase tracking-widest text-[#888888] hover:text-[#111111] transition-colors"
         >
           Cancel Transaction
         </button>
@@ -118,13 +118,13 @@ export default function StripeCheckoutModal({
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             className="relative w-full max-w-lg bg-white rounded-[3rem] p-12 shadow-2xl overflow-hidden"
           >
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#d97757]/5 rounded-full blur-3xl -mr-24 -mt-24" />
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#0f172a]/5 rounded-full blur-3xl -mr-24 -mt-24" />
             
             <div className="relative z-10">
               <div className="flex justify-between items-center mb-10">
                 <div>
-                  <h3 className="text-3xl font-black text-[#111111] tracking-tighter uppercase">Secure <span className="text-[#d97757]">Payment.</span></h3>
-                  <p className="text-[9px] font-black text-[#888888] uppercase tracking-[0.3em] mt-1">Transaction Node #48291</p>
+                  <h3 className="text-3xl font-bold text-[#111111] tracking-tighter uppercase">Secure <span className="text-[#0f172a]">Payment.</span></h3>
+                  <p className="text-[9px] font-bold text-[#888888] uppercase tracking-[0.3em] mt-1">Transaction Node #48291</p>
                 </div>
                 <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                   <X size={28} />
