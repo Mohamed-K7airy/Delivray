@@ -4,6 +4,10 @@ export const sendVerificationEmail = async (email, name, token) => {
   const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`;
   
   try {
+    if (!resend) {
+      console.warn('[EmailService] Resend client not initialized. Skipping verification email.');
+      return { success: false, error: 'Email service disabled' };
+    }
     const { data, error } = await resend.emails.send({
       from: `Delivray <${SENDER_EMAIL}>`,
       to: [email],
@@ -35,6 +39,10 @@ export const sendVerificationEmail = async (email, name, token) => {
 
 export const sendOTPEmail = async (email, name, otp) => {
   try {
+    if (!resend) {
+      console.warn('[EmailService] Resend client not initialized. Skipping OTP email.');
+      return { success: false, error: 'Email service disabled' };
+    }
     const { data, error } = await resend.emails.send({
       from: `Delivray security<${SENDER_EMAIL}>`,
       to: [email],
