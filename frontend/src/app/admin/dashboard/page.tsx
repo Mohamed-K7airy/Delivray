@@ -53,7 +53,7 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [statsData, pendingData, usersData, storesData, finData, promoData] = await Promise.all([
+        const [statsData, pendingData, usersData, storesData, finData, promoData, anData, schData] = await Promise.all([
           apiClient('/admin/stats'),
           apiClient('/admin/pending-users'),
           apiClient(`/admin/users?search=${userSearch}&role=${userRoleFilter}`),
@@ -70,8 +70,8 @@ export default function AdminDashboard() {
         if (storesData) setAllStores(storesData);
         if (finData) setFinancials(finData);
         if (promoData) setPromos(promoData);
-        if (analyticsData) setAnalyticsData(analyticsData);
-        if (schedulingData) setSchedulingData(schedulingData);
+        if (anData) setAnalyticsData(anData);
+        if (schData) setSchedulingData(schData);
       } catch (err) {
         console.error(err);
       } finally {

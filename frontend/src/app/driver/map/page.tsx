@@ -122,7 +122,7 @@ export default function DriverMapPage() {
               center={currentPos || [activeOrder.stores?.location_lat || 0, activeOrder.stores?.location_lng || 0]}
               zoom={15}
               markers={markers}
-              polyline={polyline}
+              routingPoints={currentPos && activeOrder?.delivery_lat ? [currentPos, [activeOrder.delivery_lat, activeOrder.delivery_lng]] : undefined}
             />
             
             {/* Overlay Info */}

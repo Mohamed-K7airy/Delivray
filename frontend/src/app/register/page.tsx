@@ -230,6 +230,23 @@ export default function RegisterPage() {
                                 <ChevronDown size={14} className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300" />
                              </div>
                           </div>
+                          <div className="sm:col-span-2 space-y-4">
+                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Geospatial Registry</label>
+                             <div className="h-64 rounded-3xl overflow-hidden border border-slate-100 relative shadow-inner">
+                                <MapView 
+                                   center={[24.7136, 46.6753]} 
+                                   zoom={12} 
+                                   interactive={true}
+                                   onLocationSelect={(lat, lng) => setSelectedLocation([lat, lng])}
+                                   markers={selectedLocation ? [{ position: selectedLocation, type: 'store', label: 'HUB' }] : []}
+                                />
+                                {!selectedLocation && (
+                                   <div className="absolute inset-x-0 bottom-4 flex justify-center pointer-events-none">
+                                      <span className="bg-slate-900/90 backdrop-blur-md text-white px-4 py-2 rounded-xl text-[8px] font-bold uppercase tracking-[0.2em] shadow-xl">Point to establish node</span>
+                                   </div>
+                                )}
+                             </div>
+                          </div>
                        </motion.div>
                     )}
 
