@@ -26,6 +26,7 @@ interface Order {
   created_at: string;
   driver_id?: string;
   store_id?: string;
+  delivery_address?: string;
   order_items?: {
     id: string;
     quantity: number;
