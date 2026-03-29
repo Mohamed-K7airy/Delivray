@@ -12,6 +12,7 @@ export default function MerchantSettings() {
   const { user, token } = useAuthStore();
   const [store, setStore] = useState<any>(null);
   const [storeName, setStoreName] = useState('');
+  const [storeDescription, setStoreDescription] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -21,6 +22,7 @@ export default function MerchantSettings() {
         if (data && data.length > 0) {
           setStore(data[0]);
           setStoreName(data[0].name);
+          setStoreDescription(data[0].description || '');
         }
       }).catch(err => console.error('Failed to fetch store:', err));
     }
@@ -58,13 +60,14 @@ export default function MerchantSettings() {
       console.log('[StoreUpdate] Syncing data with DB:', { name: storeName, image: imageUrl });
       const updated = await apiClient(`/stores/${store.id}`, {
         method: 'PATCH',
-        data: { name: storeName, image: imageUrl }
+        data: { name: storeName, description: storeDescription, image: imageUrl }
       });
 
       if (updated) {
         console.log('[StoreUpdate] Success:', updated);
         setStore(updated);
         setStoreName(updated.name);
+        setStoreDescription(updated.description || '');
         setImageFile(null);
         toast.success('Store configuration synchronized! 🚀');
       } else {
@@ -145,6 +148,16 @@ export default function MerchantSettings() {
                         className="w-full h-16 px-8 bg-[#f8fafc] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none opacity-50 cursor-not-allowed" 
                       />
                    </div>
+                </div>
+
+                <div className="space-y-4">
+                   <label className="text-[10px] font-bold text-[#888888] uppercase tracking-widest ml-1">Store Description</label>
+                   <textarea 
+                     value={storeDescription}
+                     onChange={e => setStoreDescription(e.target.value)}
+                     placeholder="Tell your store's story... (e.g. Traditional recipes with a modern twist)"
+                     className="w-full h-32 p-8 bg-[#f8fafc] border border-gray-100 rounded-xl text-[#111111] font-bold outline-none focus:border-[#0f172a] transition-all resize-none" 
+                   />
                 </div>
 
                 {/* Brand Visuals */}

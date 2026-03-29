@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                 {[
                   { label: 'Network Orders', value: stats?.totalOrders || 0, icon: ShoppingBag, color: 'text-slate-900' },
                   { label: 'Active Personnel', value: stats?.totalUsers || 0, icon: Users, color: 'text-slate-900' },
-                  { label: 'Capital Flow', value: `$${stats?.totalRevenue.toFixed(2) || '0.00'}`, icon: DollarSign, color: 'text-slate-900' },
+                  { label: 'Capital Flow', value: `${stats?.totalRevenue.toFixed(2) || '0.00'} ج.م`, icon: DollarSign, color: 'text-slate-900' },
                   { label: 'Partner Sockets', value: stats?.totalStores || 0, icon: Activity, color: 'text-slate-900' },
                 ].map((item, idx) => (
                   <div key={item.label} className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
@@ -398,15 +398,15 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Gross Merchandise Value (GMV)</p>
-                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.gmv || '0.00'}</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">{financials?.gmv || '0.00'} ج.م</p>
                 </div>
                 <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Platform Revenue (20%)</p>
-                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.platformCommission || '0.00'}</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">{financials?.platformCommission || '0.00'} ج.م</p>
                 </div>
                 <div className="bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Merchant Payouts</p>
-                  <p className="text-4xl font-bold text-slate-900 tracking-tight">${financials?.netMerchantPayout || '0.00'}</p>
+                  <p className="text-4xl font-bold text-slate-900 tracking-tight">{financials?.netMerchantPayout || '0.00'} ج.م</p>
                 </div>
               </div>
  
@@ -439,7 +439,7 @@ export default function AdminDashboard() {
                   />
                   <input 
                     type="number" 
-                    placeholder="Discount ($)" 
+                    placeholder="Discount (ج.م)" 
                     className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.discount_amount}
                     onChange={e => setNewPromo({...newPromo, discount_amount: e.target.value})}
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
                   />
                   <input 
                     type="number" 
-                    placeholder="Min Order ($)" 
+                    placeholder="Min Order (ج.م)" 
                     className="h-12 px-5 bg-slate-50 rounded-lg font-bold uppercase tracking-widest text-[10px] border border-transparent outline-none focus:bg-white focus:border-slate-100 transition-all text-slate-900"
                     value={newPromo.min_subtotal}
                     onChange={e => setNewPromo({...newPromo, min_subtotal: e.target.value})}
@@ -471,8 +471,8 @@ export default function AdminDashboard() {
                        <button onClick={() => handleDeletePromo(promo.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                     </div>
                     <div className="space-y-1">
-                       <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">-${promo.value} USD</p>
-                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Min Order: ${promo.min_subtotal}</p>
+                       <p className="text-xs font-bold text-slate-900 uppercase tracking-widest">-{promo.value} ج.م</p>
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Min Order: {promo.min_subtotal} ج.م</p>
                     </div>
                  </div>
                ))}

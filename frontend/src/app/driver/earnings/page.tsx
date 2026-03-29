@@ -19,7 +19,7 @@ export default function EarningsPage() {
       apiClient('/delivery/stats'),
       apiClient('/orders/driver')
     ]).then(([statsData, ordersData]) => {
-      if (statsData) setStats({ earnings: statsData.earnings, deliveries: statsData.deliveries, delivery_fee: statsData.delivery_fee || 3.00 });
+      if (statsData) setStats({ earnings: statsData.earnings, deliveries: statsData.deliveries, delivery_fee: statsData.delivery_fee || 45.00 });
       if (ordersData && Array.isArray(ordersData)) {
         setHistory(ordersData.filter((o: any) => o.status === 'completed').slice(0, 20));
       }
@@ -40,9 +40,9 @@ export default function EarningsPage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: 'Total Earned', value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={18} />, accent: '#0f172a', bg: '#fef3f2', desc: 'All-time delivery fees' },
+          { label: 'Total Earned', value: `${stats.earnings.toFixed(2)} ج.م`, icon: <Wallet size={18} />, accent: '#0f172a', bg: '#fef3f2', desc: 'All-time delivery fees' },
           { label: 'Deliveries', value: stats.deliveries, icon: <Package size={18} />, accent: '#2563eb', bg: '#eff6ff', desc: 'Completed trips' },
-          { label: 'Per Delivery', value: `$${stats.delivery_fee.toFixed(2)}`, icon: <DollarSign size={18} />, accent: '#16a34a', bg: '#f0fdf4', desc: 'Fixed delivery fee' },
+          { label: 'Per Delivery', value: `${stats.delivery_fee.toFixed(2)} ج.م`, icon: <DollarSign size={18} />, accent: '#16a34a', bg: '#f0fdf4', desc: 'Fixed delivery fee' },
         ].map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
             className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm"
@@ -86,7 +86,7 @@ export default function EarningsPage() {
         <div>
           <p className="text-xs font-bold text-[#111111] mb-1">How Your Pay Works</p>
           <p className="text-[11px] text-[#555555] font-medium leading-relaxed">
-            You earn a <strong className="text-[#0f172a]">${stats.delivery_fee.toFixed(2)} delivery fee</strong> per completed delivery.
+            You earn a <strong className="text-[#0f172a]">{stats.delivery_fee.toFixed(2)} ج.م delivery fee</strong> per completed delivery.
             The product subtotal (order value) goes directly to the merchant.
             Simple, transparent, fair.
           </p>
@@ -134,7 +134,7 @@ export default function EarningsPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-green-600">+${stats.delivery_fee.toFixed(2)}</p>
+                  <p className="text-sm font-bold text-green-600">+{stats.delivery_fee.toFixed(2)} ج.م</p>
                   <p className="text-[9px] text-[#888888] font-bold uppercase tracking-wide">Delivery Fee</p>
                 </div>
               </motion.div>

@@ -389,9 +389,9 @@ export default function CartPage() {
                           
                           <div className="text-right">
                             <p className="text-xl font-bold text-slate-900 tracking-tighter tabular-nums">
-                              ${(Number(item.products.price) * item.quantity).toFixed(2)}
+                              {(Number(item.products.price) * item.quantity).toFixed(2)} ج.م
                             </p>
-                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">${Number(item.products.price).toFixed(2)} each</p>
+                            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{Number(item.products.price).toFixed(2)} ج.م each</p>
                           </div>
                         </div>
                       </div>
@@ -485,20 +485,20 @@ export default function CartPage() {
               <div className="space-y-5 mb-10 pb-10 border-b border-slate-50">
                 <div className="flex justify-between items-center px-2">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Subtotal</span>
-                  <span className="text-base font-bold text-slate-900 tabular-nums">${total.toFixed(2)}</span>
+                  <span className="text-base font-bold text-slate-900 tabular-nums">{total.toFixed(2)} ج.م</span>
                 </div>
                 <div className="flex justify-between items-center px-2">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Logistics</span>
-                  <span className="text-base font-bold text-green-600 tabular-nums">$3.00</span>
+                  <span className="text-base font-bold text-green-600 tabular-nums">45.00 ج.م</span>
                 </div>
                 <div className="flex justify-between items-center px-2">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Service Fee</span>
-                  <span className="text-base font-bold text-slate-900 tabular-nums">${(total * 0.1).toFixed(2)}</span>
+                  <span className="text-base font-bold text-slate-900 tabular-nums">{(total * 0.1).toFixed(2)} ج.م</span>
                 </div>
                 {isPromoApplied && (
                   <div className="flex justify-between items-center bg-blue-50 -mx-6 px-8 py-4 rounded-2xl border border-blue-100">
                     <span className="text-[11px] font-bold uppercase tracking-widest text-blue-600">Protocol Discount</span>
-                    <span className="text-base font-bold text-blue-600 tabular-nums">-${discount.toFixed(2)}</span>
+                    <span className="text-base font-bold text-blue-600 tabular-nums">-{discount.toFixed(2)} ج.م</span>
                   </div>
                 )}
               </div>
@@ -506,7 +506,7 @@ export default function CartPage() {
               <div className="mb-10 px-2 flex justify-between items-center">
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Total</p>
                 <p className="text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">
-                  ${Math.max(0, (total + 3.00 + (total * 0.1) - discount)).toFixed(2)}
+                  {Math.max(0, (total + 45.00 + (total * 0.1) - discount)).toFixed(2)} ج.م
                 </p>
               </div>
 

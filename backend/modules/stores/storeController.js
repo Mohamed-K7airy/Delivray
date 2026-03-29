@@ -7,14 +7,14 @@ const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '3.00');
 // @access  Private/Merchant
 export const createStore = async (req, res) => {
   try {
-    const { name, type, location_lat, location_lng } = req.body;
+    const { name, type, description, location_lat, location_lng } = req.body;
 
     const { data: store, error } = await supabase
       .from('stores')
       .insert([{ 
-        owner_id: req.user.id, 
         name, 
         type, 
+        description,
         location_lat, 
         location_lng 
       }])
@@ -97,9 +97,9 @@ export const getStoreById = async (req, res) => {
 export const updateStore = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, image, type, is_open } = req.body;
+    const { name, image, description, type, is_open } = req.body;
 
-    console.log(`[StoreUpdate] Request for ID ${id}:`, { name, image });
+    console.log(`[StoreUpdate] Request for ID ${id}:`, { name, image, description });
 
     // Ownership check done in middleware or here
     const { data: store, error: fetchError } = await supabase
@@ -114,6 +114,7 @@ export const updateStore = async (req, res) => {
     const updates = {
       ...(name && { name }),
       ...(image !== undefined && { image }),
+      ...(description !== undefined && { description }),
       ...(type && { type }),
       ...(is_open !== undefined && { is_open }),
       updated_at: new Date()

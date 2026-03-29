@@ -315,12 +315,12 @@ export default function OrderTracking() {
                       <span className="w-10 h-10 bg-slate-50 border border-slate-100 text-slate-900 rounded-xl flex items-center justify-center text-xs font-bold tabular-nums shadow-inner">{item.quantity}</span>
                       <span className="text-base font-bold text-slate-900 tracking-tight">{item.products.name}</span>
                     </div>
-                    <span className="text-base font-bold text-slate-900 tabular-nums">${(item.quantity * item.products.price).toFixed(2)}</span>
+                    <span className="text-base font-bold text-slate-900 tabular-nums">{(item.quantity * item.products.price).toFixed(2)} ج.م</span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between px-10 py-10 bg-slate-50/50">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Total Valuation</span>
-                  <span className="text-4xl font-bold text-slate-900 tracking-tighter tabular-nums">${order.total_price.toFixed(2)}</span>
+                  <span className="text-4xl font-bold text-slate-900 tracking-tighter tabular-nums">{order.total_price.toFixed(2)} ج.م</span>
                 </div>
               </div>
             </div>

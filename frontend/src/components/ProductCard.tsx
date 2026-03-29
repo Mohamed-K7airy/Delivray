@@ -86,7 +86,7 @@ export default function ProductCard({ product, quantity, onAdd, onRemove }: Prod
           <div className="flex flex-col items-start">
             <span className="text-[9px] font-black text-[#6b7280] uppercase tracking-[0.2em] mb-0.5">Price</span>
             <span className="text-[#d97757] font-black text-2xl tracking-tighter leading-none">
-              ${Number(product.price).toFixed(2)}
+              {Number(product.price).toFixed(2)} ج.م
             </span>
           </div>
 

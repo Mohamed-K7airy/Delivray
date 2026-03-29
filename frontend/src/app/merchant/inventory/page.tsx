@@ -311,7 +311,7 @@ export default function MerchantInventory() {
                                         <h4 className="font-bold uppercase tracking-tight text-lg text-slate-900">{product.name}</h4>
                                         <span className="px-2 py-0.5 bg-slate-900/5 border border-slate-900/10 rounded-md text-[8px] font-bold text-slate-500 uppercase tracking-widest">{product.category || 'STD'}</span>
                                      </div>
-                                     <p className="text-xl font-bold text-slate-900 tracking-tight">${product.price.toFixed(2)}</p>
+                                     <p className="text-xl font-bold text-slate-900 tracking-tight">{product.price.toFixed(2)} ج.م</p>
                                      <p className="text-[10px] text-slate-400 font-medium mt-1.5 line-clamp-1">{product.description}</p>
                                   </div>
                                </div>

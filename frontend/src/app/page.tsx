@@ -319,7 +319,7 @@ export default function Home() {
                                </div>
                                <div>
                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Base Fee</p>
-                                  <p className="text-[11px] font-bold text-slate-900 uppercase">$2.99 USD</p>
+                                  <p className="text-[11px] font-bold text-slate-900 uppercase">45 ج.م</p>
                                </div>
                             </div>
                           </div>

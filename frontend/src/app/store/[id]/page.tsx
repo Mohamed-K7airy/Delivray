@@ -32,6 +32,7 @@ interface Store {
   image?: string;
   location_lat: number;
   location_lng: number;
+  description?: string;
   products: Product[];
 }
 
@@ -252,8 +253,15 @@ export default function StorePage() {
         {/* Menu Navigation */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 border-b border-slate-100 pb-10">
           <div className="space-y-2">
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Inventory Registry.</h2>
-            <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Select assets for logistics fulfillment.</p>
+              <h1 className="text-5xl sm:text-7xl font-bold text-slate-900 tracking-tighter mb-4">{store.name}.</h1>
+              {store.description && (
+                <p className="max-w-xl text-lg font-medium text-slate-500 leading-relaxed mb-8">
+                  {store.description}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-6">
+                <p className="text-sm font-medium text-slate-400 uppercase tracking-widest">Select assets for logistics fulfillment.</p>
+              </div>
           </div>
           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
             {categories.map((cat) => (

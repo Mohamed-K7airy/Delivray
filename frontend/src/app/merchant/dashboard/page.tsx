@@ -139,7 +139,7 @@ export default function MerchantDashboard() {
   const orderIcon = <Package size={22} className="text-slate-300" />;
 
   const statCards = [
-    { label: "Today's Revenue",  value: `$${stats.todayRevenue.toFixed(2)}`, sub: 'Real-time', icon: <DollarSign size={20} />, accent: '#334155', bg: '#f8fafc' },
+    { label: "Today's Revenue",  value: `${stats.todayRevenue.toFixed(2)} ج.م`, sub: 'Real-time', icon: <DollarSign size={20} />, accent: '#334155', bg: '#f8fafc' },
     { label: 'Completed Orders', value: stats.completedOrders,               sub: 'All time',  icon: <PackageCheck size={20} />, accent: '#334155', bg: '#f8fafc' },
     { label: 'Pending Action',   value: stats.pendingOrders,                 sub: 'Need review', icon: <AlertCircle size={20} />, accent: '#e11d48', bg: '#fff1f2' },
     { label: 'Total Today',      value: stats.totalOrdersToday,              sub: 'Orders', icon: <ShoppingBag size={20} />, accent: '#334155', bg: '#f8fafc' },
@@ -275,7 +275,7 @@ export default function MerchantDashboard() {
                             {/* Price & Actions */}
                             <div className="flex items-center justify-between md:justify-end gap-10 pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
                                <div className="text-left md:text-right">
-                                  <p className="text-lg font-bold text-slate-900 tracking-tight">${Number(order.total_price || 0).toFixed(2)}</p>
+                                  <p className="text-lg font-bold text-slate-900 tracking-tight">{Number(order.total_price || 0).toFixed(2)} ج.م</p>
                                   <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Total Flow</p>
                                </div>
   
