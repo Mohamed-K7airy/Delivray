@@ -9,6 +9,7 @@ import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import ProductEditModal from '@/components/ProductEditModal';
 
 export default function MerchantInventory() {
   const { token, user } = useAuthStore();
@@ -21,6 +22,8 @@ export default function MerchantInventory() {
   const [newCatName, setNewCatName] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (!token || user?.role !== 'merchant') {
@@ -141,6 +144,18 @@ export default function MerchantInventory() {
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{products.length} Units Online</span>
              </div>
           </div>
+
+          <ProductEditModal 
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            product={editingProduct}
+            categories={categories}
+            token={token}
+            onUpdate={async () => {
+              const productData = await apiClient(`/products?store_id=${newProduct.store_id}`);
+              if (productData) setProducts(productData);
+            }}
+          />
 
          <div className="grid grid-cols-1 gap-10">
             {/* Add Product Form */}
@@ -302,7 +317,13 @@ export default function MerchantInventory() {
                                </div>
                                
                                <div className="flex items-center space-x-2 w-full sm:w-auto shrink-0">
-                                  <button className="flex-1 sm:flex-none h-12 w-12 flex items-center justify-center bg-white text-slate-400 hover:text-slate-900 rounded-lg transition-all border border-slate-100 shadow-sm">
+                                  <button 
+                                    onClick={() => {
+                                      setEditingProduct(product);
+                                      setIsEditModalOpen(true);
+                                    }}
+                                    className="flex-1 sm:flex-none h-12 w-12 flex items-center justify-center bg-white text-slate-400 hover:text-slate-900 rounded-lg transition-all border border-slate-100 shadow-sm"
+                                  >
                                      <Edit size={16} />
                                    </button>
                                    <button 
