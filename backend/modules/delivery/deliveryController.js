@@ -2,7 +2,7 @@ import { supabase } from '../../config/supabase.js';
 import { getIo } from '../../config/socket.js';
 
 // Fixed delivery fee paid to the driver per completed delivery
-const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '3.00');
+const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '45.00');
 
 // @desc    Get available orders for driver
 // @route   GET /delivery/available-orders

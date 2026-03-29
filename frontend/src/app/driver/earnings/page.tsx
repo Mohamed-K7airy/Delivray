@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 export default function EarningsPage() {
   const { token, user } = useAuthStore();
   const router = useRouter();
-  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 3.00 });
+  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 45.00 });
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

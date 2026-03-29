@@ -27,7 +27,7 @@ async function verifyPayoutLogic() {
       return;
     }
 
-    const DELIVERY_FEE_CONST = 3.00;
+    const DELIVERY_FEE_CONST = 45.00; // Updated for EGP localization
     let expectedRevenue = 0;
 
     orders.forEach((o, i) => {

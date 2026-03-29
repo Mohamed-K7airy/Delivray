@@ -1,6 +1,6 @@
 import { supabase } from '../../config/supabase.js';
 
-const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '3.00');
+const DELIVERY_FEE = parseFloat(process.env.DELIVERY_FEE || '45.00');
 
 // @desc    Create store (linked to merchant user)
 // @route   POST /stores

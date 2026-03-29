@@ -291,7 +291,7 @@ export default function UserProfile() {
                              </p>
                              <div className="flex items-center gap-6">
                               <span className="text-[10px] font-bold text-slate-900 flex items-center gap-2 tabular-nums">
-                                <CreditCard size={12} className="text-slate-300" /> ${Number(order.price).toFixed(2)} USD
+                                <CreditCard size={12} className="text-slate-300" /> {Number(order.price).toFixed(2)} ج.م
                               </span>
                               <span className="text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
                                 <Clock size={12} className="text-slate-300" /> {order.date}

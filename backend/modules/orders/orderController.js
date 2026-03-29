@@ -49,7 +49,7 @@ export const createOrder = async (req, res) => {
 
     // 4. ATOMIC ORDER CREATION (RPC v2)
     const { delivery_address, payment_method = 'cash' } = req.body;
-    const DELIVERY_FEE = 3.00; // Consistent with schema default
+    const DELIVERY_FEE = 45.00; // Consistent with schema default and EGP localization
     
     const { data: order, error: rpcError } = await supabase.rpc('create_order_v2', {
       p_user_id: userId,
@@ -385,15 +385,15 @@ export const getMerchantStats = async (req, res) => {
       .in('store_id', storeIds)
       .eq('status', 'completed');
 
-    // 4. Today's Revenue
+    // 4. Today's Revenue (Subtotal only, excludes delivery fees)
     const { data: revenueData } = await supabase
       .from('orders')
-      .select('total_price')
+      .select('subtotal')
       .in('store_id', storeIds)
       .eq('status', 'completed')
       .gte('created_at', today.toISOString());
 
-    const revenue = revenueData ? revenueData.reduce((acc, o) => acc + Number(o.total_price), 0) : 0;
+    const revenue = revenueData ? revenueData.reduce((acc, o) => acc + Number(o.subtotal || 0), 0) : 0;
 
     res.json({
       totalOrdersToday: totalToday || 0,

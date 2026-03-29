@@ -33,9 +33,9 @@ export default function MerchantPayouts() {
   }, [token]);
 
   const stats = [
-    { label: 'Available Balance', value: `$${balance.available_balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: <DollarSign size={40} />, color: 'primary' },
-    { label: 'Pending Payouts', value: `$${balance.pending_payouts.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: <Clock size={40} />, color: 'white' },
-    { label: 'Total Withdrawn', value: `$${balance.total_withdrawn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: <TrendingUp size={40} />, color: 'white' },
+    { label: 'Available Balance', value: `${balance.available_balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`, icon: <DollarSign size={40} />, color: 'primary' },
+    { label: 'Pending Payouts', value: `${balance.pending_payouts.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`, icon: <Clock size={40} />, color: 'white' },
+    { label: 'Total Withdrawn', value: `${balance.total_withdrawn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م`, icon: <TrendingUp size={40} />, color: 'white' },
   ];
 
   return (
@@ -116,7 +116,7 @@ export default function MerchantPayouts() {
                        </div>
                     </div>
                     <div className="text-right space-y-2">
-                       <p className="text-3xl font-bold tracking-tighter text-[#111111]">${Number(tx.amount).toFixed(2)}</p>
+                       <p className="text-3xl font-bold tracking-tighter text-[#111111]">{Number(tx.amount).toFixed(2)} ج.م</p>
                        <div className="flex items-center justify-end space-x-2">
                           <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${tx.status === 'settled' ? 'bg-[#0f172a]' : 'bg-yellow-500'}`}></div>
                           <span className={`text-[9px] font-bold uppercase tracking-widest italic ${tx.status === 'settled' ? 'text-[#0f172a]' : 'text-yellow-500'}`}>{tx.status}</span>

@@ -106,7 +106,7 @@ export default function MerchantOrders() {
     { label: "Today's Orders", value: stats.totalOrdersToday, icon: <ShoppingBag size={18} />, accent: '#0f172a', bg: '#fef3f2' },
     { label: 'Pending',        value: stats.pendingOrders,    icon: <Timer size={18} />,       accent: '#0f172a', bg: '#fef3f2' },
     { label: 'Completed',      value: stats.completedOrders,  icon: <CheckCircle2 size={18} />, accent: '#16a34a', bg: '#f0fdf4' },
-    { label: "Today's Revenue",value: `$${stats.todayRevenue.toFixed(2)}`, icon: <Zap size={18} />, accent: '#2563eb', bg: '#eff6ff' },
+    { label: "Today's Yield",value: `${stats.todayRevenue.toFixed(2)} ج.م`, icon: <Zap size={18} />, accent: '#2563eb', bg: '#eff6ff' },
   ];
 
   return (
@@ -178,7 +178,7 @@ export default function MerchantOrders() {
                 <th className="px-6 py-4">Order</th>
                 <th className="px-6 py-4">Customer</th>
                 <th className="px-6 py-4">Items</th>
-                <th className="px-6 py-4">Total</th>
+                <th className="px-6 py-4">Net Profit</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Time</th>
                 <th className="px-6 py-4 text-right">Update</th>
@@ -233,7 +233,7 @@ export default function MerchantOrders() {
 
                         {/* Total */}
                         <td className="px-6 py-4">
-                          <span className="text-sm font-bold text-[#111111]">${Number(order.total_price).toFixed(2)}</span>
+                          <span className="text-sm font-bold text-[#111111]">{Number(order.subtotal || 0).toFixed(2)} ج.م</span>
                         </td>
 
                         {/* Status Pill */}

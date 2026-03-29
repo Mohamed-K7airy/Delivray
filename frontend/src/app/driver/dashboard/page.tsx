@@ -28,7 +28,7 @@ export default function DriverDashboard() {
   const [loading, setLoading] = useState(true);
   const [countdown, setCountdown] = useState(24);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 3.00 });
+  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 45.00 });
   const [currentPos, setCurrentPos] = useState<[number, number] | null>(null);
   const lastUpdateRef = useRef<number>(0);
   const [isCentering, setIsCentering] = useState(true);
@@ -38,7 +38,7 @@ export default function DriverDashboard() {
     if (!token || user?.role !== 'driver') return router.push('/login');
 
     apiClient('/delivery/stats').then(data => {
-      if (data) setStats({ earnings: data.earnings, deliveries: data.deliveries, delivery_fee: data.delivery_fee || 3.00 });
+      if (data) setStats({ earnings: data.earnings, deliveries: data.deliveries, delivery_fee: data.delivery_fee || 45.00 });
     }).catch(() => {});
 
     apiClient('/orders/driver').then(data => {
@@ -108,7 +108,7 @@ export default function DriverDashboard() {
     try {
       const data = await apiClient(`/delivery/complete-order/${activeOrder.id}`, { method: 'PATCH' });
       if (data) {
-        toast.success(`+$${stats.delivery_fee.toFixed(2)} added to your earnings!`);
+        toast.success(`+${stats.delivery_fee.toFixed(2)} ج.م added to your earnings!`);
         setActiveOrder(null);
         setStats(prev => ({ ...prev, earnings: prev.earnings + prev.delivery_fee, deliveries: prev.deliveries + 1 }));
       }
@@ -144,9 +144,9 @@ export default function DriverDashboard() {
         {/* Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
           {[
-            { label: "Today's Yield", value: `$${stats.earnings.toFixed(2)}`, icon: <Wallet size={18} /> },
+            { label: "Today's Yield", value: `${stats.earnings.toFixed(2)} ج.م`, icon: <Wallet size={18} /> },
             { label: 'Completed Logistics', value: stats.deliveries, icon: <Package size={18} /> },
-            { label: 'Target Rate', value: `$${stats.delivery_fee.toFixed(2)}`, icon: <DollarSign size={18} /> },
+            { label: 'Target Rate', value: `${stats.delivery_fee.toFixed(2)} ج.م`, icon: <DollarSign size={18} /> },
           ].map((s, i) => (
             <motion.div 
               key={s.label} 
@@ -199,7 +199,7 @@ export default function DriverDashboard() {
                   <div className="flex items-center justify-between p-6 bg-slate-50 rounded-xl border border-slate-100">
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Registry Credit</p>
-                      <p className="text-4xl font-bold text-slate-900 tracking-tight">${stats.delivery_fee.toFixed(2)}</p>
+                      <p className="text-4xl font-bold text-slate-900 tracking-tight">{stats.delivery_fee.toFixed(2)} ج.م</p>
                     </div>
                     <div className="w-14 h-14 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-900 shadow-sm">
                       <Wallet size={24} />
@@ -351,16 +351,16 @@ export default function DriverDashboard() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Trip Total (×{stats.deliveries})</span>
-                  <span className="text-sm font-bold text-slate-900">${stats.earnings.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-slate-900">{stats.earnings.toFixed(2)} ج.م</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Standard Rate</span>
-                  <span className="text-sm font-bold text-slate-900">${stats.delivery_fee.toFixed(2)}</span>
+                  <span className="text-sm font-bold text-slate-900">{stats.delivery_fee.toFixed(2)} ج.م</span>
                 </div>
                 <div className="h-px bg-slate-50" />
                 <div className="flex justify-between items-center bg-slate-50/50 p-4 rounded-lg border border-slate-50">
                   <span className="text-[10px] font-bold text-slate-900 uppercase tracking-widest">Cumulative</span>
-                  <span className="text-xl font-bold text-slate-900 tracking-tight">${stats.earnings.toFixed(2)}</span>
+                  <span className="text-xl font-bold text-slate-900 tracking-tight">{stats.earnings.toFixed(2)} ج.م</span>
                 </div>
               </div>
               <button onClick={() => router.push('/driver/history')}
@@ -420,7 +420,7 @@ export default function DriverDashboard() {
 
                   <div className="w-full space-y-1">
                     <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Estimated Payout</p>
-                    <h3 className="text-6xl font-black text-slate-900 tracking-tight leading-none">${stats.delivery_fee.toFixed(2)}</h3>
+                    <h3 className="text-6xl font-black text-slate-900 tracking-tight leading-none">{stats.delivery_fee.toFixed(2)} ج.م</h3>
                   </div>
 
                   <div className="w-full bg-slate-50 rounded-xl p-6 border border-slate-100 text-center space-y-4">

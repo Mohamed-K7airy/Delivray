@@ -37,7 +37,7 @@ export default function DriverSupport() {
         </div>
         <div className="divide-y divide-gray-50">
           {[
-            { q: 'How are my earnings calculated?', a: 'You earn a fixed delivery fee ($3.00) per completed delivery. Product prices go to the merchant.' },
+            { q: 'How are my earnings calculated?', a: 'You earn a fixed delivery fee (45.00 ج.م) per completed delivery. Product prices go to the merchant.' },
             { q: 'When do I get paid?', a: 'Payouts are processed every Friday. Check the Earnings page for your balance.' },
             { q: 'What if I have an issue with a delivery?', a: 'Use the Emergency contact option above or email us. We respond within 5 minutes.' },
             { q: 'How do I update my vehicle info?', a: 'Go to Settings to update your vehicle type, plate number, and profile details.' },

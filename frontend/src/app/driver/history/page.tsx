@@ -117,7 +117,7 @@ export default function DriverHistory() {
                     <div className="flex items-center justify-between md:justify-end gap-10 border-t md:border-t-0 pt-4 md:pt-0">
                       <div className="text-center md:text-right">
                         <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-1">Fee Earned</p>
-                        <p className="text-xl font-bold text-green-600 tracking-tighter">${Number(order.delivery_fee || 3.00).toFixed(2)}</p>
+                        <p className="text-xl font-bold text-green-600 tracking-tighter">{Number(order.delivery_fee || 45.00).toFixed(2)} ج.م</p>
                       </div>
                       <div className="text-center md:text-right">
                         <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-1">Status</p>
