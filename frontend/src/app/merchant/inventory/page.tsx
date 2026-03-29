@@ -181,7 +181,7 @@ export default function MerchantInventory() {
                          </div>
                          <div>
                            <Input 
-                              label="UNIT PRICE ($)"
+                              label="UNIT PRICE (ج.م)"
                               required
                               type="number"
                               step="0.01"

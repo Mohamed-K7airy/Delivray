@@ -68,6 +68,7 @@ export default function ProductEditModal({ isOpen, onClose, product, onUpdate, t
         method: 'PATCH',
         data: {
           ...formData,
+          category_id: formData.category_id || null,
           price: parseFloat(formData.price),
           image: imageUrl
         }
@@ -131,7 +132,7 @@ export default function ProductEditModal({ isOpen, onClose, product, onUpdate, t
                     onChange={e => setFormData({...formData, name: e.target.value})}
                   />
                   <Input 
-                    label="Price ($)"
+                    label="Price (ج.م)"
                     type="number"
                     step="0.01"
                     required

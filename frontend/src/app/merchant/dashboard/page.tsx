@@ -373,7 +373,7 @@ export default function MerchantDashboard() {
   
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Price</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Price (ج.م)</label>
                     <input
                       required
                       type="number"
