@@ -240,7 +240,7 @@ export default function StorePage() {
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">PROXIMITY</p>
-                    <p className="text-lg font-bold text-slate-900 tracking-tight">1.2 MI</p>
+                    <p className="text-lg font-bold text-slate-900 tracking-tight">2.0 KM</p>
                   </div>
                 </div>
               </div>

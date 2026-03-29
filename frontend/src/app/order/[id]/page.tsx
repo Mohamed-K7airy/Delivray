@@ -293,7 +293,7 @@ export default function OrderTracking() {
               <div className="flex-1">
                 <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2">Endpoint Destination</p>
                 <p className="text-xl font-bold text-slate-900 tracking-tight">{order.delivery_address || 'Authorized Secure Location'}</p>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Logistics Radius: 1.2 MI</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Logistics Radius: 2.0 KM</p>
               </div>
               <button 
                 onClick={() => router.push('/')} 
