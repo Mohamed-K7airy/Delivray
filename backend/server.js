@@ -128,9 +128,13 @@ app.use((req, res) => {
 });
 
 io.on('connection', (socket) => {
-  const { id: userId, role } = socket.data.user;
+  const user = socket.data?.user;
+  if (!user || !user.id) {
+    console.warn(`[Socket] Rejected unauthenticated connection: ${socket.id}`);
+    return socket.disconnect(true);
+  }
+  const { id: userId, role } = user;
   console.log(`User connected: ${socket.id} (User: ${userId}, Role: ${role})`);
-  
   socket.on('join', ({ role: requestedRole, id: requestedId }) => {
     // SECURITY: Validate that the user is joining their OWN room or an authorized room
     if (requestedRole === 'merchant') {

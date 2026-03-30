@@ -187,6 +187,17 @@ export const updateOrderStatus = async (req, res) => {
         io.to(`order_${id}`).emit('order_status_updated', fullOrder);
         io.to(`merchant_${fullOrder.stores.owner_id}`).emit('order_status_updated', fullOrder);
         
+        // Phase 1: Record driver payout when order completes
+        if (status === 'completed' && fullOrder.driver_id) {
+            await supabase.from('payouts').insert([{
+                driver_id: fullOrder.driver_id,
+                order_id: id,
+                payout_type: 'driver_weekly',
+                amount: 3.00, // $3 fixed delivery fee
+                status: 'pending'
+            }]);
+        }
+        
         if (status === 'ready_for_pickup') {
           console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
           io.to('drivers').emit('order_ready_for_pickup', fullOrder);
@@ -276,10 +287,13 @@ export const getOrderById = async (req, res) => {
     if (error || !order) return res.status(404).json({ message: 'Order not found' });
     
     // Auth check: Customer who owns it, OR Merchant who owns the store, OR Assigned Driver
-    const isCustomer = order.user_id === req.user.id;
-    const isMerchant = order.stores?.owner_id === req.user.id;
-    const isDriver = order.drivers?.user_id === req.user.id;
-    const isAdmin = req.user.role === 'admin';
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized access' });
+
+    const isCustomer = order.user_id === userId;
+    const isMerchant = order.stores?.owner_id === userId;
+    const isDriver = order.drivers?.user_id === userId;
+    const isAdmin = req.user?.role === 'admin';
 
     if (!isCustomer && !isMerchant && !isDriver && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to view this order' });

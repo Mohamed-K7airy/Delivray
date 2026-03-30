@@ -177,13 +177,14 @@ export const getAdminFinancials = async (req, res) => {
     // Platform Commission (20% of subtotal)
     const platformCommission = totalSubtotal * 0.20;
     
-    // Net Merchant Payout (Subtotal - Commission)
-    const netMerchantPayout = totalSubtotal - platformCommission;
+    // Platform Net
+    const platformNet = platformCommission;
 
     res.json({
       gmv: gmv.toFixed(2),
       platformCommission: platformCommission.toFixed(2),
       netMerchantPayout: netMerchantPayout.toFixed(2),
+      platformNet: platformNet.toFixed(2),
       totalDeliveryFees: totalDeliveryFees.toFixed(2),
       orderCount: orders.length
     });
@@ -287,6 +288,59 @@ export const getAdvancedStats = async (req, res) => {
         .sort((a, b) => a.date.localeCompare(b.date));
 
     res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all pending payouts
+// @route   GET /admin/pending-payouts
+export const getPendingPayouts = async (req, res) => {
+  try {
+    const { data: payouts, error } = await supabase
+      .from('payouts')
+      .select('*, merchant:merchant_id(name, email), driver:driver_id(users(name, email))')
+      .eq('status', 'pending');
+
+    if (error) throw error;
+    res.json(payouts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Approve a payout
+// @route   PATCH /admin/payouts/:id/approve
+export const approvePayout = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { data: payout, error } = await supabase
+      .from('payouts')
+      .update({ status: 'settled', updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(payout);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Settle all driver weekly payouts
+// @route   POST /admin/settle-driver-payouts
+export const settleDriverPayouts = async (req, res) => {
+  try {
+    const { data: payouts, error } = await supabase
+      .from('payouts')
+      .update({ status: 'settled', updated_at: new Date().toISOString() })
+      .eq('status', 'pending')
+      .eq('payout_type', 'driver_weekly')
+      .select();
+
+    if (error) throw error;
+    res.json({ message: `Settled ${payouts.length} driver payouts`, payouts });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

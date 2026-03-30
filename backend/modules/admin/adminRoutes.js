@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, updateUserStatus, getAdminStores, toggleStoreAdminDisable, getPendingUsers, approveUser, getAllOrders, getAdminStats, getAdminFinancials, getAdminPromos, createPromoCode, deletePromoCode, getAdvancedStats } from './adminController.js';
+import { getUsers, updateUserStatus, getAdminStores, toggleStoreAdminDisable, getPendingUsers, approveUser, getAllOrders, getAdminStats, getAdminFinancials, getAdminPromos, createPromoCode, deletePromoCode, getAdvancedStats, getPendingPayouts, approvePayout, settleDriverPayouts } from './adminController.js';
 import { protect, authorizeRoles } from '../../middlewares/authMiddleware.js';
 
 const router = express.Router();
@@ -17,6 +17,9 @@ router.get('/orders', getAllOrders);
 router.get('/stats', getAdminStats);
 router.get('/analytics', getAdvancedStats);
 router.get('/financials', getAdminFinancials);
+router.get('/pending-payouts', getPendingPayouts);
+router.patch('/payouts/:id/approve', approvePayout);
+router.post('/settle-driver-payouts', settleDriverPayouts);
 router.get('/promos', getAdminPromos);
 router.post('/promos', createPromoCode);
 router.delete('/promos/:id', deletePromoCode);

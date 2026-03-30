@@ -37,6 +37,14 @@ export const useCartStore = create<CartState>((set) => ({
   setCart: (cartId, items, total) => set({ cartId, items, total }),
   
   addItem: (newItem) => set((state) => {
+    // Restrict cart to a single store at a time
+    if (state.items.length > 0) {
+      if (newItem.products?.store_id && state.items[0].products?.store_id !== newItem.products.store_id) {
+        console.error('Cross-store cart addition blocked');
+        throw new Error('Cannot add items from a different store');
+      }
+    }
+
     // Check if the product already exists in the cart by product_id
     const existing = state.items.find((i) => i.product_id === newItem.product_id);
     

@@ -43,7 +43,7 @@ export const getStores = async (req, res) => {
       .eq('is_open', true)
       .eq('admin_disabled', false); // Only return stores not disabled by admin
 
-    if (type) {
+    if (type && type !== 'all') {
       query = query.eq('type', type);
     }
 
@@ -254,8 +254,8 @@ export const getMerchantBalance = async (req, res) => {
 
     const merchantRevenue = orders ? orders.reduce((sum, o) => {
       const fee = o.delivery_fee !== undefined && o.delivery_fee !== null ? Number(o.delivery_fee) : DELIVERY_FEE;
-      const price = (o.subtotal !== undefined && o.subtotal !== null) ? Number(o.subtotal) : (Number(o.total_price) - fee);
-      return sum + Math.max(0, price);
+      const subtotal = (o.subtotal !== undefined && o.subtotal !== null) ? Number(o.subtotal) : Math.max(0, Number(o.total_price) - fee);
+      return sum + (subtotal * 0.80); // Merchant = subtotal * 80% (20% platform commission)
     }, 0) : 0;
 
     // 2. Get total paid out
@@ -309,6 +309,32 @@ export const getMerchantPayouts = async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Request a withdrawal for the merchant
+// @route   POST /stores/withdraw
+// @access  Private/Merchant
+export const requestWithdrawal = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) return res.status(400).json({ message: 'Invalid withdrawal amount' });
+
+    const { data: payout, error } = await supabase
+      .from('payouts')
+      .insert([{
+        merchant_id: req.user.id,
+        payout_type: 'merchant_withdrawal',
+        amount: Number(amount),
+        status: 'pending'
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(payout);
+  } catch (err) {
+    res.status(500).json({ message: err.message || 'Server Error' });
   }
 };
 
