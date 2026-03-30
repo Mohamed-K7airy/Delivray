@@ -203,8 +203,27 @@ export const getDriverStats = async (req, res) => {
       return sum + (Number(o.delivery_fee) || DELIVERY_FEE);
     }, 0);
 
+    // Get total paid or pending payouts for driver
+    const { data: payouts, error: payoutError } = await supabase
+      .from('payouts')
+      .select('amount, status')
+      .eq('driver_id', driver.id)
+      .in('status', ['pending', 'settled'])
+      .in('payout_type', ['driver_withdrawal', 'driver_weekly']);
+
+    if (payoutError) throw payoutError;
+
+    const totalWithdrawnAndPending = payouts ? payouts.reduce((sum, p) => sum + Number(p.amount), 0) : 0;
+    const availableBalance = Math.max(0, totalEarnings - totalWithdrawnAndPending);
+    
+    const pendingPayouts = payouts ? payouts.filter(p => p.status === 'pending').reduce((sum, p) => sum + Number(p.amount), 0) : 0;
+    const totalWithdrawn = payouts ? payouts.filter(p => p.status === 'settled').reduce((sum, p) => sum + Number(p.amount), 0) : 0;
+
     res.json({
       earnings: totalEarnings,
+      available_balance: availableBalance,
+      pending_payouts: pendingPayouts,
+      total_withdrawn: totalWithdrawn,
       deliveries: deliveriesCount,
       delivery_fee: DELIVERY_FEE
     });
@@ -248,5 +267,35 @@ export const getDriverHistory = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message || 'Server Error' });
+  }
+};
+
+// @desc    Request a withdrawal for the driver
+// @route   POST /delivery/withdraw
+// @access  Private/Driver
+export const requestDriverWithdrawal = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (!amount || amount <= 0) return res.status(400).json({ message: 'Invalid withdrawal amount' });
+
+    const userId = req.user.id;
+    const { data: driver, error: driverError } = await supabase.from('drivers').select('id').eq('user_id', userId).single();
+    if (driverError || !driver) return res.status(404).json({ message: 'Driver not found' });
+
+    const { data: payout, error } = await supabase
+      .from('payouts')
+      .insert([{
+        driver_id: driver.id,
+        payout_type: 'driver_withdrawal',
+        amount: Number(amount),
+        status: 'pending'
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(payout);
+  } catch (err) {
+    res.status(500).json({ message: err.message || 'Server Error' });
   }
 };

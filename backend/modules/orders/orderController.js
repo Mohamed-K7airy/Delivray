@@ -187,17 +187,6 @@ export const updateOrderStatus = async (req, res) => {
         io.to(`order_${id}`).emit('order_status_updated', fullOrder);
         io.to(`merchant_${fullOrder.stores.owner_id}`).emit('order_status_updated', fullOrder);
         
-        // Phase 1: Record driver payout when order completes
-        if (status === 'completed' && fullOrder.driver_id) {
-            await supabase.from('payouts').insert([{
-                driver_id: fullOrder.driver_id,
-                order_id: id,
-                payout_type: 'driver_weekly',
-                amount: 3.00, // $3 fixed delivery fee
-                status: 'pending'
-            }]);
-        }
-        
         if (status === 'ready_for_pickup') {
           console.log(`[updateOrderStatus] Broadcasting ready_for_pickup for Order ${id}`);
           io.to('drivers').emit('order_ready_for_pickup', fullOrder);

@@ -5,13 +5,40 @@ import { motion } from 'framer-motion';
 import { Wallet, Package, DollarSign, TrendingUp, Calendar, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 export default function EarningsPage() {
   const { token, user } = useAuthStore();
   const router = useRouter();
-  const [stats, setStats] = useState({ earnings: 0, deliveries: 0, delivery_fee: 45.00 });
+  const [stats, setStats] = useState({ earnings: 0, available_balance: 0, pending_payouts: 0, total_withdrawn: 0, deliveries: 0, delivery_fee: 45.00 });
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawing, setWithdrawing] = useState(false);
+
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = Number(withdrawAmount);
+    if (!amount || amount <= 0) return toast.error('Enter a valid amount');
+    if (amount > stats.available_balance) return toast.error('Insufficient available balance');
+
+    try {
+      setWithdrawing(true);
+      const res = await apiClient('/delivery/withdraw', {
+        method: 'POST',
+        data: { amount }
+      });
+      if (res) {
+        toast.success(`Withdrawal request for ${amount.toFixed(2)} ج.م submitted`);
+        setWithdrawAmount('');
+        // Refresh stats
+        const statsData = await apiClient('/delivery/stats');
+        if (statsData) setStats(prev => ({ ...prev, available_balance: statsData.available_balance || 0, pending_payouts: statsData.pending_payouts || 0, total_withdrawn: statsData.total_withdrawn || 0 }));
+      }
+    } catch (err) {} finally {
+      setWithdrawing(false);
+    }
+  };
 
   useEffect(() => {
     if (!token || user?.role !== 'driver') { router.push('/login'); return; }
@@ -19,7 +46,7 @@ export default function EarningsPage() {
       apiClient('/delivery/stats'),
       apiClient('/orders/driver')
     ]).then(([statsData, ordersData]) => {
-      if (statsData) setStats({ earnings: statsData.earnings, deliveries: statsData.deliveries, delivery_fee: statsData.delivery_fee || 45.00 });
+      if (statsData) setStats({ earnings: statsData.earnings, available_balance: statsData.available_balance || 0, pending_payouts: statsData.pending_payouts || 0, total_withdrawn: statsData.total_withdrawn || 0, deliveries: statsData.deliveries, delivery_fee: statsData.delivery_fee || 45.00 });
       if (ordersData && Array.isArray(ordersData)) {
         setHistory(ordersData.filter((o: any) => o.status === 'completed').slice(0, 20));
       }
@@ -57,6 +84,40 @@ export default function EarningsPage() {
             <p className="text-[10px] text-[#888888] mt-1 font-medium">{s.desc}</p>
           </motion.div>
         ))}
+      </div>
+
+      {/* Withdrawal Action */}
+      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
+         <div className="flex-1 space-y-1 relative z-10 text-center md:text-left">
+            <h3 className="text-xl font-bold uppercase tracking-tight text-[#111111]">Request Payout</h3>
+            <p className="text-[10px] font-medium text-[#888888] leading-relaxed">Available to withdraw: <strong className="text-[#0f172a] ml-1">{stats.available_balance.toFixed(2)} ج.م</strong></p>
+         </div>
+         <form onSubmit={handleWithdraw} className="w-full md:w-auto flex flex-col md:flex-row items-center gap-3 relative z-10">
+            <div className="relative w-full md:w-56">
+               <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888888]" />
+               <input 
+                 type="number" 
+                 step="0.01"
+                 min="10"
+                 max={stats.available_balance}
+                 placeholder="Amount (ج.م)" 
+                 className="w-full h-12 pl-12 pr-4 bg-[#f8fafc] border border-gray-100 rounded-xl text-xs font-bold text-[#111111] placeholder-[#888888] focus:border-[#0f172a] focus:bg-white outline-none transition-all"
+                 value={withdrawAmount}
+                 onChange={e => setWithdrawAmount(e.target.value)}
+                 disabled={withdrawing}
+                 required
+               />
+            </div>
+            <button 
+              type="submit" 
+              disabled={withdrawing || stats.available_balance < 10}
+              className="w-full md:w-auto h-12 px-6 bg-[#0f172a] text-white rounded-xl font-bold uppercase text-[9px] tracking-widest hover:bg-[#111111] transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {withdrawing ? 'Processing...' : 'Withdraw'}
+            </button>
+         </form>
+         
+         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] pointer-events-none -mr-40 -mt-40 opacity-50"></div>
       </div>
 
       {/* Weekly Progress */}

@@ -3,14 +3,46 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { CreditCard, DollarSign, TrendingUp, ArrowDownRight, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
-import { API_URL } from '@/config/api';
 import { apiClient } from '@/lib/apiClient';
+import { toast } from 'sonner';
 
 export default function MerchantPayouts() {
   const { token } = useAuthStore();
   const [balance, setBalance] = useState({ available_balance: 0, pending_payouts: 0, total_withdrawn: 0 });
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawing, setWithdrawing] = useState(false);
+
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const amount = Number(withdrawAmount);
+    if (!amount || amount <= 0) return toast.error('Enter a valid amount');
+    if (amount > balance.available_balance) return toast.error('Insufficient available balance');
+
+    try {
+      setWithdrawing(true);
+      const res = await apiClient('/stores/withdraw', {
+        method: 'POST',
+        data: { amount }
+      });
+      if (res) {
+        toast.success(`Withdrawal request for ${amount.toFixed(2)} ج.م submitted successfully`);
+        setWithdrawAmount('');
+        // Refresh data
+        const [balData, payData] = await Promise.all([
+          apiClient('/stores/balance'),
+          apiClient('/stores/payouts')
+        ]);
+        if (balData) setBalance(balData);
+        if (payData) setTransactions(payData);
+      }
+    } catch (err) {
+      // apiClient already shows toast on error
+    } finally {
+      setWithdrawing(false);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,6 +111,40 @@ export default function MerchantPayouts() {
                  <h3 className={`text-4xl font-bold ${stat.color === 'primary' ? 'text-[#0f172a]' : 'text-[#111111]'} tracking-tighter`}>{stat.value}</h3>
               </motion.div>
            ))}
+         </div>
+
+        {/* Withdrawal Action */}
+        <div className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-100 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+           <div className="flex-1 space-y-2 relative z-10 text-center md:text-left">
+              <h3 className="text-2xl font-bold uppercase tracking-widest text-[#111111]">Request Payout</h3>
+              <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest leading-relaxed max-w-sm">Enter the amount you wish to withdraw to your linked bank account. Minimum withdrawal is 50.00 ج.م.</p>
+           </div>
+           <form onSubmit={handleWithdraw} className="w-full md:w-auto flex flex-col md:flex-row items-center gap-3 relative z-10">
+              <div className="relative w-full md:w-64">
+                 <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888888]" />
+                 <input 
+                   type="number" 
+                   step="0.01"
+                   min="50"
+                   max={balance.available_balance}
+                   placeholder="Amount (ج.م)" 
+                   className="w-full h-14 pl-12 pr-4 bg-[#f8fafc] border border-gray-100 rounded-xl text-sm font-bold text-[#111111] placeholder-[#888888] focus:border-[#0f172a] focus:bg-white outline-none transition-all"
+                   value={withdrawAmount}
+                   onChange={e => setWithdrawAmount(e.target.value)}
+                   disabled={withdrawing}
+                   required
+                 />
+              </div>
+              <button 
+                type="submit" 
+                disabled={withdrawing || balance.available_balance < 50}
+                className="w-full md:w-auto h-14 px-8 bg-[#0f172a] text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-[#111111] transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {withdrawing ? 'Processing...' : 'Withdraw Funds'}
+              </button>
+           </form>
+           
+           <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#0f172a]/5 rounded-full blur-[100px] pointer-events-none -mr-40 -mt-40 opacity-50"></div>
         </div>
 
         {/* Transaction History */}
