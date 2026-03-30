@@ -319,7 +319,7 @@ export const approvePayout = async (req, res) => {
     const { id } = req.params;
     const { data: payout, error } = await supabase
       .from('payouts')
-      .update({ status: 'settled', updated_at: new Date().toISOString() })
+      .update({ status: 'settled' })
       .eq('id', id)
       .select()
       .single();
@@ -337,7 +337,7 @@ export const settleDriverPayouts = async (req, res) => {
   try {
     const { data: payouts, error } = await supabase
       .from('payouts')
-      .update({ status: 'settled', updated_at: new Date().toISOString() })
+      .update({ status: 'settled' })
       .eq('status', 'pending')
       .eq('payout_type', 'driver_weekly')
       .select();
