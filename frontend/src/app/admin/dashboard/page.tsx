@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Users, ShoppingBag, DollarSign, Activity, ShieldAlert, ShieldCheck, Check, Search, Filter, Ban, AlertTriangle, Eye, Store, X, RotateCcw, Zap, Trash2 } from 'lucide-react';
@@ -26,6 +26,14 @@ interface Stats {
 }
 
 export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<div className="h-screen w-full flex items-center justify-center"><div className="w-8 h-8 border-4 border-[#0f172a] border-t-transparent rounded-full animate-spin"></div></div>}>
+      <AdminDashboardContent />
+    </Suspense>
+  )
+}
+
+function AdminDashboardContent() {
   const { token, user } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();

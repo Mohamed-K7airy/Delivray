@@ -1,6 +1,8 @@
 'use client';
 import { useAuthStore } from '@/store/authStore';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { Suspense } from 'react';
 import { 
   ShieldAlert, 
   LayoutDashboard, 
@@ -24,6 +26,14 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
+  return (
+    <Suspense fallback={<aside className={`h-screen bg-white border-r border-gray-100 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] ${isCollapsed ? 'w-24' : 'w-80'}`} />}>
+      <SidebarContent isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+    </Suspense>
+  );
+}
+
+function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
   const { logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -83,9 +93,9 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
         {navItems.map(item => {
           const isActive = tab === item.id;
           return (
-            <button 
+            <Link 
               key={item.id}
-              onClick={() => router.push(item.path)}
+              href={item.path}
               className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl transition-all group relative overflow-hidden ${
                 isActive 
                   ? 'bg-slate-50 text-slate-900 border border-slate-100 shadow-sm' 
@@ -106,7 +116,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
                   className="absolute left-0 w-1 h-8 bg-slate-900 rounded-r-full"
                 />
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>
