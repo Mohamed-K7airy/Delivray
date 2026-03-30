@@ -1,6 +1,6 @@
 'use client';
 import { useAuthStore } from '@/store/authStore';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { 
   ShieldAlert, 
   LayoutDashboard, 
@@ -27,14 +27,17 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
   const { logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab') || 'overview';
 
   const navItems = [
-    { id: 'dashboard', label: 'Overview', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard' },
-    { id: 'users', label: 'Users Control', icon: <Users size={20} />, path: '/admin/users' },
-    { id: 'stores', label: 'Ecosystem Control', icon: <ShoppingBag size={20} />, path: '/admin/stores' },
-    { id: 'revenue', label: 'Fiscal Audit', icon: <DollarSign size={20} />, path: '/admin/revenue' },
-    { id: 'logs', label: 'System Logs', icon: <FileText size={20} />, path: '/admin/logs' },
-    { id: 'settings', label: 'System Settings', icon: <Settings size={20} />, path: '/admin/settings' },
+    { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard?tab=overview' },
+    { id: 'users', label: 'Users Control', icon: <Users size={20} />, path: '/admin/dashboard?tab=users' },
+    { id: 'stores', label: 'Ecosystem Control', icon: <ShoppingBag size={20} />, path: '/admin/dashboard?tab=stores' },
+    { id: 'economics', label: 'Fiscal Audit', icon: <DollarSign size={20} />, path: '/admin/dashboard?tab=economics' },
+    { id: 'promos', label: 'Promotions', icon: <FileText size={20} />, path: '/admin/dashboard?tab=promos' },
+    { id: 'fleet', label: 'Fleet Schedule', icon: <Activity size={20} />, path: '/admin/dashboard?tab=fleet' },
+    { id: 'pulse', label: 'Global Pulse', icon: <Settings size={20} />, path: '/admin/dashboard?tab=pulse' },
   ];
 
   const handleLogout = () => {
@@ -78,7 +81,7 @@ export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSideb
       {/* Nav */}
       <nav className="flex-1 px-4 space-y-2 overflow-y-auto no-scrollbar pt-4">
         {navItems.map(item => {
-          const isActive = pathname === item.path;
+          const isActive = tab === item.id;
           return (
             <button 
               key={item.id}

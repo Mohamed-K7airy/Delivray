@@ -177,6 +177,9 @@ export const getAdminFinancials = async (req, res) => {
     // Platform Commission (20% of subtotal)
     const platformCommission = totalSubtotal * 0.20;
     
+    // Net Merchant Payout (Subtotal - Commission)
+    const netMerchantPayout = totalSubtotal - platformCommission;
+
     // Platform Net
     const platformNet = platformCommission;
 

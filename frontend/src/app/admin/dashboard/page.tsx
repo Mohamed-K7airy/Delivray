@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Users, ShoppingBag, DollarSign, Activity, ShieldAlert, ShieldCheck, Check, Search, Filter, Ban, AlertTriangle, Eye, Store, X, RotateCcw, Zap, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -28,12 +28,19 @@ interface Stats {
 export default function AdminDashboard() {
   const { token, user } = useAuthStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tabFromUrl = searchParams.get('tab') as 'overview' | 'users' | 'stores' | 'economics' | 'promos' | 'pulse' | 'fleet';
+  
   const [stats, setStats] = useState<Stats | null>(null);
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [allStores, setAllStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores' | 'economics' | 'promos' | 'pulse' | 'fleet'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'stores' | 'economics' | 'promos' | 'pulse' | 'fleet'>(tabFromUrl || 'overview');
+
+  useEffect(() => {
+    if (tabFromUrl) setActiveTab(tabFromUrl);
+  }, [tabFromUrl]);
   const { socket } = useSocket();
   const [activeDrivers, setActiveDrivers] = useState<Record<string, any>>({});
   const [financials, setFinancials] = useState<any>(null);
@@ -191,7 +198,7 @@ export default function AdminDashboard() {
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => router.push(`/admin/dashboard?tab=${tab.id}`)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                 activeTab === tab.id ? 'bg-slate-900 text-white shadow-md' : 'text-slate-400 hover:bg-white hover:text-slate-900'
               }`}
