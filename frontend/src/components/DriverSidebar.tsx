@@ -60,8 +60,8 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
                <Truck className="text-white" size={20} />
             </div>
             <div>
-               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 leading-none">Driver Hub</h1>
-               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-1">Nexus Fleet</p>
+               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 leading-none">Driver Dashboard</h1>
+               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-1">Active Fleet</p>
             </div>
           </motion.div>
         )}
@@ -106,8 +106,8 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
                 <ShieldCheck size={20} />
              </div>
              <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">Tier Status</p>
-                <p className="text-[10px] font-bold text-slate-900 uppercase">Elite Courier</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">System Status</p>
+                <p className="text-[10px] font-bold text-slate-900 uppercase">Online</p>
              </div>
           </div>
         )}

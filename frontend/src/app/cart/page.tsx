@@ -293,16 +293,16 @@ export default function CartPage() {
         <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2.5">
-               <div className="w-1.5 h-1.5 bg-slate-900 rounded-full" />
-               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Secure Session</span>
+               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Checkout Ready</span>
             </div>
             <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
-              Your <span className="text-slate-300">Selection.</span>
+              Your <span className="text-slate-300">Cart.</span>
             </h1>
           </div>
           <div className="flex items-center gap-4 text-slate-400 border-l border-slate-100 pl-6 h-12">
             <ShoppingBag size={20} />
-            <p className="text-sm font-bold tracking-tight">{items.length} Product{items.length !== 1 ? 's' : ''} Staged</p>
+            <p className="text-sm font-bold tracking-tight">{items.length} Item{items.length !== 1 ? 's' : ''} inside</p>
           </div>
         </header>
 
@@ -367,7 +367,7 @@ export default function CartPage() {
                       <div className="flex-1 flex flex-col justify-between py-1 h-full">
                         <div className="space-y-1">
                           <h3 className="text-xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">{item.products.name}</h3>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Premium Selection</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.products.store_name || 'Store Product'}</p>
                         </div>
                         
                         <div className="flex items-center justify-between mt-6 lg:mt-8">
@@ -423,7 +423,7 @@ export default function CartPage() {
                  <div className="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg">
                     <MapPin size={16} />
                  </div>
-                 <h3 className="text-lg font-bold text-slate-900 tracking-tight">Logistics Hub</h3>
+                 <h3 className="text-lg font-bold text-slate-900 tracking-tight">Delivery Address</h3>
               </div>
               
               <div className="space-y-6">
@@ -480,7 +480,7 @@ export default function CartPage() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-xl"
             >
-              <h3 className="text-2xl font-bold text-slate-900 mb-8 tracking-tighter">Summary.</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-8 tracking-tighter">Order Summary</h3>
 
               <div className="space-y-5 mb-10 pb-10 border-b border-slate-50">
                 <div className="flex justify-between items-center px-2">
@@ -488,7 +488,7 @@ export default function CartPage() {
                   <span className="text-base font-bold text-slate-900 tabular-nums">{total.toFixed(2)} ج.م</span>
                 </div>
                 <div className="flex justify-between items-center px-2">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Logistics</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Delivery Fee</span>
                   <span className="text-base font-bold text-green-600 tabular-nums">45.00 ج.م</span>
                 </div>
                 <div className="flex justify-between items-center px-2">
@@ -497,7 +497,7 @@ export default function CartPage() {
                 </div>
                 {isPromoApplied && (
                   <div className="flex justify-between items-center bg-blue-50 -mx-6 px-8 py-4 rounded-2xl border border-blue-100">
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-blue-600">Protocol Discount</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-blue-600">Promo Applied</span>
                     <span className="text-base font-bold text-blue-600 tabular-nums">-{discount.toFixed(2)} ج.م</span>
                   </div>
                 )}
@@ -521,7 +521,7 @@ export default function CartPage() {
                   }`}
                 >
                   <DollarSign size={18} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Liquid</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Cash on Delivery</span>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('online')}
@@ -532,7 +532,7 @@ export default function CartPage() {
                   }`}
                 >
                   <Lock size={18} />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Digital</span>
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Credit Card</span>
                 </button>
               </div>
 
@@ -560,14 +560,14 @@ export default function CartPage() {
                 disabled={loading || items.length === 0}
                 className="w-full h-20 bg-slate-900 text-white font-bold uppercase tracking-[0.25em] text-xs rounded-3xl hover:bg-slate-800 transition-all flex items-center justify-center gap-4 disabled:opacity-20 active:scale-[0.98] shadow-2xl shadow-slate-900/20"
               >
-                <span>Authorize Deployment</span>
+                <span>Confirm Order</span>
                 <ChevronRight size={20} className="text-slate-400" />
               </button>
 
-              <div className="mt-8 flex items-center justify-center gap-3">
-                <ShieldCheck size={16} className="text-slate-300" />
-                <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">
-                  End-to-End Encryption Enabled
+              <div className="mt-8 flex items-center justify-center gap-3 text-slate-400">
+                <ShieldCheck size={16} />
+                <p className="text-[9px] font-bold uppercase tracking-widest">
+                  100% Secure Checkout
                 </p>
               </div>
             </motion.div>

@@ -42,12 +42,12 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
 
   const navItems = [
     { id: 'overview', label: 'Overview', icon: <LayoutDashboard size={20} />, path: '/admin/dashboard?tab=overview' },
-    { id: 'users', label: 'Users Control', icon: <Users size={20} />, path: '/admin/dashboard?tab=users' },
-    { id: 'stores', label: 'Ecosystem Control', icon: <ShoppingBag size={20} />, path: '/admin/dashboard?tab=stores' },
-    { id: 'economics', label: 'Fiscal Audit', icon: <DollarSign size={20} />, path: '/admin/dashboard?tab=economics' },
+    { id: 'users', label: 'Users', icon: <Users size={20} />, path: '/admin/dashboard?tab=users' },
+    { id: 'stores', label: 'Stores', icon: <ShoppingBag size={20} />, path: '/admin/dashboard?tab=stores' },
+    { id: 'economics', label: 'Financials & Payouts', icon: <DollarSign size={20} />, path: '/admin/dashboard?tab=economics' },
     { id: 'promos', label: 'Promotions', icon: <FileText size={20} />, path: '/admin/dashboard?tab=promos' },
     { id: 'fleet', label: 'Fleet Schedule', icon: <Activity size={20} />, path: '/admin/dashboard?tab=fleet' },
-    { id: 'pulse', label: 'Global Pulse', icon: <Settings size={20} />, path: '/admin/dashboard?tab=pulse' },
+    { id: 'pulse', label: 'Live Map Tracking', icon: <Settings size={20} />, path: '/admin/dashboard?tab=pulse' },
   ];
 
   const handleLogout = () => {
@@ -74,8 +74,8 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
                <ShieldAlert className="text-white" size={20} />
             </div>
             <div>
-               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 leading-none">Admin Nexus</h1>
-               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-1">Core Access Layer</p>
+               <h1 className="text-xs font-bold uppercase tracking-widest text-slate-900 leading-none">Admin Dashboard</h1>
+               <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-1">Control Panel</p>
             </div>
           </motion.div>
         )}
@@ -129,8 +129,8 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
                 <Activity size={20} />
              </div>
              <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">System State</p>
-                <p className="text-[10px] font-bold text-slate-900 uppercase">Operational</p>
+                <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400">System Status</p>
+                <p className="text-[10px] font-bold text-slate-900 uppercase">Online</p>
              </div>
           </div>
         )}
@@ -139,8 +139,7 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
           onClick={handleLogout}
           className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
         >
-          <LogOut size={18} className="group-hover:translate-x-1 transition-transform flex-shrink-0" />
-          {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout Hub</span>}
+          {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout</span>}
         </button>
       </div>
     </aside>

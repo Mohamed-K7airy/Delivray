@@ -70,8 +70,8 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center mb-16 space-y-8">
            <Logo className="scale-150 grayscale opacity-80" />
            <div className="space-y-3">
-              <h1 className="text-6xl font-bold text-slate-900 tracking-tighter leading-none">Security <br /><span className="text-slate-300">Protocol.</span></h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Authorized Access Required</p>
+              <h1 className="text-6xl font-bold text-slate-900 tracking-tighter leading-none">User <br /><span className="text-slate-300">Login.</span></h1>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Welcome Back</p>
            </div>
         </div>
 
@@ -79,10 +79,10 @@ export default function LoginPage() {
            <form onSubmit={handleLogin} className="space-y-10">
               <div className="space-y-8">
                  <div className="space-y-3">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Terminal ID</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Phone Number</label>
                     <input 
                        type="tel"
-                       placeholder="SYSTEM-PHONE-LINK"
+                       placeholder="e.g. 01012345678"
                        required
                        value={phone}
                        onChange={(e) => setPhone(e.target.value)}
@@ -91,7 +91,7 @@ export default function LoginPage() {
                  </div>
 
                  <div className="space-y-3 relative">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Security Key</label>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Password</label>
                     <input 
                        type={showPassword ? 'text' : 'password'}
                        placeholder="••••••••"
@@ -123,7 +123,7 @@ export default function LoginPage() {
                     </div>
                  ) : (
                     <>
-                       <span className="relative z-10">Access Terminal</span>
+                       <span className="relative z-10">Sign In</span>
                        <ChevronRight size={18} className="relative z-10 group-hover:translate-x-2 transition-transform" />
                     </>
                  )}
@@ -132,9 +132,9 @@ export default function LoginPage() {
 
            <div className="mt-12 pt-10 border-t border-slate-50 text-center">
               <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
-                 Unregistered Entity?{' '}
+                 Don't have an account?{' '}
                  <Link href="/register" className="text-slate-900 hover:underline underline-offset-8 transition-all">
-                    Register Hub
+                    Sign Up
                  </Link>
               </p>
            </div>
@@ -143,7 +143,7 @@ export default function LoginPage() {
         <div className="mt-16 flex items-center justify-center gap-4 opacity-20">
            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.4em] text-slate-900">
               <Lock size={14} fill="currentColor" />
-              Verified Protocol
+              Secure Login
            </div>
         </div>
       </motion.div>

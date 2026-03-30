@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
-  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-[#888888]">Initializing Global Pulse...</div>
+  loading: () => <div className="h-full w-full bg-gray-50 animate-pulse flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-[#888888]">Initializing Live Map Tracking...</div>
 });
 import { useSocket } from '@/context/SocketContext';
 import { Truck, Navigation as NavIcon, Map as MapIcon } from 'lucide-react';
@@ -184,7 +184,7 @@ function AdminDashboardContent() {
       if (data) {
         setPromos([data, ...promos]);
         setNewPromo({ code: '', discount_amount: '', min_subtotal: '', expires_at: '' });
-        toast.success('Promo code active.');
+        toast.success('Promotion created.');
       }
     } catch (err) {}
   };
@@ -220,7 +220,7 @@ function AdminDashboardContent() {
             { id: 'economics', label: 'Economics', icon: DollarSign },
             { id: 'promos', label: 'Promos', icon: Zap },
             { id: 'fleet', label: 'Fleet Schedule', icon: Truck },
-            { id: 'pulse', label: 'Global Pulse', icon: MapIcon }
+            { id: 'pulse', label: 'Live Map Tracking', icon: MapIcon }
           ].map(tab => (
             <button
               key={tab.id}
@@ -446,7 +446,7 @@ function AdminDashboardContent() {
               <div className="bg-slate-900 p-10 rounded-2xl text-white shadow-xl relative overflow-hidden group">
                  <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-10">
                     <div className="space-y-4">
-                       <h3 className="text-3xl font-bold tracking-tight">Financial Health Status</h3>
+                       <h3 className="text-3xl font-bold tracking-tight">Financial Overview</h3>
                        <p className="text-sm font-medium text-slate-400 max-w-md">Global fiscal integrity is currently at 99.8%. All merchant payouts are processed through the automated ledger.</p>
                     </div>
                     <div className="flex gap-4">
