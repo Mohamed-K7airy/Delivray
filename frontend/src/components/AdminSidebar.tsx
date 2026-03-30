@@ -2,7 +2,7 @@
 import { useAuthStore } from '@/store/authStore';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { 
   ShieldAlert, 
   LayoutDashboard, 
@@ -23,17 +23,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface AdminSidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (val: boolean) => void;
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (val: boolean) => void;
 }
 
-export default function AdminSidebar({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
+export default function AdminSidebar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }: AdminSidebarProps) {
   return (
-    <Suspense fallback={<aside className={`h-screen bg-white border-r border-gray-100 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] ${isCollapsed ? 'w-24' : 'w-80'}`} />}>
-      <SidebarContent isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+    <Suspense fallback={<aside className={`h-screen bg-white...`} />}>
+      <SidebarContent isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
     </Suspense>
   );
 }
 
-function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
+function SidebarContent({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }: AdminSidebarProps) {
   const { logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -56,15 +58,38 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
     toast.success('Secure admin terminal disconnected.');
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  typeof window !== 'undefined' && useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  const actualCollapsed = isCollapsed && !isMobile;
+
   return (
-    <aside 
-      className={`h-screen bg-white border-r border-gray-100 flex flex-col hidden md:flex fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-        isCollapsed ? 'w-24' : 'w-80'
-      }`}
-    >
+    <>
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileOpen?.(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[140] md:hidden"
+          />
+        )}
+      </AnimatePresence>
+      <aside 
+        className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-[150] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+          isMobileOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full md:translate-x-0'
+        } ${actualCollapsed ? 'md:w-24' : 'md:w-80'}`}
+      >
       {/* Brand Header */}
-      <div className={`p-8 mb-12 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-6' : 'px-8'}`}>
-        {!isCollapsed && (
+      <div className={`p-8 mb-12 flex items-center justify-between transition-all duration-500 ${actualCollapsed ? 'px-6' : 'px-8'}`}>
+        {!actualCollapsed && (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -82,9 +107,9 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-slate-900 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`hidden md:block p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-slate-900 transition-all ${actualCollapsed ? 'mx-auto' : ''}`}
         >
-          {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+          {actualCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
@@ -100,17 +125,18 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
                 isActive 
                   ? 'bg-slate-50 text-slate-900 border border-slate-100 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50/50'
-              } ${isCollapsed ? 'justify-center px-0' : ''}`}
+              } ${actualCollapsed ? 'justify-center px-0' : ''}`}
+              onClick={() => setIsMobileOpen?.(false)}
             >
-              <div className={`${isActive ? 'text-slate-900 scale-110' : 'text-slate-300 group-hover:text-slate-900 group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${isCollapsed ? 'mx-auto' : ''}`}>
+              <div className={`${isActive ? 'text-slate-900 scale-110' : 'text-slate-300 group-hover:text-slate-900 group-hover:scale-110'} transition-all duration-300 relative z-10 w-5 h-5 flex items-center justify-center ${actualCollapsed ? 'mx-auto' : ''}`}>
                 {item.icon}
               </div>
-              {!isCollapsed && (
+              {!actualCollapsed && (
                 <span className={`text-[10px] font-bold uppercase tracking-widest relative z-10 transition-all duration-300 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'}`}>
                    {item.label}
                 </span>
               )}
-              {isActive && !isCollapsed && (
+              {isActive && !actualCollapsed && (
                 <motion.div 
                   layoutId="activePin"
                   className="absolute left-0 w-1 h-8 bg-slate-900 rounded-r-full"
@@ -123,7 +149,7 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
 
       {/* Bottom Actions */}
       <div className="p-6 space-y-6">
-        {!isCollapsed && (
+        {!actualCollapsed && (
           <div className="p-5 bg-white border border-slate-100 rounded-3xl flex items-center space-x-4 shadow-sm">
              <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-900 border border-slate-100 shadow-inner">
                 <Activity size={20} />
@@ -137,11 +163,12 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: AdminSidebarProps) {
 
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
+          className={`w-full flex items-center space-x-4 px-4 py-3 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group ${actualCollapsed ? 'justify-center px-0' : 'justify-start'}`}
         >
-          {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout</span>}
+          {!actualCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout</span>}
         </button>
       </div>
     </aside>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Map as MapIcon, 
@@ -8,6 +9,7 @@ import {
   LifeBuoy, 
   Settings, 
   LogOut,
+
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -21,6 +23,8 @@ import { useAuthStore } from '@/store/authStore';
 interface DriverSidebarProps {
   isCollapsed: boolean;
   setIsCollapsed: (val: boolean) => void;
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (val: boolean) => void;
 }
 
 const menuItems = [
@@ -31,10 +35,20 @@ const menuItems = [
   { icon: Settings, label: 'Settings', href: '/driver/settings' },
 ];
 
-export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSidebarProps) {
+export default function DriverSidebar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }: DriverSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 768);
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  const actualCollapsed = isCollapsed && !isMobile;
 
   const handleLogout = () => {
     logout();
@@ -43,14 +57,26 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
   };
 
   return (
-    <aside 
-      className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-[100] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] hidden md:flex ${
-        isCollapsed ? 'w-16 lg:w-20' : 'w-56 lg:w-64'
-      }`}
-    >
+    <>
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileOpen?.(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[140] md:hidden"
+          />
+        )}
+      </AnimatePresence>
+      <aside 
+        className={`h-screen bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 z-[150] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+          isMobileOpen ? 'translate-x-0 w-[280px]' : '-translate-x-full md:translate-x-0'
+        } ${actualCollapsed ? 'md:w-16 lg:w-20' : 'md:w-56 lg:w-64'}`}
+      >
       {/* Brand Header */}
-      <div className={`p-4 lg:p-6 mb-6 lg:mb-8 flex items-center justify-between transition-all duration-500 ${isCollapsed ? 'px-2 lg:px-4' : 'px-4 lg:px-6'}`}>
-        {!isCollapsed && (
+      <div className={`p-4 lg:p-6 mb-6 lg:mb-8 flex items-center justify-between transition-all duration-500 ${actualCollapsed ? 'px-2 lg:px-4' : 'px-4 lg:px-6'}`}>
+        {!actualCollapsed && (
           <motion.div 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -68,9 +94,9 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
         
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-slate-900 transition-all ${isCollapsed ? 'mx-auto' : ''}`}
+          className={`hidden md:block p-2 rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-slate-900 transition-all ${actualCollapsed ? 'mx-auto' : ''}`}
         >
-          {isCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
+          {actualCollapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
@@ -86,11 +112,12 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
                 isActive 
                   ? 'bg-slate-50 text-slate-900 border border-slate-100 shadow-sm' 
                   : 'text-slate-400 hover:text-slate-900 hover:bg-slate-50/50'
-              } ${isCollapsed ? 'justify-center px-0' : ''}`}
+              } ${actualCollapsed ? 'justify-center px-0' : ''}`}
+              onClick={() => setIsMobileOpen?.(false)}
             >
-              <item.icon size={20} className={`${isActive ? 'text-slate-900 scale-110' : 'group-hover:text-slate-900 group-hover:scale-105'} transition-all duration-300 ${isCollapsed ? 'mx-auto' : ''}`} />
-              {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>}
-              {isActive && !isCollapsed && (
+              <item.icon size={20} className={`${isActive ? 'text-slate-900 scale-110' : 'group-hover:text-slate-900 group-hover:scale-105'} transition-all duration-300 ${actualCollapsed ? 'mx-auto' : ''}`} />
+              {!actualCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>}
+              {isActive && !actualCollapsed && (
                 <motion.div layoutId="activeDot" className="absolute left-0 w-1 h-6 bg-slate-900 rounded-r-full" />
               )}
             </Link>
@@ -100,7 +127,7 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
 
       {/* Bottom Actions */}
       <div className="p-4 lg:p-6 space-y-3 lg:space-y-4">
-        {!isCollapsed && (
+        {!actualCollapsed && (
           <div className="p-5 bg-white rounded-2xl border border-slate-100 flex items-center space-x-4 shadow-sm">
              <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-900 border border-slate-100">
                 <ShieldCheck size={20} />
@@ -114,12 +141,13 @@ export default function DriverSidebar({ isCollapsed, setIsCollapsed }: DriverSid
 
         <button 
           onClick={handleLogout}
-          className={`w-full flex items-center space-x-4 text-slate-400 hover:text-red-600 transition-all group ${isCollapsed ? 'justify-center' : 'justify-center'}`}
+          className={`w-full flex items-center space-x-3 lg:space-x-4 px-4 py-3 lg:py-4 rounded-xl hover:bg-red-50 text-slate-400 hover:text-red-500 transition-all group ${actualCollapsed ? 'justify-center px-0' : 'justify-start'}`}
         >
-          <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-          {!isCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Logout</span>}
+          <LogOut size={20} className="group-hover:scale-110 transition-transform" />
+          {!actualCollapsed && <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Terminate Session</span>}
         </button>
       </div>
     </aside>
+    </>
   );
 }

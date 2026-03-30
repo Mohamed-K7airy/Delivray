@@ -239,7 +239,7 @@ export default function UserProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-2">Account Telemetry</p>
-                <h1 className="text-5xl lg:text-6xl font-bold text-slate-900 tracking-tighter">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tighter">
                   {activeTab === 'orders' ? 'Protocol History.' : 'Verified Hubs.'}
                 </h1>
               </div>

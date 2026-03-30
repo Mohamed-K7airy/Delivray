@@ -32,6 +32,15 @@ body {
   min-height: 100vh;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+.scroll-smooth {
+  -webkit-overflow-scrolling: touch;
+}
+
+
 /* Custom Scrollbar - Modern Light Style */
 ::-webkit-scrollbar {
   width: 8px;

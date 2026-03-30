@@ -128,7 +128,7 @@ export default function DriverDashboard() {
                 Live Network
               </span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
               Operational Terminal.
             </h1>
             <p className="text-slate-400 mt-2 font-medium text-sm">Active session for {user?.name?.split(' ')[0]} Registry.</p>
@@ -420,7 +420,7 @@ export default function DriverDashboard() {
 
                   <div className="w-full space-y-1">
                     <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Estimated Payout</p>
-                    <h3 className="text-6xl font-black text-slate-900 tracking-tight leading-none">{stats.delivery_fee.toFixed(2)} ج.م</h3>
+                    <h3 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-none">{stats.delivery_fee.toFixed(2)} ج.م</h3>
                   </div>
 
                   <div className="w-full bg-slate-50 rounded-xl p-6 border border-slate-100 text-center space-y-4">

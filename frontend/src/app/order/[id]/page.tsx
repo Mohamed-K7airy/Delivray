@@ -146,7 +146,7 @@ export default function OrderTracking() {
             >
               <ChevronLeft size={14} /> Protocol History
             </button>
-            <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
               Deployment <span className="text-slate-300">#{String(id).substring(0, 8).toUpperCase()}</span>
             </h1>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.25em]">

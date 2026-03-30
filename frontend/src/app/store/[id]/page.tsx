@@ -215,7 +215,7 @@ export default function StorePage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="text-6xl lg:text-8xl font-bold text-slate-900 tracking-tighter leading-[0.85]"
+                  className="text-5xl sm:text-6xl lg:text-8xl font-bold text-slate-900 tracking-tighter leading-[0.85]"
                 >
                   {store.name}.
                 </motion.h1>
@@ -253,7 +253,7 @@ export default function StorePage() {
         {/* Menu Navigation */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 border-b border-slate-100 pb-10">
           <div className="space-y-2">
-              <h1 className="text-5xl sm:text-7xl font-bold text-slate-900 tracking-tighter mb-4">{store.name}.</h1>
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter mb-4">{store.name}.</h1>
               {store.description && (
                 <p className="max-w-xl text-lg font-medium text-slate-500 leading-relaxed mb-8">
                   {store.description}

@@ -79,7 +79,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-4 relative ml-2">
                    {user.role === 'customer' && cartItemCount > 0 && (
                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                       <Link href="/cart" className="relative p-2 text-slate-400 hover:text-slate-900 transition-all">
+                       <Link href="/cart" className="relative p-2 text-slate-400 hover:text-slate-900 transition-all flex items-center justify-center min-h-[44px] min-w-[44px]">
                           <ShoppingCart size={22} />
                           <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-[10px] font-bold text-white bg-slate-900 rounded-full border-2 border-white">
                              {cartItemCount}
@@ -109,7 +109,7 @@ export default function Navbar() {
                         initial={{ opacity: 0, y: 15, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                        className="absolute right-0 top-full mt-4 w-56 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-[60]"
+                        className="absolute right-0 lg:right-auto lg:left-1/2 lg:-translate-x-1/2 top-full mt-4 w-[calc(100vw-2rem)] sm:w-56 bg-white border border-slate-100 rounded-xl shadow-xl overflow-hidden z-[60]"
                       >
                          <div className="p-2">
                            <Link 

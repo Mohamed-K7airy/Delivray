@@ -70,7 +70,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center text-center mb-16 space-y-8">
            <Logo className="scale-150 grayscale opacity-80" />
            <div className="space-y-3">
-              <h1 className="text-6xl font-bold text-slate-900 tracking-tighter leading-none">User <br /><span className="text-slate-300">Login.</span></h1>
+              <h1 className="text-4xl sm:text-6xl font-bold text-slate-900 tracking-tighter leading-none">User <br /><span className="text-slate-300">Login.</span></h1>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Welcome Back</p>
            </div>
         </div>

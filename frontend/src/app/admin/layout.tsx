@@ -15,6 +15,7 @@ export default function AdminLayout({
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -45,13 +46,13 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen bg-[#f8fafc] text-[#111111] relative overflow-x-hidden">
-      <AdminSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} />
+      <AdminSidebar isCollapsed={isCollapsed} setIsCollapsed={toggleCollapse} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
       <div 
         className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${
           isCollapsed ? 'ml-0 md:ml-24' : 'ml-0 md:ml-80'
         }`}
       >
-        <AdminNavbar isCollapsed={isCollapsed} />
+        <AdminNavbar isCollapsed={isCollapsed} isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-10 custom-scrollbar relative">
            {/* Background Decor */}
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#0f172a]/5 rounded-full blur-[150px] pointer-events-none -mr-40 -mt-80"></div>

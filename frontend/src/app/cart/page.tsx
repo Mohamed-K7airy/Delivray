@@ -296,7 +296,7 @@ export default function CartPage() {
                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Checkout Ready</span>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tighter leading-none">
               Your <span className="text-slate-300">Cart.</span>
             </h1>
           </div>
@@ -505,7 +505,7 @@ export default function CartPage() {
 
               <div className="mb-10 px-2 flex justify-between items-center">
                 <p className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Total</p>
-                <p className="text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">
+                <p className="text-4xl sm:text-5xl font-bold text-slate-900 tracking-tighter tabular-nums">
                   {Math.max(0, (total + 45.00 + (total * 0.1) - discount)).toFixed(2)} ج.م
                 </p>
               </div>

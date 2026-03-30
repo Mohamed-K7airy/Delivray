@@ -211,7 +211,7 @@ export default function Home() {
              <div className="w-2 h-2 bg-slate-900 rounded-full animate-pulse" />
              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">Network Online</span>
           </div>
-          <h2 className="text-6xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-[0.9]">Select Your <br /> <span className="text-slate-300">Operational Hub.</span></h2>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-slate-900 tracking-tight leading-[0.9]">Select Your <br /> <span className="text-slate-300">Operational Hub.</span></h2>
           <p className="text-slate-400 font-medium max-w-2xl text-lg lg:text-xl uppercase tracking-tighter">Real-time marketplace sync. Quality-verified logistics partners available now.</p>
         </div>
 
