@@ -109,7 +109,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Role Selection */}
-        <div className="grid grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8 sm:mb-12">
            {[
              { id: 'customer', label: 'User', icon: <User size={20} /> },
              { id: 'merchant', label: 'Vendor', icon: <ShoppingBag size={20} /> },
@@ -119,23 +119,23 @@ export default function RegisterPage() {
                key={item.id}
                type="button"
                onClick={() => setRole(item.id as any)}
-               className={`flex flex-col items-center justify-center p-6 rounded-[2rem] transition-all border shrink-0 gap-4 group/item
+               className={`flex flex-col items-center justify-center p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] transition-all border shrink-0 gap-2 sm:gap-4 group/item
                  ${role === item.id 
-                   ? 'bg-slate-900 border-slate-900 text-white shadow-2xl scale-105' 
+                   ? 'bg-slate-900 border-slate-900 text-white shadow-xl sm:shadow-2xl scale-100 sm:scale-105' 
                    : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300 hover:text-slate-900 shadow-sm'}`}
              >
-               <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${role === item.id ? 'bg-white/10' : 'bg-slate-50'}`}>
+               <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all ${role === item.id ? 'bg-white/10' : 'bg-slate-50'}`}>
                   {item.icon}
                </div>
-               <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{item.label}</span>
+               <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest sm:tracking-[0.2em]">{item.label}</span>
              </button>
            ))}
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-12 lg:p-16 border border-slate-100 shadow-2xl relative">
-           <form onSubmit={handleRegister} className="space-y-12">
-              <div className="space-y-10">
-                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+        <div className="bg-white rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 lg:p-16 border border-slate-100 shadow-2xl relative">
+           <form onSubmit={handleRegister} className="space-y-8 sm:space-y-12">
+              <div className="space-y-8 sm:space-y-10">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10">
                     <div className="sm:col-span-2 space-y-3">
                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Full Name</label>
                        <input 
@@ -199,7 +199,7 @@ export default function RegisterPage() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="grid grid-cols-1 sm:grid-cols-2 gap-10 pt-10 border-t border-slate-50"
+                          className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 pt-8 sm:pt-10 border-t border-slate-50"
                        >
                           <div className="space-y-3">
                              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] ml-1">Store Name</label>

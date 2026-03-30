@@ -271,41 +271,43 @@ export default function UserProfile() {
                       transition={{ delay: idx * 0.05, duration: 0.2 }}
                       className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all group overflow-hidden"
                     >
-                      <div className="flex items-center gap-8 p-8 lg:p-10">
-                        {/* Status Icon or Badge */}
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center border border-slate-100 shadow-inner">
-                          <Package size={28} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
-                        </div>
-
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-4 flex-wrap mb-3">
-                            <h3 className="text-xl font-bold text-slate-900 tracking-tight truncate">{order.restaurant}</h3>
-                            <span className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-[0.2em] border shadow-sm ${getStatusStyle(order.status)}`}>
-                              {order.status?.replace(/_/g, ' ')}
-                            </span>
+                      <div className="p-6 lg:p-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+                        <div className="flex items-center gap-6 w-full flex-1">
+                          {/* Status Icon or Badge */}
+                          <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-slate-50 shrink-0 flex items-center justify-center border border-slate-100 shadow-inner">
+                            <Package size={28} className="text-slate-300 group-hover:text-slate-900 transition-colors" />
                           </div>
-                          <div className="flex items-center gap-8">
-                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest tabular-nums">
-                              ID: {order.id.slice(0,12).toUpperCase()}
-                             </p>
-                             <div className="flex items-center gap-6">
-                              <span className="text-[10px] font-bold text-slate-900 flex items-center gap-2 tabular-nums">
-                                <CreditCard size={12} className="text-slate-300" /> {Number(order.price).toFixed(2)} ج.م
+
+                          {/* Info */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 flex-wrap mb-2">
+                              <h3 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight truncate">{order.restaurant}</h3>
+                              <span className={`px-4 py-1.5 rounded-lg text-[9px] font-bold uppercase tracking-[0.2em] border shadow-sm whitespace-nowrap ${getStatusStyle(order.status)}`}>
+                                {order.status?.replace(/_/g, ' ')}
                               </span>
-                              <span className="text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
-                                <Clock size={12} className="text-slate-300" /> {order.date}
-                              </span>
+                            </div>
+                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8">
+                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest tabular-nums">
+                                ID: {order.id.slice(0,12).toUpperCase()}
+                               </p>
+                               <div className="flex items-center gap-6">
+                                <span className="text-[10px] font-bold text-slate-900 flex items-center gap-2 tabular-nums">
+                                  <CreditCard size={12} className="text-slate-300" /> {Number(order.price).toFixed(2)} ج.م
+                                </span>
+                                <span className="text-[10px] font-bold text-slate-400 flex items-center gap-2 uppercase tracking-widest">
+                                  <Clock size={12} className="text-slate-300" /> {order.date}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-slate-50">
                           {isActive(order.status) ? (
                             <button
                               onClick={() => router.push(`/order/${order.id}`)}
-                              className="h-14 px-8 bg-slate-900 text-white rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-3 hover:bg-slate-800 transition-all shadow-xl active:scale-95"
+                              className="w-full md:w-auto flex-1 h-14 px-8 bg-slate-900 text-white rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl active:scale-95"
                             >
                               <Navigation size={14} fill="currentColor" /> Tracking
                             </button>
@@ -314,14 +316,14 @@ export default function UserProfile() {
                               {order.status === 'completed' && (
                                 <button
                                   onClick={() => setSelectedOrderForReview(order)}
-                                  className="h-12 px-6 bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 border border-slate-100 shadow-sm hover:bg-slate-100 transition-all active:scale-95"
+                                  className="w-full md:w-auto flex-1 h-12 px-6 bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 border border-slate-100 shadow-sm hover:bg-slate-100 transition-all active:scale-95"
                                 >
                                   <Star size={12} className="fill-slate-900" /> Analyze
                                 </button>
                               )}
                               <button
                                 onClick={() => handleOrderAgain(order)}
-                                className="h-12 px-6 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 border border-slate-100 shadow-sm transition-all active:scale-95"
+                                className="w-full md:w-auto flex-1 h-12 px-6 bg-white hover:bg-slate-50 text-slate-900 rounded-xl text-[9px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 border border-slate-100 shadow-sm transition-all active:scale-95"
                               >
                                 <RotateCcw size={12} /> Sync Base
                               </button>

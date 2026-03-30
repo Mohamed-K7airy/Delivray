@@ -75,7 +75,7 @@ export default function LoginPage() {
            </div>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-12 lg:p-16 border border-slate-100 shadow-2xl relative">
+        <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 lg:p-16 border border-slate-100 shadow-2xl relative">
            <form onSubmit={handleLogin} className="space-y-10">
               <div className="space-y-8">
                  <div className="space-y-3">
@@ -131,12 +131,12 @@ export default function LoginPage() {
            </form>
 
            <div className="mt-12 pt-10 border-t border-slate-50 text-center">
-              <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
-                 Don't have an account?{' '}
+              <div className="text-slate-400 font-bold text-[9px] sm:text-[10px] uppercase tracking-widest flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-1">
+                 <span>Don't have an account?</span>
                  <Link href="/register" className="text-slate-900 hover:underline underline-offset-8 transition-all">
                     Sign Up
                  </Link>
-              </p>
+              </div>
            </div>
         </div>
 

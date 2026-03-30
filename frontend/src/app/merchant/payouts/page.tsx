@@ -99,16 +99,18 @@ export default function MerchantPayouts() {
                  initial={{ opacity: 0, y: 20 }}
                  animate={{ opacity: 1, y: 0 }}
                  transition={{ delay: idx * 0.1 }}
-                 className="bg-white p-6 sm:p-10 rounded-2xl border border-gray-100 shadow-md relative overflow-hidden group hover:shadow-xl transition-all"
+                 className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-md relative overflow-hidden group hover:shadow-xl transition-all flex items-center gap-4 sm:gap-6"
               >
-                 <div className="absolute -top-4 -right-4 text-[#0f172a]/[0.05] transform rotate-12">
+                 <div className="absolute -top-4 -right-4 text-[#0f172a]/[0.05] transform rotate-12 pointer-events-none">
                     {stat.icon}
                  </div>
-                 <div className="w-12 h-12 bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#0f172a] border border-gray-100 mb-8 shadow-inner">
+                 <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-[#f8fafc] rounded-xl flex items-center justify-center text-[#0f172a] border border-gray-100 shadow-inner">
                     {stat.icon}
                  </div>
-                 <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.3em] mb-3">{stat.label}</p>
-                 <h3 className={`text-4xl font-bold ${stat.color === 'primary' ? 'text-[#0f172a]' : 'text-[#111111]'} tracking-tighter`}>{stat.value}</h3>
+                 <div className="flex-1 min-w-0">
+                    <p className="text-[8px] sm:text-[10px] font-bold text-[#888888] uppercase tracking-widest sm:tracking-[0.3em] mb-0.5 sm:mb-1 truncate">{stat.label}</p>
+                    <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${stat.color === 'primary' ? 'text-[#0f172a]' : 'text-[#111111]'} tracking-tighter truncate`}>{stat.value}</h3>
+                 </div>
               </motion.div>
            ))}
          </div>
@@ -170,22 +172,22 @@ export default function MerchantPayouts() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 + (idx * 0.1) }}
-                    className="bg-[#f8fafc] p-8 rounded-xl border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-lg transition-all group cursor-pointer"
+                    className="bg-[#f8fafc] p-4 sm:p-6 rounded-xl border border-gray-100 flex items-center justify-between hover:bg-white hover:shadow-lg transition-all group cursor-pointer"
                  >
-                    <div className="flex items-center space-x-8">
-                       <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#888888] transition-colors group-hover:text-[#0f172a] border border-gray-100 shadow-sm">
-                          <ArrowDownRight size={20} />
+                    <div className="flex items-center space-x-4 sm:space-x-6 min-w-0">
+                       <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-white rounded-xl flex items-center justify-center text-[#888888] transition-colors group-hover:text-[#0f172a] border border-gray-100 shadow-sm">
+                          <ArrowDownRight size={18} />
                        </div>
-                       <div className="space-y-1">
-                          <h4 className="font-bold uppercase tracking-tighter text-xl text-[#111111]">{tx.id}</h4>
-                          <p className="text-[9px] font-bold text-[#888888] uppercase tracking-[0.3em]">{new Date(tx.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}</p>
+                       <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                          <h4 className="font-bold uppercase tracking-tight text-sm sm:text-lg text-[#111111] truncate">{tx.id}</h4>
+                          <p className="text-[8px] sm:text-[9px] font-bold text-[#888888] uppercase tracking-widest sm:tracking-[0.3em] truncate">{new Date(tx.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()}</p>
                        </div>
                     </div>
-                    <div className="text-right space-y-2">
-                       <p className="text-3xl font-bold tracking-tighter text-[#111111]">{Number(tx.amount).toFixed(2)} ج.م</p>
-                       <div className="flex items-center justify-end space-x-2">
+                    <div className="text-right space-y-1 sm:space-y-2 shrink-0 ml-4">
+                       <p className="text-lg sm:text-2xl font-bold tracking-tighter text-[#111111] whitespace-nowrap">{Number(tx.amount).toFixed(2)} ج.م</p>
+                       <div className="flex items-center justify-end space-x-1.5 sm:space-x-2">
                           <div className={`w-1.5 h-1.5 rounded-full shadow-[0_0_8px_currentColor] ${tx.status === 'settled' ? 'bg-[#0f172a]' : 'bg-yellow-500'}`}></div>
-                          <span className={`text-[9px] font-bold uppercase tracking-widest italic ${tx.status === 'settled' ? 'text-[#0f172a]' : 'text-yellow-500'}`}>{tx.status}</span>
+                          <span className={`text-[8px] sm:text-[9px] font-bold uppercase tracking-widest italic ${tx.status === 'settled' ? 'text-[#0f172a]' : 'text-yellow-500'}`}>{tx.status}</span>
                        </div>
                     </div>
                  </motion.div>

@@ -158,7 +158,7 @@ export default function MerchantDashboard() {
                 Live Network
               </span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight whitespace-nowrap">
               Operational Summary.
             </h1>
             <p className="text-slate-400 mt-2 font-medium text-sm">Merchant terminal for {user?.name?.split(' ')[0]} Hub.</p>
@@ -184,11 +184,11 @@ export default function MerchantDashboard() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: i * 0.03 }}
-              className="bg-white rounded-xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+              className="bg-white rounded-xl p-4 sm:p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
             >
               <div className="relative z-10">
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                <div className="flex items-start justify-between mb-4 sm:mb-6">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 group-hover:bg-slate-900 group-hover:text-white transition-all scale-90 sm:scale-100">
                     {s.icon}
                   </div>
                   <div className="flex flex-col items-end">
@@ -197,7 +197,7 @@ export default function MerchantDashboard() {
                 </div>
                 
                 <div className="space-y-1">
-                  <p className="text-3xl font-bold text-slate-900 tracking-tight leading-none">{s.value}</p>
+                  <p className="text-xl sm:text-3xl font-bold text-slate-900 tracking-tight leading-none truncate">{s.value}</p>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{s.label}</p>
                 </div>
               </div>

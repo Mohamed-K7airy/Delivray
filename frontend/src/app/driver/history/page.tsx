@@ -94,27 +94,27 @@ export default function DriverHistory() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group"
+                  className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group"
                 >
-                  <div className="flex flex-col md:flex-row justify-between gap-6">
+                  <div className="flex flex-col md:flex-row justify-between gap-4 sm:gap-6">
                     <div className="flex items-start gap-5">
                       <div className="w-14 h-14 bg-[#fef3f2] rounded-2xl flex items-center justify-center text-[#0f172a] shrink-0 group-hover:scale-110 transition-transform">
                         <MapPin size={24} />
                       </div>
                       <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <h3 className="font-bold text-[#111111] uppercase tracking-tight text-lg">{order.stores?.name}</h3>
-                          <span className="px-2 py-0.5 bg-gray-50 text-gray-400 rounded-md text-[8px] font-bold uppercase tracking-widest">#{order.id.slice(0,8)}</span>
+                        <div className="flex flex-wrap items-center gap-2 mb-1 max-w-full">
+                          <h3 className="font-bold text-[#111111] uppercase tracking-tight text-base sm:text-lg truncate max-w-[120px] sm:max-w-[200px]">{order.stores?.name}</h3>
+                          <span className="px-2 py-0.5 bg-gray-50 text-gray-400 rounded-md text-[8px] font-bold uppercase tracking-widest shrink-0">#{String(order.id).slice(0,8)}</span>
                         </div>
-                        <p className="text-sm font-medium text-[#888888] flex items-center gap-2">
+                        <p className="text-[10px] sm:text-sm font-medium text-[#888888] flex flex-wrap items-center gap-1.5 sm:gap-2">
                           <Calendar size={14} /> {new Date(order.updated_at).toLocaleDateString()}
-                          <span className="mx-1">·</span>
+                          <span className="mx-0.5 sm:mx-1">·</span>
                           <Clock size={14} /> {new Date(order.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between md:justify-end gap-10 border-t md:border-t-0 pt-4 md:pt-0">
+                    <div className="flex items-center justify-between md:justify-end gap-3 sm:gap-10 border-t md:border-t-0 pt-4 md:pt-0 w-full md:w-auto">
                       <div className="text-center md:text-right">
                         <p className="text-[10px] font-bold text-[#888888] uppercase tracking-widest mb-1">Fee Earned</p>
                         <p className="text-xl font-bold text-green-600 tracking-tighter">{Number(order.delivery_fee || 45.00).toFixed(2)} ج.م</p>
