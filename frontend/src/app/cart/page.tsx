@@ -366,8 +366,8 @@ export default function CartPage() {
                       {/* Content Area */}
                       <div className="flex-1 flex flex-col justify-between py-1 h-full">
                         <div className="space-y-1">
-                          <h3 className="text-xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">{item.products.name}</h3>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.products.store_name || 'Store Product'}</p>
+                          <h3 className="text-xl font-bold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">{item.products?.name}</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Store Product</p>
                         </div>
                         
                         <div className="flex items-center justify-between mt-6 lg:mt-8">
