@@ -33,6 +33,7 @@ export default function AdminDashboard() {
   
   const [stats, setStats] = useState<Stats | null>(null);
   const [pendingUsers, setPendingUsers] = useState<any[]>([]);
+  const [pendingPayouts, setPendingPayouts] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [allStores, setAllStores] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [statsData, pendingData, usersData, storesData, finData, promoData, anData, schData] = await Promise.all([
+        const [statsData, pendingData, usersData, storesData, finData, promoData, anData, schData, pendingPayoutsData] = await Promise.all([
           apiClient('/admin/stats'),
           apiClient('/admin/pending-users'),
           apiClient(`/admin/users?search=${userSearch}&role=${userRoleFilter}`),
@@ -68,7 +69,8 @@ export default function AdminDashboard() {
           apiClient('/admin/financials'),
           apiClient('/admin/promos'),
           apiClient('/admin/analytics'),
-          apiClient('/scheduling/admin/all')
+          apiClient('/scheduling/admin/all'),
+          apiClient('/admin/pending-payouts')
         ]);
         
         if (statsData) setStats(statsData);
@@ -79,6 +81,7 @@ export default function AdminDashboard() {
         if (promoData) setPromos(promoData);
         if (anData) setAnalyticsData(anData);
         if (schData) setSchedulingData(schData);
+        if (pendingPayoutsData) setPendingPayouts(pendingPayoutsData);
       } catch (err) {
         console.error(err);
       } finally {
@@ -142,6 +145,21 @@ export default function AdminDashboard() {
     } catch (err) {
       // apiClient handles toasts
     }
+  };
+
+  const handleApprovePayout = async (id: string) => {
+    try {
+      const data = await apiClient(`/admin/payouts/${id}/approve`, {
+        method: 'PATCH',
+      });
+      if (data) {
+        toast.success('Payout approved and settled');
+        setPendingPayouts(pendingPayouts.filter(p => p.id !== id));
+        // Refresh financials
+        const finData = await apiClient('/admin/financials');
+        if (finData) setFinancials(finData);
+      }
+    } catch (err) {}
   };
 
   const handleCreatePromo = async (e: React.FormEvent) => {
@@ -428,6 +446,52 @@ export default function AdminDashboard() {
                        <button className="h-14 px-10 bg-slate-800 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-slate-700 transition-all">Deep Audit</button>
                     </div>
                  </div>
+              </div>
+
+              {/* Pending Payouts List */}
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                      <DollarSign size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Pending Withdrawals</h3>
+                      <p className="text-[10px] text-slate-500 font-medium mt-0.5">{pendingPayouts.length} requests awaiting settlement</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
+                  {pendingPayouts.length === 0 ? (
+                    <div className="p-12 text-center">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No pending payouts</p>
+                    </div>
+                  ) : (
+                    pendingPayouts.map(payout => (
+                      <div key={payout.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors">
+                        <div>
+                          <p className="text-xs font-bold text-slate-900 uppercase mb-1">
+                            {payout.merchant?.name || payout.driver?.users?.name || 'Unknown Entity'}
+                          </p>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-100 uppercase tracking-wider shadow-sm">{payout.payout_type?.replace('_', ' ')}</span>
+                            <span className="text-[10px] text-slate-400">{new Date(payout.created_at || Date.now()).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4">
+                          <p className="text-xl font-bold text-slate-900 tracking-tight">{Number(payout.amount).toFixed(2)} ج.م</p>
+                          <button 
+                            onClick={() => handleApprovePayout(payout.id)}
+                            className="h-9 px-5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold uppercase text-[9px] tracking-widest transition-all shadow-sm"
+                          >
+                            Approve
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
