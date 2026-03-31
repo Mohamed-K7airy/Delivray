@@ -42,10 +42,15 @@ export const acceptOrder = async (req, res) => {
       return res.status(400).json({ message: 'Order is no longer available' });
     }
 
-    // Assign driver and update status to delivering
+    // Assign driver and update status to delivering, plus generate a 2-digit confirmation code
+    const confirmationCode = Math.floor(10 + Math.random() * 90).toString();
     const { data: updatedOrder, error } = await supabase
       .from('orders')
-      .update({ driver_id: driver.id, status: 'delivering' })
+      .update({ 
+        driver_id: driver.id, 
+        status: 'delivering',
+        confirmation_code: confirmationCode
+      })
       .eq('id', id)
       .select()
       .single();
@@ -85,17 +90,25 @@ export const acceptOrder = async (req, res) => {
 export const completeOrder = async (req, res) => {
   try {
     const { id } = req.params;
+    const { code } = req.body;
     const userId = req.user.id;
+
+    if (!code) return res.status(400).json({ message: 'Confirmation code is required' });
 
     // Verify driver
     const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId).single();
     if (!driver) return res.status(404).json({ message: 'Driver not found' });
 
-    // Verify order ownership
-    const { data: order } = await supabase.from('orders').select('status, driver_id').eq('id', id).single();
+    // Verify order ownership and code
+    const { data: order } = await supabase.from('orders').select('status, driver_id, confirmation_code').eq('id', id).single();
     if (!order) return res.status(404).json({ message: 'Order not found' });
     if (order.driver_id !== driver.id) return res.status(403).json({ message: 'Not authorized for this order' });
     if (order.status !== 'delivering') return res.status(400).json({ message: 'Cannot complete an order that is not delivering' });
+    
+    // Check code
+    if (order.confirmation_code !== code) {
+      return res.status(400).json({ message: 'Invalid confirmation code' });
+    }
 
     // Mark order as completed
     const { data: completedOrder, error } = await supabase
@@ -297,5 +310,60 @@ export const requestDriverWithdrawal = async (req, res) => {
     res.json(payout);
   } catch (err) {
     res.status(500).json({ message: err.message || 'Server Error' });
+  }
+};
+
+// @desc    Update driver signal for buyer
+// @route   PATCH /delivery/signal/:id
+// @access  Private/Driver
+export const updateDriverSignal = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { signal } = req.body;
+    const userId = req.user.id;
+
+    if (!signal) return res.status(400).json({ message: 'Signal message is required' });
+
+    // Find driver
+    const { data: driver } = await supabase.from('drivers').select('id').eq('user_id', userId).single();
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+
+    // Verify order ownership
+    const { data: order } = await supabase.from('orders').select('driver_id').eq('id', id).single();
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (order.driver_id !== driver.id) return res.status(403).json({ message: 'Not authorized for this order' });
+
+    // Update signal
+    const { data: updatedOrder, error } = await supabase
+      .from('orders')
+      .update({ driver_signal: signal })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Emit socket event to notify buyer
+    const io = getIo();
+    if (io) {
+      // Fetch full order for consistent updates
+      const { data: fullOrder } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          stores(name, owner_id),
+          drivers(id, user_id, users(name))
+        `)
+        .eq('id', id)
+        .single();
+      
+      if (fullOrder) {
+        io.to(`order_${id}`).emit('order_status_updated', fullOrder);
+      }
+    }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: error.message || 'Server Error' });
   }
 };

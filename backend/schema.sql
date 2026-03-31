@@ -69,6 +69,8 @@ CREATE TABLE orders (
   delivery_address TEXT, -- Add this
   delivery_lat NUMERIC(10, 8),
   delivery_lng NUMERIC(11, 8),
+  driver_signal VARCHAR(255),
+  confirmation_code VARCHAR(10),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

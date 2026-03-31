@@ -28,6 +28,8 @@ interface Order {
   driver_id?: string;
   store_id?: string;
   delivery_address?: string;
+  driver_signal?: string;
+  confirmation_code?: string;
   order_items?: {
     id: string;
     quantity: number;
@@ -230,6 +232,29 @@ export default function OrderTracking() {
                </div>
             )}
 
+            {/* Driver Signal Notification */}
+            {order.driver_signal && (order.status === 'delivering' || order.status === 'picked_up') && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-slate-900 border border-slate-800 rounded-[2rem] p-8 shadow-2xl flex items-center gap-6 relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 w-32 h-full bg-white/5 skew-x-12 translate-x-16" />
+                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-inner">
+                  <MessageCircle size={24} className="animate-bounce" />
+                </div>
+                <div className="relative z-10 flex-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Signal from Driver</p>
+                  <p className="text-xl font-bold text-white tracking-tight">"{order.driver_signal}"</p>
+                </div>
+                <div className="hidden sm:block">
+                  <span className="px-3 py-1 bg-green-500/20 text-green-400 border border-green-500/20 rounded-lg text-[9px] font-bold uppercase tracking-widest">
+                    JUST NOW
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
             {/* Progress Steps */}
             <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm space-y-12">
               <div className="flex items-center justify-between gap-6 border-b border-slate-50 pb-8">
@@ -370,14 +395,28 @@ export default function OrderTracking() {
                     <div>
                       <h3 className="text-3xl font-bold text-slate-900 tracking-tighter mb-1">{order.drivers.users.name}.</h3>
                       <div className="flex items-center justify-center gap-1.5 mb-4">
-                        <div className="flex items-center gap-1 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100">
-                          <Star size={12} className="text-slate-900 fill-slate-900" />
-                          <span className="text-[10px] font-bold text-slate-900 tabular-nums">5.0</span>
-                        </div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">RANK: GLOBAL ALPHA</span>
                       </div>
                     </div>
                   </div>
+
+                  {/* Confirmation Code for Buyer */}
+                  {(order.status === 'delivering' || order.status === 'picked_up') && order.confirmation_code && (
+                    <div className="p-8 bg-slate-50 rounded-3xl border border-dashed border-slate-200 space-y-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <ShieldCheck size={14} className="text-slate-900" />
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Security Protocol</p>
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Delivery Key</h4>
+                        <p className="text-5xl font-black text-slate-900 tracking-[0.3em] tabular-nums pl-[0.3em]">{order.confirmation_code}</p>
+                      </div>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight leading-relaxed">
+                        PROVIDE THIS CODE TO THE <span className="text-slate-900">OPERATOR</span><br/>
+                        TO AUTHORIZE LOGISTICS COMPLETION
+                      </p>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 gap-4 pt-4">
                     <button className="h-16 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-4 hover:bg-slate-800 transition-all shadow-xl active:scale-95 group">
                       <MessageCircle size={18} className="group-hover:rotate-12 transition-transform" /> ENCRYPTED CHANNEL

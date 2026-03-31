@@ -33,6 +33,9 @@ export default function DriverDashboard() {
   const lastUpdateRef = useRef<number>(0);
   const [isCentering, setIsCentering] = useState(true);
   const [routeInfo, setRouteInfo] = useState<RouteUpdateData | null>(null);
+  const [showCodeInput, setShowCodeInput] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState('');
+  const [isSendingSignal, setIsSendingSignal] = useState(false);
 
   useEffect(() => {
     if (!token || user?.role !== 'driver') return router.push('/login');
@@ -103,16 +106,47 @@ export default function DriverDashboard() {
     } catch (err: any) { toast.error('Failed to accept order.'); }
   };
 
+  const sendSignal = async (signal: string) => {
+    if (!activeOrder) return;
+    setIsSendingSignal(true);
+    try {
+      const data = await apiClient(`/delivery/signal/${activeOrder.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ signal })
+      });
+      if (data) {
+        toast.success('Signal transmitted to buyer.');
+        setActiveOrder({ ...activeOrder, driver_signal: signal });
+      }
+    } catch (err) {
+      toast.error('Failed to send signal.');
+    } finally {
+      setIsSendingSignal(false);
+    }
+  };
+
   const completeOrder = async () => {
     if (!activeOrder) return;
+    if (!confirmationCode || confirmationCode.length !== 2) {
+      toast.error('Please enter the 2-digit confirmation code from the buyer.');
+      return;
+    }
+
     try {
-      const data = await apiClient(`/delivery/complete-order/${activeOrder.id}`, { method: 'PATCH' });
+      const data = await apiClient(`/delivery/complete-order/${activeOrder.id}`, { 
+        method: 'PATCH',
+        body: JSON.stringify({ code: confirmationCode })
+      });
       if (data) {
         toast.success(`+${stats.delivery_fee.toFixed(2)} ج.م added to your earnings!`);
         setActiveOrder(null);
+        setConfirmationCode('');
+        setShowCodeInput(false);
         setStats(prev => ({ ...prev, earnings: prev.earnings + prev.delivery_fee, deliveries: prev.deliveries + 1 }));
       }
-    } catch (err: any) { toast.error('Failed to complete delivery.'); }
+    } catch (err: any) { 
+      // apiClient handles toasts, but we handle specific logic if needed
+    }
   };
 
   return (
@@ -318,12 +352,72 @@ export default function DriverDashboard() {
                     </div>
                   </div>
 
-                  {/* Complete button */}
-                  <button onClick={completeOrder}
-                    className="w-full h-16 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg hover:bg-slate-800 active:scale-[0.99] transition-all flex items-center justify-center gap-4 transition-all"
-                  >
-                    <ShieldCheck size={20} /> Terminate Logistics Cycle
-                  </button>
+
+                  {/* Driver Signals */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <button 
+                      onClick={() => sendSignal("أنا قريب من موقعك")}
+                      disabled={isSendingSignal}
+                      className="h-12 bg-white border border-slate-100 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Navigation size={14} className="text-slate-400" /> أنا قريب
+                    </button>
+                    <button 
+                      onClick={() => sendSignal("أنا وصلت")}
+                      disabled={isSendingSignal}
+                      className="h-12 bg-white border border-slate-100 rounded-xl text-[10px] font-bold uppercase tracking-widest text-slate-900 hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <CheckCircle2 size={14} className="text-green-500" /> أنا وصلت
+                    </button>
+                  </div>
+
+                  {activeOrder.driver_signal && (
+                    <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Signal</p>
+                      <p className="text-sm font-bold text-slate-900">"{activeOrder.driver_signal}"</p>
+                    </div>
+                  )}
+
+                  {/* Complete button and Code Input */}
+                  <div className="space-y-4">
+                    {showCodeInput ? (
+                      <div className="bg-slate-900 rounded-xl p-6 shadow-xl border border-slate-800 space-y-6">
+                        <div className="text-center space-y-2">
+                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Security Authorization</p>
+                           <h4 className="text-white text-lg font-bold">Buyer Confirmation Code</h4>
+                        </div>
+                        <input 
+                          type="text" 
+                          maxLength={2}
+                          value={confirmationCode}
+                          onChange={(e) => setConfirmationCode(e.target.value.replace(/[^0-9]/g, ''))}
+                          placeholder="00"
+                          className="w-full h-20 bg-white/5 border border-white/10 rounded-xl text-center text-5xl font-black text-white tracking-[0.2em] focus:outline-none focus:border-white/30 transition-all placeholder:text-white/5"
+                        />
+                        <div className="grid grid-cols-2 gap-4">
+                          <button 
+                            onClick={() => setShowCodeInput(false)}
+                            className="h-12 border border-white/10 text-white/50 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+                          >
+                            Cancel
+                          </button>
+                          <button 
+                            onClick={completeOrder}
+                            disabled={confirmationCode.length !== 2}
+                            className="h-12 bg-white text-slate-900 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-xl hover:bg-slate-100 transition-all disabled:opacity-30"
+                          >
+                            Verify & Complete
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button onClick={() => setShowCodeInput(true)}
+                        className="w-full h-16 bg-slate-900 text-white rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg hover:bg-slate-800 active:scale-[0.99] transition-all flex items-center justify-center gap-4 transition-all"
+                      >
+                        <ShieldCheck size={20} /> Terminate Logistics Cycle
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             ) : (
