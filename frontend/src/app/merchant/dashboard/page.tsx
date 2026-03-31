@@ -177,7 +177,7 @@ export default function MerchantDashboard() {
         </header>
   
         {/* ── Stats Row ── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {statCards.map((s, i) => (
             <motion.div
               key={s.label}
@@ -206,7 +206,7 @@ export default function MerchantDashboard() {
         </div>
   
         {/* ── Main Content ── */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 sm:gap-8 lg:gap-10 items-start">
   
           {/* Left: Orders */}
           <div className="xl:col-span-8 space-y-8">

@@ -91,7 +91,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, delay: 0.05 }}
-                className="text-[4rem] sm:text-[6.5rem] lg:text-[8.5rem] font-bold tracking-tight leading-[0.85] text-slate-900"
+                className="text-[2.5rem] sm:text-[5.5rem] lg:text-[7.5rem] font-bold tracking-tight leading-[0.85] text-slate-900"
               >
                 Gourmet <br />
                 Logistics.
@@ -254,7 +254,7 @@ export default function Home() {
               variants={containerVariants}
               initial="hidden"
               animate="show"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14 xl:gap-16"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 xl:gap-12"
             >
               {stores.map((store) => (
                 <motion.div key={store.id} variants={itemVariants} transition={{ duration: 0.2 }}>

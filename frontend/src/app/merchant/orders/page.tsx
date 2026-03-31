@@ -171,7 +171,8 @@ export default function MerchantOrders() {
 
       {/* Orders Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto no-scrollbar">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto no-scrollbar">
           <table className="w-full min-w-[560px] sm:min-w-[700px] text-left border-collapse">
             <thead>
               <tr className="text-[9px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50">
@@ -289,6 +290,70 @@ export default function MerchantOrders() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y divide-gray-50">
+          {loading ? (
+             Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="p-4">
+                   <div className="h-20 bg-gray-50 rounded-xl animate-pulse" />
+                </div>
+             ))
+          ) : filteredOrders.length > 0 ? (
+             <AnimatePresence>
+                {filteredOrders.map((order, idx) => {
+                   const cfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG['pending'];
+                   const isTerminal = ['completed', 'delivering', 'cancelled'].includes(order.status);
+                   return (
+                      <motion.div key={order.id} className="p-4 flex flex-col gap-4 group hover:bg-[#fafafa]">
+                         <div className="flex justify-between items-start">
+                             <div>
+                                <span className="text-xs font-bold text-[#0f172a]">#{order.id.slice(0, 8).toUpperCase()}</span>
+                                <div className="text-xs font-bold text-[#111111] mt-1">{order.customer?.name || 'Customer'}</div>
+                             </div>
+                             <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest border ${cfg.pill}`}>{cfg.label}</span>
+                         </div>
+                         <div className="flex justify-between items-end">
+                             <div className="text-xs font-medium text-[#555555]">
+                                {order.order_items?.[0]?.quantity}× {order.order_items?.[0]?.products?.name}
+                                {order.order_items?.length > 1 && <span className="text-[#0f172a]"> +{order.order_items.length - 1}</span>}
+                             </div>
+                             <span className="text-sm font-bold text-[#111111]">{Number(order.subtotal || 0).toFixed(2)} ج.م</span>
+                         </div>
+                         <div className="flex justify-between items-center mt-2 border-t border-gray-50 pt-3">
+                             <span className="text-[10px] font-bold text-gray-400">
+                               {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                             </span>
+                             {isTerminal ? (
+                                <span className="h-8 px-3 rounded-lg text-[9px] font-bold uppercase tracking-wider bg-gray-50 text-gray-300 border border-gray-100 inline-flex items-center">
+                                  {order.status === 'completed' ? '✓ Done' : order.status === 'cancelled' ? '✕ Cancelled' : '🚀 En Route'}
+                                </span>
+                             ) : (
+                                <select
+                                  value={order.status}
+                                  onChange={e => { if (e.target.value !== order.status) updateStatus(order.id, e.target.value); }}
+                                  className="h-8 pl-3 pr-7 rounded-lg text-[9px] font-bold uppercase tracking-wider bg-[#111111] text-white border-0 outline-none cursor-pointer appearance-none"
+                                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+                                >
+                                  <option value="pending" disabled={order.status === 'pending'}>⏳ Pending</option>
+                                  <option value="accepted" disabled={order.status === 'accepted'}>✅ Accept</option>
+                                  <option value="preparing" disabled={order.status === 'preparing'}>🍳 Preparing</option>
+                                  <option value="ready_for_pickup" disabled={order.status === 'ready_for_pickup'}>📦 Ready</option>
+                                  <option value="cancelled">❌ Cancel</option>
+                                </select>
+                             )}
+                         </div>
+                      </motion.div>
+                   )
+                })}
+             </AnimatePresence>
+          ) : (
+             <div className="p-8 text-center opacity-30">
+                <ShoppingBag size={32} className="mx-auto mb-2" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em]">No orders</p>
+             </div>
+          )}
         </div>
 
         {/* Footer */}

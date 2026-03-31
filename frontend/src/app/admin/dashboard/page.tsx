@@ -211,8 +211,8 @@ function AdminDashboardContent() {
           </div>
         </header>
         
-        {/* Tabs */}
-        <div className="flex items-center gap-4 border-b border-slate-100 pb-2 overflow-x-auto no-scrollbar">
+        {/* Tabs (Horizontal Scroll on Mobile) */}
+        <div className="flex items-center gap-2 sm:gap-4 border-b border-slate-100 pb-2 overflow-x-auto no-scrollbar">
           {[
             { id: 'overview', label: 'Overview', icon: Activity },
             { id: 'users', label: 'Personnel', icon: Users },
@@ -246,7 +246,7 @@ function AdminDashboardContent() {
               className="space-y-12"
             >
               {/* Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 xl:gap-8">
                 {[
                   { label: 'Network Orders', value: stats?.totalOrders || 0, icon: ShoppingBag, color: 'text-slate-900' },
                   { label: 'Active Personnel', value: stats?.totalUsers || 0, icon: Users, color: 'text-slate-900' },
@@ -596,7 +596,7 @@ function AdminDashboardContent() {
 
         {activeTab === 'pulse' && (
           <motion.div key="pulse" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }} className="space-y-8">
-             <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xl overflow-hidden relative h-[600px]">
+             <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xl overflow-hidden relative h-[350px] sm:h-[600px]">
                 <MapView 
                   center={[30.0444, 31.2357]} 
                   zoom={12}

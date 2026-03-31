@@ -306,7 +306,7 @@ export default function CartPage() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative max-w-[1400px] mx-auto w-full">
 
           {/* Items Column */}
           <div className="lg:col-span-7">
@@ -453,7 +453,7 @@ export default function CartPage() {
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mt-8 space-y-4"
                 >
-                  <div className="h-64 rounded-3xl overflow-hidden border border-slate-100 relative shadow-inner">
+                  <div className="h-48 sm:h-64 rounded-3xl overflow-hidden border border-slate-100 relative shadow-inner">
                     <MapView 
                       center={selectedLocation || [30.0444, 31.2357]} 
                       zoom={15}

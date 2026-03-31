@@ -3,7 +3,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import BottomNav from './BottomNav';
+import MobileBottomNav from './MobileBottomNav';
 import { useAuthStore } from '@/store/authStore';
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -33,11 +33,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   return (
     <div className="flex flex-col min-h-screen pb-[68px] md:pb-0">
       {!isPortal && !isAuthPage && <Navbar />}
-      <main className="flex-grow">
+      <main className={`flex-grow ${!isPortal ? 'pb-16 md:pb-0' : ''}`}>
         {children}
       </main>
-      <BottomNav />
       {!isPortal && !isAuthPage && <Footer />}
+      {!isPortal && <MobileBottomNav />}
     </div>
   );
 }

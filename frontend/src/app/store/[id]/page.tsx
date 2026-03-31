@@ -344,11 +344,11 @@ export default function StorePage() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[100] w-full max-w-lg px-8"
+            className="fixed bottom-[68px] md:bottom-12 left-0 md:left-1/2 md:-translate-x-1/2 z-[100] w-full md:max-w-lg px-0 md:px-8"
           >
             <Link
               href="/cart"
-              className="bg-slate-900/95 backdrop-blur-xl text-white px-10 py-8 rounded-[2.5rem] font-bold uppercase tracking-[0.2em] shadow-2xl flex items-center justify-between group hover:scale-[1.02] hover:bg-slate-900 transition-all duration-300 border border-white/10"
+              className="bg-slate-900/95 backdrop-blur-xl text-white px-6 sm:px-10 py-6 sm:py-8 rounded-none md:rounded-[2.5rem] font-bold uppercase tracking-[0.2em] shadow-2xl flex items-center justify-between group hover:scale-[1.02] hover:bg-slate-900 transition-all duration-300 border-t md:border border-white/10"
             >
               <div className="flex items-center gap-8">
                 <div className="relative">

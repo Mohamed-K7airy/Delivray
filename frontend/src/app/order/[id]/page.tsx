@@ -159,12 +159,12 @@ export default function OrderTracking() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
           {/* Left: Status Timeline + Order Items */}
           <div className="lg:col-span-8 space-y-10">
             
             {(order.status === 'delivering' || order.status === 'picked_up' || order.status === 'delivered' || order.status === 'completed') && (
-               <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative h-[500px]">
+               <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative h-[280px] sm:h-[450px]">
                   <div className="h-full relative">
                     <MapView 
                       center={driverPos || [order.delivery_lat, order.delivery_lng]}
